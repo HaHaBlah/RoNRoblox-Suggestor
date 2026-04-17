@@ -1,18 +1,5 @@
 <!-- index.vue -->
 <script setup>
-  import CompFooter from '@/components/CompFooter.vue';
-  import CompTopNav from '@/components/CompTopNav.vue';
-
-  useHead({
-    title: 'Suggestor',
-    meta: [
-      { name: 'Suggestor', content: 'Tools for the Rise of Nations suggestions community.', },
-      { name: 'og:title', content: 'Suggestor' },
-      { name: 'og:description', content: 'Tools for the Rise of Nations suggestions community.', },
-      { name: 'og:image', content: 'https://i.imgur.com/NQS7FDH.png' },
-      { name: 'og:url', content: 'https://ronroblox-suggestor.pages.dev' },
-    ],
-  });
 </script>
 
 <template>
