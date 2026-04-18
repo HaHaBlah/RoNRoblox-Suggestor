@@ -24,7 +24,9 @@
 
           <ul class="list-unstyled mb-0">
             <li>
-              <NuxtLink to="/Dyn-Flagger" class="text-body">Dyn-Flagger</NuxtLink>
+              <NuxtLink to="/Dyn-Flagger" class="text-body"
+                >Dyn-Flagger</NuxtLink
+              >
             </li>
             <li>
               <NuxtLink to="/Formabler" class="text-body">Formabler</NuxtLink>
@@ -66,8 +68,12 @@
 
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05)">
-      © 2020 Copyright:
-      <a class="text-body" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+      <NuxtLink
+        to="https://github.com/HaHaBlah/RoNRoblox-Suggestor"
+        class="text-body"
+        >Source Code</NuxtLink
+      >
+      | by HaHaBlah @ 2026
     </div>
     <!-- Copyright -->
   </footer>

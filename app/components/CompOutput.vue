@@ -1,1 +1,2 @@
 <!-- CompOutput.vue -->
+<template></template>

@@ -1,1 +1,2 @@
-<!--   -->
+<!-- CompNationsList.vue -->
+<template></template>

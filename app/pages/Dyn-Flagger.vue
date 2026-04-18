@@ -20,7 +20,12 @@ useHead({
 </script>
 
 <template>
-  <div class="page-wrapper"></div>
+  <div class="page-wrapper">
+    <BContainer class="py-4">
+      <p>Test</p>
+      <CompParamsDyn-Flagger />
+    </BContainer>
+  </div>
 </template>
 
 <style scoped>
