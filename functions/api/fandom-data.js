@@ -1,5 +1,5 @@
 // fandom-data.js
-import { getFandomData } from '../../fandomProcessor.js';
+import { getFandomData } from '../fandomProcessor.js';
 
 let cachedFandomData = null;
 let cacheTime = null;
