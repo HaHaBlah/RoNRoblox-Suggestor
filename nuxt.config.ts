@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   modules: ["nitro-cloudflare-dev", "@bootstrap-vue-next/nuxt"],
-  css: ["bootstrap/dist/css/bootstrap.min.css"],
+  css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/style.css"],
 
   nitro: {
     preset: "cloudflare_module",
@@ -36,6 +36,12 @@ export default defineNuxtConfig({
         { name: "og:url", content: "https://ronroblox-suggestor.pages.dev" },
         { property: "og:type", content: "website" },
       ],
+    },
+  },
+
+  runtimeConfig: {
+    public: {
+      apiBase: "http://127.0.0.1:8787",
     },
   },
 });

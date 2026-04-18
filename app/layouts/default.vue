@@ -1,13 +1,24 @@
 <!-- layouts/default.vue -->
-<script setup>
-    import CompTopNav from '@/components/CompTopNav.vue';
-    import CompFooter from '@/components/CompFooter.vue';
-</script>
-
 <template>
-  <CompTopNav />
-  <main>
-    <slot />
-  </main>
-  <CompFooter />
+  <div class="app-layout">
+    <CompTopNav />
+    <main>
+      <slot />
+    </main>
+    <CompFooter />
+  </div>
 </template>
+
+<style>
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;        /* to have main fill the space between content and  footer */
+  display: flex;
+  flex-direction: column;
+}
+</style>

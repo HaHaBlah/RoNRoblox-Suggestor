@@ -2,10 +2,22 @@
 <script setup></script>
 
 <template>
-  <BNavbar toggleable="lg" variant="dark" v-b-color-mode="'dark'">
-    <BNavbarBrand to="/">RoN Roblox Suggestor</BNavbarBrand>
+  <BNavbar
+    toggleable="lg"
+    variant="dark"
+    v-b-color-mode="'dark'"
+    container="lg"
+  >
+    <BNavbarBrand to="/">
+      <img
+        src="@/assets/images/Logo.png"
+        class="d-inline-block align-top img-logo"
+        alt="Logo"
+      />
+      Suggestor
+    </BNavbarBrand>
 
-    <BNavbarToggle class="ms-auto" target="nav-collapse" />
+    <BNavbarToggle target="nav-collapse" />
 
     <BCollapse id="nav-collapse" is-nav>
       <BNavbarNav>
@@ -18,4 +30,9 @@
   </BNavbar>
 </template>
 
-<style scoped></style>
+<style scoped>
+.img-logo {
+  width: auto;
+  height: 30px;
+}
+</style>

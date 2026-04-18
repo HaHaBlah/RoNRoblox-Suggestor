@@ -8,13 +8,13 @@
       <div class="col">
         <ul>
           <li>
-            <RouterLink to="/Credits">Credits</RouterLink>
+            <NuxtLink to="/Credits">Credits</NuxtLink>
           </li>
           <li>
-            <RouterLink to="/Formabler">Formabler</RouterLink>
+            <NuxtLink to="/Formabler">Formabler</NuxtLink>
           </li>
           <li>
-            <RouterLink to="/Dyn-Flagger">Dyn-Flagger</RouterLink>
+            <NuxtLink to="/Dyn-Flagger">Dyn-Flagger</NuxtLink>
           </li>
         </ul>
       </div>
