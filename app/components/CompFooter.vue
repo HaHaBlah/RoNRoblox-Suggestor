@@ -1,6 +1,6 @@
 <!-- CompFooter.vue -->
 <template>
-  <footer class="bg-body-tertiary text-center text-md-start">
+  <footer class="text-center text-md-start">
     <!-- Grid container -->
     <div class="container p-4">
       <!--Grid row-->
@@ -20,7 +20,29 @@
 
         <!--Grid column-->
         <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-          <h5 class="text-uppercase">Tools</h5>
+          <h5 class="text-uppercase">Pages</h5>
+
+          
+          <ul class="list-unstyled">
+            <li>
+              <NuxtLink to="/" class="text-body">Home Page</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/Credits" class="text-body">Credits</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="#!" class="text-body">Link 3</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="#!" class="text-body">Link 4</NuxtLink>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+          <h5 class="text-uppercase mb-0">Tools</h5>
 
           <ul class="list-unstyled mb-0">
             <li>
@@ -32,31 +54,10 @@
               <NuxtLink to="/Formabler" class="text-body">Formabler</NuxtLink>
             </li>
             <li>
-              <a href="#!" class="text-body">Link 3</a>
+              <NuxtLink to="#!" class="text-body">Link 3</NuxtLink>
             </li>
             <li>
-              <a href="#!" class="text-body">Link 4</a>
-            </li>
-          </ul>
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-          <h5 class="text-uppercase mb-0">Links</h5>
-
-          <ul class="list-unstyled">
-            <li>
-              <a href="#!" class="text-body">Link 1</a>
-            </li>
-            <li>
-              <a href="#!" class="text-body">Link 2</a>
-            </li>
-            <li>
-              <a href="#!" class="text-body">Link 3</a>
-            </li>
-            <li>
-              <a href="#!" class="text-body">Link 4</a>
+              <NuxtLink to="#!" class="text-body">Link 4</NuxtLink>
             </li>
           </ul>
         </div>

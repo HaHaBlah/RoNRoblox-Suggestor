@@ -22,8 +22,23 @@ useHead({
 <template>
   <div class="page-wrapper">
     <BContainer class="py-4">
-      <p>Test</p>
-      <CompParamsDyn-Flagger />
+      <BRow class="ron-card">
+        <h1 class="text-center">Dyn-Flagger</h1>
+      </BRow>
+
+      <BRow class="ron-card mt-4">
+        <CompParamsDyn-Flagger />
+      </BRow>
+
+      <BRow class="ron-card mt-4 text-center">
+        <p>Updates based on the following wiki modules:</p>
+        <ul class="list-unstyled">
+          <li><NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Lawnames">Module:Lawnames</NuxtLink></li>
+          <li><NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Nationdata">Module:Nationdata</NuxtLink></li>
+          <li><NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Tagdata">Module:Tagdata</NuxtLink></li>
+          <li><NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Flagdata">Module:Flagdata</NuxtLink></li>
+        </ul>
+      </BRow>
     </BContainer>
   </div>
 </template>

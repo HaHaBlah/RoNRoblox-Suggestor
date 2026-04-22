@@ -1,7 +1,55 @@
 /* style.css */
+
+/* base color variables */
+:root {
+  --ron-button-dark: #15191e;
+  --ron-button-dark-hover: #0e1115;
+  --ron-button-dark-active: #5b5e61;
+  --ron-dark-1: #2c353d;
+  --ron-dark-2: #272f38;
+  --ron-green: #a0ff57;
+  --ron-red: #fc734a;
+  --ron-yellow: #7c6938;
+
+  --ron-text: #fff;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
+
+/* Primary page background colours */
+.ron-card {
+  background-color: var(--ron-dark-2);
+  padding: 1.5rem;
+  color: var(--ron-text);
+}
+
+/* Override Bootstrap's Dark Theme Background */
+[data-bs-theme="dark"] {
+  --bs-body-bg: var(--ron-dark-2);
+  /* --bg-body-tertiary: var(--ron-dark-1);
+  --bg-body-secondary: var(--ron-dark-1);
+  --bg-body-primary: var(--ron-dark-1); */
+}
+
+/* Scrollbar START */
+::-webkit-scrollbar {
+  width: 15px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ron-dark-1);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ron-button-dark);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ron-button-dark-hover);
+}
+::-webkit-scrollbar-thumb:active {
+  background: var(--ron-button-dark-active);
+}
+/* Scrollbar END */

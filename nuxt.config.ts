@@ -6,6 +6,10 @@ export default defineNuxtConfig({
   modules: ["nitro-cloudflare-dev", "@bootstrap-vue-next/nuxt"],
   css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/style.css"],
 
+  bootstrapVueNext: {
+    composables: true,
+  },
+
   nitro: {
     preset: "cloudflare_module",
 
@@ -20,6 +24,7 @@ export default defineNuxtConfig({
       title: "Suggestor", // default fallback title
       htmlAttrs: {
         lang: "en",
+        "data-bs-theme": "dark",
       },
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
       meta: [

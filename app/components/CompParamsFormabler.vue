@@ -1,2 +1,2 @@
 <!-- CompParamsFormabler.vue -->
-<template></template>
+<template><h1 class="text-center">CompParamsFormabler</h1></template>

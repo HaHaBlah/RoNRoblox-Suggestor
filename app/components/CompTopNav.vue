@@ -4,8 +4,6 @@
 <template>
   <BNavbar
     toggleable="lg"
-    variant="dark"
-    v-b-color-mode="'dark'"
     container="lg"
   >
     <BNavbarBrand to="/">
