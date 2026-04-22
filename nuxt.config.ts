@@ -3,7 +3,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["nitro-cloudflare-dev", "@bootstrap-vue-next/nuxt"],
+  modules: ["nitro-cloudflare-dev", "@bootstrap-vue-next/nuxt", "@nuxt/image"],
   css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/style.css"],
 
   bootstrapVueNext: {

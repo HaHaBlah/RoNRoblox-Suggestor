@@ -15,6 +15,7 @@
     "@bootstrap-vue-next/nuxt": "^0.44.3",
     "@emnapi/core": "^1.10.0",
     "@emnapi/runtime": "^1.10.0",
+    "@nuxt/image": "^2.0.0",
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^0.44.3",
     "commander": "^13.1.0",

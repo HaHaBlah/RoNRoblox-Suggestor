@@ -43,7 +43,8 @@
       <!-- Params -->
       <BCol md="10">
         <BForm>
-          
+          <NuxtImg src="assets/images/Unknown Flag.png" alt="Placeholder Image" class="mb-3" />
+          <BFormInput type="text" placeholder="Enter some text..." />
         </BForm>
       </BCol>
     </BRow>
