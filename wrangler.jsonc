@@ -1,17 +1,12 @@
 // wrangler.jsonc
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "o--oblox--uggestor--uxt",
+  "name": "ronroblox-suggestor",
   "compatibility_date": "2026-04-17",
-  "observability": {
-    "enabled": true
-  },
-  "main": "./.output/server/index.mjs",
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "./.output/public/"
-  },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "observability": {
+    "enabled": true
+  }
 }
