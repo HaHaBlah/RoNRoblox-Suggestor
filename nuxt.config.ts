@@ -3,7 +3,12 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["nitro-cloudflare-dev", "@bootstrap-vue-next/nuxt", "@nuxt/image"],
+  modules: [
+    "nitro-cloudflare-dev",
+    "@bootstrap-vue-next/nuxt",
+    "@nuxt/image",
+    "@nuxt/ui",
+  ],
   css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/style.css"],
 
   bootstrapVueNext: {
@@ -44,9 +49,14 @@ export default defineNuxtConfig({
     },
   },
 
+  image: {
+    dir: "assets/images", //default images directory
+  },
+
   runtimeConfig: {
     public: {
       apiBase: "http://127.0.0.1:8787",
+      robloxApiKey: process.env.ROBLOX_API_KEY ?? '',
     },
   },
 });

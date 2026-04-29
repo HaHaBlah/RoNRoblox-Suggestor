@@ -1,4 +1,5 @@
 /* style.css */
+@import "@nuxt/ui";
 
 /* base color variables */
 :root {
