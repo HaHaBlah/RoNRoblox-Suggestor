@@ -16,14 +16,12 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: "cloudflare_module",
-
+    preset: "cloudflare-module", 
     cloudflare: {
-      deployConfig: true,
+      deployConfig: false,
       nodeCompat: true,
     },
   },
-
   app: {
     head: {
       title: "Suggestor", // default fallback title
@@ -56,7 +54,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: "http://127.0.0.1:8787",
-      robloxApiKey: process.env.ROBLOX_API_KEY ?? '',
+      robloxApiKey: process.env.ROBLOX_API_KEY ?? "",
     },
   },
 });
