@@ -2,7 +2,7 @@
 <script setup lang="ts">
     import { ref, computed } from 'vue'
 
-    // ---- Types ----
+    // Types 
     interface NationEntry { nation: boolean }
     interface FormableEntry { FormableName?: string; Removed?: boolean }
 
@@ -11,7 +11,7 @@
         Tagdata: { Tags: Record<string, FormableEntry> }
     }
 
-    // ---- Data ----
+    // Data 
     const emit = defineEmits<{ select: [name: string] }>()
 
     const { data, status, error } = await useFetch<FandomData>('/api/fandom-data')
@@ -43,7 +43,7 @@
             : []
     )
 
-    // ---- Tab + Search ----
+    // Tab + Search 
     type Tab = 'Nations' | 'Releasables' | 'Formables'
     const tabIndex = ref<Tab>('Nations')
     const searchQuery = ref('')
@@ -89,6 +89,7 @@
                 <ul v-else class="nations-list list-unstyled">
                     <li v-for="name in filteredList" :key="name">
                         <BButton class="btn text-start w-100" @click="emit('select', name)">
+                            <CompFlagImage :name="name" />
                             {{ name }}
                         </BButton>
                     </li>

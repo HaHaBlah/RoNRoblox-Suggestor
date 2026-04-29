@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: "cloudflare-module", 
+    preset: "cloudflare-module",
     cloudflare: {
       deployConfig: false,
       nodeCompat: true,
@@ -53,7 +53,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: "http://127.0.0.1:8787",
+      // Leave this empty or use a relative path for production
+      apiBase:
+        process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8787",
       robloxApiKey: process.env.ROBLOX_API_KEY ?? "",
     },
   },
