@@ -3,7 +3,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ronroblox-suggestor",
   "compatibility_date": "2026-04-17",
-  "pages_build_output_dir": ".output/public",
+  "pages_build_output_dir": "dist",
   "compatibility_flags": [
     "nodejs_compat"
   ],
