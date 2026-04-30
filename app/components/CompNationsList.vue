@@ -1,4 +1,4 @@
-<!-- CompNationsListSelector.vue -->
+<!-- CompNationsList.vue -->
 <script setup lang="ts">
     import { ref, computed } from 'vue'
 
@@ -9,6 +9,7 @@
     interface FandomData {
         Nationdata: { nationdata: Record<string, NationEntry> }
         Tagdata: { Tags: Record<string, FormableEntry> }
+        flagMap: Record<string, string>;
     }
 
     // Data 
@@ -64,7 +65,7 @@
 </script>
 
 <template>
-    <BContainer>
+    <BContainer fluid>
         <!-- Tabs -->
         <BRow>
             <BNav tabs>
@@ -89,7 +90,8 @@
                 <ul v-else class="nations-list list-unstyled">
                     <li v-for="name in filteredList" :key="name">
                         <BButton class="btn text-start w-100" @click="emit('select', name)">
-                            <CompFlagImage :name="name" />
+                            <!-- Pass the pre-resolved URL directly from the data map -->
+                            <CompFlagImage :name="name" :src="data?.flagMap?.[name]" />
                             {{ name }}
                         </BButton>
                     </li>
