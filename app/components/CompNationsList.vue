@@ -39,9 +39,6 @@
 
 <template>
   <div class="h-100 d-flex flex-column">
-    <BFormGroup class="mb-2">
-      <BFormInput v-model="searchQuery" :placeholder="`Filter ${tabIndex.toLowerCase()}...`" type="search" />
-    </BFormGroup>
 
     <BNav pills justified class="mb-3">
       <BNavItem 
@@ -54,7 +51,12 @@
       </BNavItem>
     </BNav>
 
-    <div class="flex-grow-1 overflow-auto" style="max-height: 70vh;">
+    
+    <BFormGroup class="mb-2">
+      <BFormInput v-model="searchQuery" :placeholder="`Filter ${tabIndex.toLowerCase()}...`" type="search" />
+    </BFormGroup>
+
+    <div class="flex-grow-1 overflow-auto">
       <div v-if="status === 'pending'" class="text-center text-muted p-4">
         <BSpinner class="mb-2" />
         <p>Loading nations...</p>

@@ -61,7 +61,10 @@
     <BRow>
       <!-- Desktop Sidebar -->
       <BCol lg="3" class="d-none d-lg-block border-end">
-        <CompNationsList @select="name => state.NationName = name" />
+        <!-- Add a wrapper div with sticky-top and overflow properties -->
+        <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto;">
+          <CompNationsList @select="name => state.NationName = name" />
+        </div>
       </BCol>
 
       <!-- Main Content -->
