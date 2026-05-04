@@ -1,118 +1,103 @@
-<!-- CompParamsDyn-Flagger.vue -->
+<!-- components/CompParamsDyn-Flagger.vue -->
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { useDynFlagger } from '~/composables/useDynFlagger'
+  import { useFlagUrl } from '~/composables/useFlagUrl'
 
-  import CompNationsListSelector from "./CompNationsList.vue";
+  const { state, addFlag, removeFlag } = useDynFlagger()
+  const { getFlagData } = useFlagUrl()
 
-  // Sidebar START
-  const tocVisible = ref(false);
+  interface LawEntry { Name: string; Types: Record<string, string> }
+  interface FandomData {
+    Lawnames: { lawNames: Record<string, LawEntry> }
+  }
 
-  // This example uses buttons to show the hidden sidebars, but you could also use a menu item or any other
-  //  UX element that can change the state of the model value for the BOffcanvas
-  const showToc = () => {
-    tocVisible.value = true;
-  };
+  const { data: fandomData } = await useFetch<FandomData>('/api/fandom-data')
+  const lawnames = computed(() => fandomData.value?.Lawnames?.lawNames ?? {})
 
-  const tocGenerator = (s: string, c: number): string[] =>
-    [...Array(c).keys()].map((i) => `${s} ${i}`);
+  const nationFlagSrc = ref('Unknown Flag.png')
+  let nationFlagController: AbortController | null = null
 
-  const toc = tocGenerator("Chapter", 50); // Replace this with your own table of contents
-  // Sidebar END
+  watch(
+    () => state.NationName,
+    async (name) => {
+      nationFlagController?.abort()
+      nationFlagController = new AbortController()
 
+      if (!name) {
+        nationFlagSrc.value = 'Unknown Flag.png'
+        return
+      }
 
-  // Params START
-  const nationName = ref("");
-  const flagImageUrl = ref("Unknown Flag.png"); // Placeholder image URL
-  const flagData = ref(null);
-  // Params END
+      try {
+        const url = await getFlagData(name)
+        if (!nationFlagController.signal.aborted) {
+          nationFlagSrc.value = url || 'Unknown Flag.png'
+        }
+      } catch {
+        if (!nationFlagController.signal.aborted) {
+          nationFlagSrc.value = 'Unknown Flag.png'
+        }
+      }
+    },
+  )
 
-  // Output START
-  const myCode = computed(() => {
-    return `-- Generated for ${nationName.value || 'Unknown Nation'}
-local flag = "flag_id_here"
-print("Glory to " .. "${nationName.value}")`;
-  });
+  const mobileRailOpen = ref(false)
 
-  // We wrap it so the UI shows the backticks for the user to copy
-  const generatedCode = computed(() => {
-    return `\`\`\`text\n\`\`\`lua\n${myCode.value}\n\`\`\`\n\`\`\``;
-  });
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      // If using Nuxt UI, you can use useToast() here
-      console.log("Copied!");
-    } catch (err) {
-      console.error("Failed to copy", err);
-    }
-  };
-  // Output END
+  onMounted(() => {
+    if (state.Flags.length === 0) addFlag()
+  })
 </script>
 
 <template>
-  <BContainer fluid="xxl">
+  <BContainer fluid class="py-3">
+    <!-- Mobile Offcanvas Sidebar -->
+    <BOffcanvas v-model="mobileRailOpen" title="Select Nation" placement="start">
+      <CompNationsList @select="name => {
+        state.NationName = name
+        mobileRailOpen = false
+      }" />
+    </BOffcanvas>
 
-    <!-- Mobile Toggle Sidebar Button -->
-    <BRow class="d-md-none">
-      <BCol>
-        <BButton variant="link" underline-opacity="0" aria-controls="offcanvas-toc"
-          :aria-expanded="tocVisible ? 'true' : 'false'" @click="showToc">&lt; Table of Contents</BButton>
-      </BCol>
-    </BRow>
     <BRow>
-      <!-- Sidebar -->
-      <BCol md="2" class="scrollable-column">
-        <BOffcanvas id="offcanvas-toc" v-model="tocVisible" title="Table of Contents" placement="start" responsive="md">
-          <CompNationsListSelector />
-        </BOffcanvas>
+      <!-- Desktop Sidebar -->
+      <BCol lg="3" class="d-none d-lg-block border-end">
+        <CompNationsList @select="name => state.NationName = name" />
       </BCol>
-      <!-- Params -->
-      <BCol md="10">
-        <BForm>
-          <!-- Nationname and Flag Image -->
-          <NuxtImg src="Unknown Flag.png" alt="Placeholder Image" class="mb-3 nav-justified" />
-          <BFormInput type="text" placeholder="Enter the Nation Name" v-model="nationName" />
-          <!-- Params -->
 
+      <!-- Main Content -->
+      <BCol lg="9" cols="12">
+        <!-- Mobile Sidebar Toggle -->
+        <BButton variant="outline-primary" class="d-lg-none mb-3 w-100" @click="mobileRailOpen = true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          Select Nation
+        </BButton>
 
-        </BForm>
-        <!-- Output -->
-        <div class="card bg-dark text-light border-0">
-          <div class="card-header d-flex justify-content-between align-items-center py-2 border-secondary">
-            <small class="text-secondary text-uppercase fw-bold">Code Snippet</small>
-            <BButton variant="outline-light" size="sm" @click="copyToClipboard(myCode)">Copy</BButton>
-          </div>
-
-          <div class="card-body p-0">
-            <pre class="m-0 p-3"><code class="text-info">{{ generatedCode }}</code></pre>
-          </div>
+        <!-- Nation Overview -->
+        <div class="text-center mb-4">
+          <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 150px;">
+          <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
+            <BFormInput id="nation-name" v-model="state.NationName" placeholder="Click a country on the left or write here" />
+          </BFormGroup>
         </div>
+
+        <!-- Flag Cards -->
+        <CompFlag v-for="(flag, i) in state.Flags" :key="i" :flag="flag" :index="i" :lawnames="lawnames" @remove="removeFlag" />
+
+        <!-- Add Flag Button -->
+        <div class="text-center my-4">
+          <BButton variant="outline-success" size="lg" @click="addFlag()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="me-2">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="3" />
+            </svg>
+            Add New Flag
+          </BButton>
+        </div>
+
+        <!-- Output Component -->
+        <CompOutput />
       </BCol>
     </BRow>
   </BContainer>
 </template>
-
-<style scoped lang="scss">
-
-  // The styling below makes a colum scroll independently of the rest of the page if
-  //  its content is too large to fit in the current viewport
-  .scrollable-column {
-    max-height: 100vh;
-    overflow-y: auto;
-    position: sticky;
-    top: 0;
-  }
-
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-height: 400px;
-    overflow-y: auto;
-  }
-
-  code {
-    font-family: 'Courier New', Courier, monospace;
-  }
-</style>
