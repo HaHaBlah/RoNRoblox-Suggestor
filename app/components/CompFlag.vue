@@ -47,6 +47,30 @@
     }
   }
 
+
+  // --- Ideology Tree Data Structure ---
+  // OrganizationChart requires a recursive 'children' structure
+  const ideologyTree = ref({
+    label: 'Non-Aligned',
+    key: 'Non-Aligned',
+    children: [
+      {
+        label: 'Socialism',
+        key: 'Socialism',
+        children: [{ label: 'Communism', key: 'Communism' }]
+      },
+      {
+        label: 'Liberalism',
+        key: 'Liberalism',
+        children: [{ label: 'Democracy', key: 'Democracy' }]
+      },
+      {
+        label: 'Nationalism',
+        key: 'Nationalism',
+        children: [{ label: 'Fascism', key: 'Fascism' }]
+      }
+    ]
+  })
   function toggleIdeology(ideology: string) {
     const idx = props.flag.Ideologies.indexOf(ideology)
     if (idx !== -1) props.flag.Ideologies.splice(idx, 1)
@@ -55,8 +79,7 @@
 
   // Returns Bootstrap variants instead of CSS classes
   function ideologyVariant(ideology: string): string {
-    if (!props.flag.Ideologies.length) return 'outline-secondary'
-    return props.flag.Ideologies.includes(ideology) ? 'success' : 'danger'
+    return props.flag.Ideologies.includes(ideology) ? 'success' : 'outline-secondary'
   }
 
   const sortedLaws = computed(() => Object.entries(props.lawnames).sort(([, a], [, b]) => a.Name.localeCompare(b.Name)))
@@ -165,30 +188,17 @@
         <!-- Ideology Tree (Uses layout classes) -->
         <div class="mb-4">
           <h6 class="fw-bold mb-3 text-center">Ideologies</h6>
-          <!-- Note: Standard flex classes replace CSS tree. Modify structure if strict branching arrows are required -->
-          <div class="d-flex flex-column align-items-center gap-2">
-            <BButton :variant="ideologyVariant('Non-Aligned')" class="w-25" @click="toggleIdeology('Non-Aligned')">
-              Non-Aligned</BButton>
-            <div class="d-flex w-100 justify-content-center gap-3 mt-2">
-              <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Socialism')" class="w-100" @click="toggleIdeology('Socialism')">
-                  Socialism</BButton>
-                <BButton :variant="ideologyVariant('Communism')" size="sm" class="w-75"
-                  @click="toggleIdeology('Communism')">Communism</BButton>
-              </div>
-              <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Liberalism')" class="w-100" @click="toggleIdeology('Liberalism')">
-                  Liberalism</BButton>
-                <BButton :variant="ideologyVariant('Democracy')" size="sm" class="w-75"
-                  @click="toggleIdeology('Democracy')">Democracy</BButton>
-              </div>
-              <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Nationalism')" class="w-100" @click="toggleIdeology('Nationalism')">
-                  Nationalism</BButton>
-                <BButton :variant="ideologyVariant('Fascism')" size="sm" class="w-75"
-                  @click="toggleIdeology('Fascism')">Fascism</BButton>
-              </div>
-            </div>
+          <div class="chart-container">
+            <POrganizationChart :value="ideologyTree">
+              <template #default="{ node }">
+                <!-- ❌ Was: @click — bubbles into OrganizationChart's own selection handler -->
+                <!-- ✅ Fix: @click.stop prevents the chart from intercepting the event -->
+                <BButton :variant="ideologyVariant(node.key)" size="sm" @click.stop="toggleIdeology(node.key)"
+                  style="min-width: 100px;">
+                  {{ node.label }}
+                </BButton>
+              </template>
+            </POrganizationChart>
           </div>
         </div>
 

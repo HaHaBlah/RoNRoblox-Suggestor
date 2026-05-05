@@ -1,5 +1,6 @@
 // nuxt.config.ts
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import Aura from '@primeuix/themes/aura'
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
@@ -7,20 +8,15 @@ export default defineNuxtConfig({
     "nitro-cloudflare-dev",
     "@bootstrap-vue-next/nuxt",
     "@nuxt/image",
-    "@nuxt/ui",
+    // "@nuxt/ui",
+    "@primevue/nuxt-module",
   ],
-  css: ["bootstrap/dist/css/bootstrap.min.css", "@/assets/style.css"],
+  css: [
+    "bootstrap/dist/css/bootstrap.min.css",
+    "@/assets/style.css",
+    // "primeicons/primeicons.css",
+  ],
 
-  bootstrapVueNext: {
-    composables: true,
-  },
-
-  nitro: {
-    preset: "cloudflare-pages",
-    cloudflare: {
-      nodeCompat: true,
-    },
-  },
   app: {
     head: {
       title: "Suggestor", // default fallback title
@@ -47,16 +43,38 @@ export default defineNuxtConfig({
     },
   },
 
+  bootstrapVueNext: {
+    composables: true,
+  },
+
+  nitro: {
+    preset: "cloudflare-pages",
+    cloudflare: {
+      nodeCompat: true,
+    },
+  },
+
+  primevue: {
+    components: { prefix: "P" },
+    options: {
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '[data-bs-theme="dark"]', // ties PrimeVue dark mode to Bootstrap's toggle
+        },
+      },
+    },
+  },
+
   image: {
     dir: "assets/images", //default images directory
   },
 
   runtimeConfig: {
+    robloxApiKey: process.env.ROBLOX_API_KEY ?? "",
     public: {
-      // Leave this empty or use a relative path for production
       apiBase:
         process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8787",
-      robloxApiKey: process.env.ROBLOX_API_KEY ?? "",
     },
   },
 });
