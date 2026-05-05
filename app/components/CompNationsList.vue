@@ -40,21 +40,20 @@
 <template>
   <div class="h-100 d-flex flex-column">
 
-    <BNav pills justified class="mb-3">
-      <BNavItem 
-        v-for="tab in (['Nations', 'Releasables', 'Formables'] as const)" 
-        :key="tab"
-        :active="tabIndex === tab" 
-        @click="tabIndex = tab"
-      >
-        {{ tab }}
-      </BNavItem>
-    </BNav>
+    <div class="sticky-top">
+      <BNav pills justified class="mb-3">
+        <BNavItem v-for="tab in (['Nations', 'Releasables', 'Formables'] as const)" :key="tab"
+          :active="tabIndex === tab" @click="tabIndex = tab">
+          {{ tab }}
+        </BNavItem>
+      </BNav>
 
-    
-    <BFormGroup class="mb-2">
-      <BFormInput v-model="searchQuery" :placeholder="`Filter ${tabIndex.toLowerCase()}...`" type="search" />
-    </BFormGroup>
+
+      <BFormGroup class="mb-2">
+        <BFormFloatingLabel>Search:</BFormFloatingLabel>
+        <BFormInput v-model="searchQuery" :placeholder="`Filter ${tabIndex.toLowerCase()}...`" type="search" />
+      </BFormGroup>
+    </div>
 
     <div class="flex-grow-1 overflow-auto">
       <div v-if="status === 'pending'" class="text-center text-muted p-4">
@@ -65,14 +64,10 @@
         Failed to load: {{ error.message }}
       </BAlert>
       <BListGroup v-else>
-        <BListGroupItem 
-          v-for="name in filteredList" 
-          :key="name" 
-          button 
-          class="d-flex align-items-center"
-          @click="emit('select', name)"
-        >
-          <img v-if="data?.flagMap?.[name]" :src="data.flagMap[name]" :alt="name" class="me-3 border" style="width: 36px; height: 24px; object-fit: cover;">
+        <BListGroupItem v-for="name in filteredList" :key="name" button class="d-flex align-items-center"
+          @click="emit('select', name)">
+          <img v-if="data?.flagMap?.[name]" :src="data.flagMap[name]" :alt="name" class="me-3 border"
+            style="width: 36px; height: 24px; object-fit: cover;">
           <div v-else class="me-3 bg-secondary" style="width: 36px; height: 24px;"></div>
           {{ name }}
         </BListGroupItem>
@@ -83,3 +78,9 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  .sticky-top {
+    background-color: var(--bs-body-bg);
+  }
+</style>

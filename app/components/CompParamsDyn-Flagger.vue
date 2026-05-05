@@ -62,7 +62,7 @@
       <!-- Desktop Sidebar -->
       <BCol lg="3" class="d-none d-lg-block border-end">
         <!-- Add a wrapper div with sticky-top and overflow properties -->
-        <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto;">
+        <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 1rem); overflow-y: auto;">
           <CompNationsList @select="name => state.NationName = name" />
         </div>
       </BCol>
@@ -79,7 +79,7 @@
 
         <!-- Nation Overview -->
         <div class="text-center mb-4">
-          <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 150px;">
+          <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;">
           <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
             <BFormInput id="nation-name" v-model="state.NationName" placeholder="Click a country on the left or write here" />
           </BFormGroup>

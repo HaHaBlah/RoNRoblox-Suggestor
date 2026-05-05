@@ -120,7 +120,8 @@
   <BCard no-body class="mb-4 border-primary">
     <!-- Collapse Header / Overview -->
     <BCardHeader class="p-0 bg-primary bg-opacity-10 hover-overlay">
-      <BButton variant="link" class="w-100 text-decoration-none text-dark text-start d-flex flex-wrap p-3" @click="isExpanded = !isExpanded">
+      <BButton variant="link" class="w-100 text-decoration-none text-dark text-start d-flex flex-wrap p-3"
+        @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
           <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white" style="width: 120px; height: auto;">
           <h5 class="ms-3 mb-0">{{ flag.FlagName || 'Flag Name' }}</h5>
@@ -137,7 +138,8 @@
     <!-- Flag Contents -->
     <BCollapse v-model="isExpanded">
       <BCardBody class="position-relative">
-        <BButton variant="danger" size="sm" class="position-absolute top-0 end-0 m-3 z-3" @click="emit('remove', index)">
+        <BButton variant="danger" size="sm" class="position-absolute top-0 end-0 m-3 z-3"
+          @click="emit('remove', index)">
           Delete Flag
         </BButton>
 
@@ -149,7 +151,8 @@
           </BCol>
           <BCol md="6">
             <BFormGroup label="Image ID:" class="fw-bold">
-              <BFormInput :model-value="imageInputRaw" placeholder="Input Decal/Image ID here" @update:model-value="onImageInput" />
+              <BFormInput :model-value="imageInputRaw" placeholder="Input Decal/Image ID here"
+                @update:model-value="onImageInput" />
             </BFormGroup>
           </BCol>
           <BCol cols="12">
@@ -164,19 +167,26 @@
           <h6 class="fw-bold mb-3 text-center">Ideologies</h6>
           <!-- Note: Standard flex classes replace CSS tree. Modify structure if strict branching arrows are required -->
           <div class="d-flex flex-column align-items-center gap-2">
-            <BButton :variant="ideologyVariant('Non-Aligned')" class="w-25" @click="toggleIdeology('Non-Aligned')">Non-Aligned</BButton>
+            <BButton :variant="ideologyVariant('Non-Aligned')" class="w-25" @click="toggleIdeology('Non-Aligned')">
+              Non-Aligned</BButton>
             <div class="d-flex w-100 justify-content-center gap-3 mt-2">
               <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Socialism')" class="w-100" @click="toggleIdeology('Socialism')">Socialism</BButton>
-                <BButton :variant="ideologyVariant('Communism')" size="sm" class="w-75" @click="toggleIdeology('Communism')">Communism</BButton>
+                <BButton :variant="ideologyVariant('Socialism')" class="w-100" @click="toggleIdeology('Socialism')">
+                  Socialism</BButton>
+                <BButton :variant="ideologyVariant('Communism')" size="sm" class="w-75"
+                  @click="toggleIdeology('Communism')">Communism</BButton>
               </div>
               <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Liberalism')" class="w-100" @click="toggleIdeology('Liberalism')">Liberalism</BButton>
-                <BButton :variant="ideologyVariant('Democracy')" size="sm" class="w-75" @click="toggleIdeology('Democracy')">Democracy</BButton>
+                <BButton :variant="ideologyVariant('Liberalism')" class="w-100" @click="toggleIdeology('Liberalism')">
+                  Liberalism</BButton>
+                <BButton :variant="ideologyVariant('Democracy')" size="sm" class="w-75"
+                  @click="toggleIdeology('Democracy')">Democracy</BButton>
               </div>
               <div class="d-flex flex-column align-items-center gap-2">
-                <BButton :variant="ideologyVariant('Nationalism')" class="w-100" @click="toggleIdeology('Nationalism')">Nationalism</BButton>
-                <BButton :variant="ideologyVariant('Fascism')" size="sm" class="w-75" @click="toggleIdeology('Fascism')">Fascism</BButton>
+                <BButton :variant="ideologyVariant('Nationalism')" class="w-100" @click="toggleIdeology('Nationalism')">
+                  Nationalism</BButton>
+                <BButton :variant="ideologyVariant('Fascism')" size="sm" class="w-75"
+                  @click="toggleIdeology('Fascism')">Fascism</BButton>
               </div>
             </div>
           </div>
@@ -186,10 +196,11 @@
         <div>
           <h6 class="fw-bold mb-3 text-center">Laws</h6>
           <div v-if="!sortedLaws.length" class="text-center py-3">
-             <BSpinner label="Loading Laws..."></BSpinner>
+            <BSpinner label="Loading Laws..."></BSpinner>
           </div>
           <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <BButton v-for="[code, law] in sortedLaws" :key="code" size="sm" :variant="lawSelectionVariant(code)" @click="selectLaw(code)">
+            <BButton v-for="[code, law] in sortedLaws" :key="code" size="sm" :variant="lawSelectionVariant(code)"
+              @click="selectLaw(code)">
               {{ law.Name }}
             </BButton>
           </div>
@@ -197,7 +208,8 @@
           <div v-if="selectedLawName" class="mt-4 border-top pt-3 text-center">
             <h6 class="fw-bold mb-3">{{ selectedLawName }}</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
-              <BButton v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey" :variant="levelVariant(String(levelKey))" @click="toggleLawLevel(String(levelKey))">
+              <BButton v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
+                :variant="levelVariant(String(levelKey))" @click="toggleLawLevel(String(levelKey))">
                 {{ levelText }}
               </BButton>
             </div>
