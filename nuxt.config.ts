@@ -41,6 +41,7 @@ export default defineNuxtConfig({
         },
         { name: "og:image", content: "https://i.imgur.com/NQS7FDH.png" },
         { name: "og:url", content: "https://ronroblox-suggestor.pages.dev" },
+        { name: "theme-color", content: "#FF0000" },
         { property: "og:type", content: "website" },
       ],
     },
