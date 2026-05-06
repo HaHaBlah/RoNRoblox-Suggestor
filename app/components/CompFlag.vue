@@ -53,10 +53,12 @@
   const ideologyTree = ref({
     label: 'Non-Aligned',
     key: 'Non-Aligned',
+    styleClass: 'test-colour',
     children: [
       {
         label: 'Socialism',
         key: 'Socialism',
+        styleClass: 'test-colour',
         children: [{ label: 'Communism', key: 'Communism' }]
       },
       {
@@ -189,10 +191,13 @@
         <div class="mb-4">
           <h6 class="fw-bold mb-3 text-center">Ideologies</h6>
           <div class="chart-container">
-            <POrganizationChart :value="ideologyTree">
+            <POrganizationChart :value="ideologyTree" :pt="{
+              // 1. Remove Node backgrounds and padding
+              node: {
+                style: { padding: '0', background: 'transparent', borderColor: 'transparent' }
+              },
+            }">
               <template #default="{ node }">
-                <!-- ❌ Was: @click — bubbles into OrganizationChart's own selection handler -->
-                <!-- ✅ Fix: @click.stop prevents the chart from intercepting the event -->
                 <BButton :variant="ideologyVariant(node.key)" size="sm" @click.stop="toggleIdeology(node.key)"
                   style="min-width: 100px;">
                   {{ node.label }}
@@ -229,3 +234,52 @@
     </BCollapse>
   </BCard>
 </template>
+
+<style scoped>
+  :deep(.test-colour) {
+    background-color: red;
+  }
+
+
+  .chart-container {
+    /* Set Orgchart Connector Color */
+    --p-organizationchart-connector-color: var(--ron-connector-dark);
+
+    /* Adjust Vertical Distance */
+    --p-organizationchart-connector-height: 1rem;
+
+    /* Adjust Horizontal Distance */
+    --p-organizationchart-gutter: 0.5rem;
+
+    --p-organizationchart-connector-border-radius: 0;
+
+    /* Connector Width */
+    --ron-connector-width: 6px;
+  }
+
+  :deep(.p-organizationchart-connector-down) {
+    width: var(--ron-connector-width) !important;
+  }
+
+  :deep(.p-organizationchart-connector-left) {
+    border-top-width: var(--ron-connector-width) !important;
+    border-right-width: var(--ron-connector-width) !important;
+  }
+
+  :deep(.p-organizationchart-connector-right) {
+    border-top-width: var(--ron-connector-width) !important;
+  }
+
+  /* Hide the overhanging top borders on the very first and very last items */
+  :deep(.p-organizationchart-connectors > td:first-child),
+  :deep(.p-organizationchart-connectors > td:last-child) {
+    border-top-color: transparent !important;
+  }
+
+  :deep(.p-organizationchart-connectors :nth-child(1 of .p-organizationchart-connector-right)) {
+    border-inline-start: var(--ron-connector-width) solid var(--p-organizationchart-connector-color);
+    border-start-start-radius: var(--p-organizationchart-connector-border-radius);
+  }
+
+
+</style>
