@@ -155,7 +155,7 @@
 </script>
 
 <template>
-  <BCard no-body class="mb-4 border-primary">
+  <BCard no-body class="mb-4 border-yellow rounded-0">
     <!-- Collapse Header / Overview -->
     <BCardHeader class="p-0 bg-primary bg-opacity-10 hover-overlay">
       <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
@@ -202,10 +202,10 @@
 
         <!-- Ideology Tree (Uses layout classes) -->
         <div class="mb-4">
-          <h6 class="fw-bold mb-3 text-center">Ideologies</h6>
+          <h6 class="fw-bold mb-2 text-center">Ideologies</h6>
           <div class="chart-container">
             <POrganizationChart :value="ideologyTree" :pt="{
-              // 1. Remove Node backgrounds and padding
+              // Remove Node backgrounds and padding
               node: {
                 style: { padding: '0', background: 'transparent', borderColor: 'transparent' }
               },
@@ -221,8 +221,8 @@
         </div>
 
         <!-- Laws -->
-        <div>
-          <h6 class="fw-bold mb-3 text-center">Laws</h6>
+        <div class="border-top pt-3">
+          <h6 class="fw-bold mb-2 text-center">Laws</h6>
           <div v-if="!sortedLaws.length" class="text-center py-3">
             <BSpinner label="Loading Laws..."></BSpinner>
           </div>
@@ -233,8 +233,9 @@
             </BButton>
           </div>
 
+          <!-- Selected Law Options -->
           <div v-if="selectedLawName" class="mt-4 border-top pt-3 text-center">
-            <h6 class="fw-bold mb-3">{{ selectedLawName }}</h6>
+            <h6 class="fw-bold mb-2">{{ selectedLawName }}</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
               <BButton class="ron-button" v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
                 :variant="levelVariant(String(levelKey))" @click="toggleLawLevel(String(levelKey))">
@@ -282,10 +283,10 @@
     --p-organizationchart-connector-color: var(--ron-connector-dark);
 
     /* Adjust Vertical Distance */
-    --p-organizationchart-connector-height: 0.5rem;
+    --p-organizationchart-connector-height: 0.5em;
 
     /* Adjust Horizontal Distance */
-    --p-organizationchart-gutter: 0.2rem;
+    --p-organizationchart-gutter: 0.2em;
 
     --p-organizationchart-connector-border-radius: 0;
 

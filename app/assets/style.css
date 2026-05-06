@@ -49,7 +49,7 @@ body {
 
 /* Scrollbar START */
 ::-webkit-scrollbar {
-  width: 15px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
   background: var(--ron-dark-1);

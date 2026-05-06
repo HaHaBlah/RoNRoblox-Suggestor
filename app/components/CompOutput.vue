@@ -80,7 +80,7 @@
 
 <template>
     <BCard bg-variant="dark" text-variant="light" class="position-relative mt-4 shadow">
-        <BButton :variant="isCopied ? 'success' : 'primary'" size="sm"
+        <BButton :variant="isCopied ? 'green' : 'primary'" size="sm"
             class="position-absolute top-0 end-0 m-3 z-3 shadow-sm fw-bold" @click="copyOutput">
             {{ isCopied ? 'Copied!' : 'Copy to Clipboard' }}
         </BButton>
