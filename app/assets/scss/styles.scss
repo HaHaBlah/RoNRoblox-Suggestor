@@ -1,0 +1,65 @@
+/* assets/scss/main.scss */
+
+// 1. Define your custom variables
+$ron-dark-1: #2c353d;
+$ron-dark-2: #272f38;
+$ron-button-dark: #15191e;
+$ron-button-dark-hover: #0e1115;
+$ron-connector-dark: #13171D;
+$ron-button-dark-active: #5b5e61;
+
+$ron-green: #a0ff57;
+$ron-red: #fc734a;
+$ron-yellow: #7c6938;
+$ron-text: #fff;
+
+// 2. Import Bootstrap's required files first
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+// 3. Override Bootstrap Theme Colors
+$theme-colors: map-merge($theme-colors, (
+  "green": $ron-green,
+  "red": $ron-red,
+  "yellow": $ron-yellow,
+  "mixed": $ron-yellow,
+));
+
+// 4. Override Global Button Variables (Replaces your .ron-button class)
+$btn-border-width: 3px;
+$btn-border-radius: 0;
+$btn-font-weight: 700;
+
+// 5. Import the rest of Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// 6. Global custom styles (Optional: add your scrollbar/body styles here)
+body {
+//   background-color: $ron-dark-2;
+  color: $ron-text;
+  height: 100%;
+}
+
+html {
+  height: 100%;
+}
+
+// Custom button background overrides
+.btn {
+  background-color: $ron-button-dark;
+  color: $ron-text;
+  transition: background-color 0s;
+  
+  &:hover{
+    background-color: var(--bs-tertiary-bg);
+    color: $ron-text;
+  }
+}
+
+.btn-mixed {
+  border-top-color: $ron-green;
+  border-left-color: $ron-green;
+  border-bottom-color: $ron-red;
+  border-right-color: $ron-red;
+}

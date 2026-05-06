@@ -53,23 +53,24 @@
   const ideologyTree = ref({
     label: 'Non-Aligned',
     key: 'Non-Aligned',
-    styleClass: 'test-colour',
     children: [
       {
         label: 'Socialism',
         key: 'Socialism',
-        styleClass: 'test-colour',
-        children: [{ label: 'Communism', key: 'Communism' }]
+        styleClass: 'ideology-socialism',
+        children: [{ label: 'Communism', key: 'Communism', styleClass: 'ideology-communism' }]
       },
       {
         label: 'Liberalism',
         key: 'Liberalism',
-        children: [{ label: 'Democracy', key: 'Democracy' }]
+        styleClass: 'ideology-liberalism',
+        children: [{ label: 'Democracy', key: 'Democracy', styleClass: 'ideology-democracy' }]
       },
       {
         label: 'Nationalism',
         key: 'Nationalism',
-        children: [{ label: 'Fascism', key: 'Fascism' }]
+        styleClass: 'ideology-nationalism',
+        children: [{ label: 'Fascism', key: 'Fascism', styleClass: 'ideology-fascism' }]
       }
     ]
   })
@@ -81,7 +82,8 @@
 
   // Returns Bootstrap variants instead of CSS classes
   function ideologyVariant(ideology: string): string {
-    return props.flag.Ideologies.includes(ideology) ? 'success' : 'outline-secondary'
+    // Changed from 'outline-secondary' to 'yellow'
+    return props.flag.Ideologies.includes(ideology) ? 'green' : 'yellow'
   }
 
   const sortedLaws = computed(() => Object.entries(props.lawnames).sort(([, a], [, b]) => a.Name.localeCompare(b.Name)))
@@ -94,10 +96,13 @@
   function lawSelectionVariant(code: string): string {
     const hasLaws = (props.flag.Laws[code]?.length ?? 0) > 0
     const hasNotLaws = (props.flag.NOTLaws[code]?.length ?? 0) > 0
-    if (hasLaws && hasNotLaws) return 'warning'
-    if (hasLaws) return 'success'
-    if (hasNotLaws) return 'danger'
-    return 'outline-secondary'
+
+    if (hasLaws && hasNotLaws) return 'mixed'
+
+    if (hasLaws) return 'green'
+    if (hasNotLaws) return 'red'
+
+    return 'yellow'
   }
 
   function toggleLawLevel(levelKey: string) {
@@ -122,13 +127,17 @@
 
   function levelVariant(levelKey: string): string {
     const code = selectedLawCode.value
-    if (!code) return 'outline-secondary'
+    // Changed to 'yellow'
+    if (!code) return 'yellow'
+
     const lawArr = props.flag.Laws[code] ?? []
     const notLawArr = props.flag.NOTLaws[code] ?? []
-    if (lawArr.includes(levelKey)) return 'success'
-    if (notLawArr.includes(levelKey)) return 'danger'
-    if (lawArr.length) return 'danger'
-    return 'outline-secondary'
+    if (lawArr.includes(levelKey)) return 'green'
+    if (notLawArr.includes(levelKey)) return 'red'
+    if (lawArr.length) return 'red'
+
+    // Changed to 'yellow'
+    return 'yellow'
   }
 
   function getLawName(code: string): string { return props.lawnames[code]?.Name ?? code }
@@ -163,7 +172,7 @@
     <!-- Flag Contents -->
     <BCollapse v-model="isExpanded">
       <BCardBody class="position-relative">
-        <BButton variant="danger" size="sm" class="position-absolute top-0 end-0 m-3 z-3"
+        <BButton variant="red" size="sm" class="position-absolute top-0 end-0 m-3 z-3"
           @click="emit('remove', index)">
           Delete Flag
         </BButton>
@@ -198,8 +207,8 @@
               },
             }">
               <template #default="{ node }">
-                <BButton :variant="ideologyVariant(node.key)" size="sm" @click.stop="toggleIdeology(node.key)"
-                  style="min-width: 100px;">
+                <BButton :variant="ideologyVariant(node.key)" size="sm" class="ron-button"
+                  @click.stop="toggleIdeology(node.key)" style="min-width: 8em;">
                   {{ node.label }}
                 </BButton>
               </template>
@@ -214,8 +223,8 @@
             <BSpinner label="Loading Laws..."></BSpinner>
           </div>
           <div class="d-flex flex-wrap gap-2 justify-content-center">
-            <BButton v-for="[code, law] in sortedLaws" :key="code" size="sm" :variant="lawSelectionVariant(code)"
-              @click="selectLaw(code)">
+            <BButton class="ron-button" v-for="[code, law] in sortedLaws" :key="code" size="sm"
+              :variant="lawSelectionVariant(code)" @click="selectLaw(code)">
               {{ law.Name }}
             </BButton>
           </div>
@@ -223,7 +232,7 @@
           <div v-if="selectedLawName" class="mt-4 border-top pt-3 text-center">
             <h6 class="fw-bold mb-3">{{ selectedLawName }}</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
-              <BButton v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
+              <BButton class="ron-button" v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
                 :variant="levelVariant(String(levelKey))" @click="toggleLawLevel(String(levelKey))">
                 {{ levelText }}
               </BButton>
@@ -236,20 +245,43 @@
 </template>
 
 <style scoped>
-  :deep(.test-colour) {
-    background-color: red;
+
+  /* Ideology colours */
+  .ideology-socialism button {
+    color: #F3B6B6;
   }
 
+  .ideology-communism button {
+    color: #F37B7B;
+  }
+
+  .ideology-liberalism button {
+    color: #B5B6F3;
+  }
+
+  .ideology-democracy button {
+    color: #7B7BF3;
+  }
+
+  .ideology-nationalism button {
+    color: #B8B8B9;
+  }
+
+  .ideology-fascism button {
+    color: #7B7B7B;
+  }
+</style>
+<style>
 
   .chart-container {
     /* Set Orgchart Connector Color */
     --p-organizationchart-connector-color: var(--ron-connector-dark);
 
     /* Adjust Vertical Distance */
-    --p-organizationchart-connector-height: 1rem;
+    --p-organizationchart-connector-height: 0.5rem;
 
     /* Adjust Horizontal Distance */
-    --p-organizationchart-gutter: 0.5rem;
+    --p-organizationchart-gutter: 0.2rem;
 
     --p-organizationchart-connector-border-radius: 0;
 
@@ -257,29 +289,27 @@
     --ron-connector-width: 6px;
   }
 
-  :deep(.p-organizationchart-connector-down) {
+  .p-organizationchart-connector-down {
     width: var(--ron-connector-width) !important;
   }
 
-  :deep(.p-organizationchart-connector-left) {
+  .p-organizationchart-connector-left {
     border-top-width: var(--ron-connector-width) !important;
     border-right-width: var(--ron-connector-width) !important;
   }
 
-  :deep(.p-organizationchart-connector-right) {
+  .p-organizationchart-connector-right {
     border-top-width: var(--ron-connector-width) !important;
   }
 
   /* Hide the overhanging top borders on the very first and very last items */
-  :deep(.p-organizationchart-connectors > td:first-child),
-  :deep(.p-organizationchart-connectors > td:last-child) {
+  .p-organizationchart-connectors>td:first-child,
+  .p-organizationchart-connectors>td:last-child {
     border-top-color: transparent !important;
   }
 
-  :deep(.p-organizationchart-connectors :nth-child(1 of .p-organizationchart-connector-right)) {
+  .p-organizationchart-connectors :nth-child(1 of .p-organizationchart-connector-right) {
     border-inline-start: var(--ron-connector-width) solid var(--p-organizationchart-connector-color);
     border-start-start-radius: var(--p-organizationchart-connector-border-radius);
   }
-
-
 </style>

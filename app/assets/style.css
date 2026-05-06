@@ -1,5 +1,6 @@
 /* style.css */
 @import "@nuxt/ui";
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 
 /* base color variables */
 :root {
@@ -23,6 +24,11 @@ body {
   height: 100%;
 }
 
+* {
+    font-family: "Source Sans 3", sans-serif;
+    box-sizing: border-box;
+}
+
 /* Primary page background colours */
 .ron-card {
   background-color: var(--ron-dark-2);
@@ -36,6 +42,8 @@ body {
   /* --bg-body-tertiary: var(--ron-dark-1);
   --bg-body-secondary: var(--ron-dark-1);
   --bg-body-primary: var(--ron-dark-1); */
+  --bs-btn-color: var(--ron-text);
+  --bs-btn-bg: var(--ron-button-dark);
 }
 
 /* Scrollbar START */
@@ -55,3 +63,5 @@ body {
   background: var(--ron-button-dark-active);
 }
 /* Scrollbar END */
+
+

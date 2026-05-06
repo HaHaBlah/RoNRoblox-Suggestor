@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
     "@/assets/style.css",
+    "@/assets/scss/styles.scss",
     // "primeicons/primeicons.css",
   ],
 
