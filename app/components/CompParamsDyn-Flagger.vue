@@ -90,7 +90,7 @@
 
         <!-- Add Flag Button -->
         <div class="text-center my-4">
-          <BButton variant="outline-success" size="lg" @click="addFlag()">
+          <BButton variant="green" size="lg" @click="addFlag()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="me-2">
               <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="3" />
             </svg>

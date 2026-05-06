@@ -44,6 +44,7 @@ body {
   --bg-body-primary: var(--ron-dark-1); */
   --bs-btn-color: var(--ron-text);
   --bs-btn-bg: var(--ron-button-dark);
+  --bs-heading-color: var(--ron-text);
 }
 
 /* Scrollbar START */

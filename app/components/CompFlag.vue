@@ -154,7 +154,7 @@
   <BCard no-body class="mb-4 border-primary">
     <!-- Collapse Header / Overview -->
     <BCardHeader class="p-0 bg-primary bg-opacity-10 hover-overlay">
-      <BButton variant="link" class="w-100 text-decoration-none text-dark text-start d-flex flex-wrap p-3"
+      <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
         @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
           <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white" style="width: 120px; height: auto;">
@@ -163,8 +163,8 @@
         <div class="flex-grow-1 small mt-2 mt-md-0">
           <div><strong class="text-muted">Flag ID:</strong> {{ flag.FlagID }}</div>
           <div><strong class="text-muted">Ideologies:</strong> {{ flag.Ideologies.join(', ') || 'None' }}</div>
-          <div><strong class="text-success">Laws:</strong> {{ overviewLawsText }}</div>
-          <div><strong class="text-danger">NOT Laws:</strong> {{ overviewNotLawsText }}</div>
+          <div><strong class="text-green">Laws:</strong> {{ overviewLawsText }}</div>
+          <div><strong class="text-red">NOT Laws:</strong> {{ overviewNotLawsText }}</div>
         </div>
       </BButton>
     </BCardHeader>

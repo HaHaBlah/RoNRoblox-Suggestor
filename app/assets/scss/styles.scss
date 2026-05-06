@@ -23,7 +23,6 @@ $theme-colors: map-merge($theme-colors, (
   "green": $ron-green,
   "red": $ron-red,
   "yellow": $ron-yellow,
-  "mixed": $ron-yellow,
 ));
 
 // 4. Override Global Button Variables (Replaces your .ron-button class)
@@ -31,17 +30,15 @@ $btn-border-width: 3px;
 $btn-border-radius: 0;
 $btn-font-weight: 700;
 
+$heading-color: $ron-text;
+
 // 5. Import the rest of Bootstrap
 @import "bootstrap/scss/bootstrap";
 
 // 6. Global custom styles (Optional: add your scrollbar/body styles here)
-body {
+body, html {
 //   background-color: $ron-dark-2;
   color: $ron-text;
-  height: 100%;
-}
-
-html {
   height: 100%;
 }
 
