@@ -82,8 +82,12 @@
 
   // Returns Bootstrap variants instead of CSS classes
   function ideologyVariant(ideology: string): string {
-    // Changed from 'outline-secondary' to 'yellow'
-    return props.flag.Ideologies.includes(ideology) ? 'green' : 'yellow'
+   if (props.flag.Ideologies.length === 0) {
+        return 'yellow';
+    }
+
+    // If not empty, check for the specific ideology
+    return props.flag.Ideologies.includes(ideology) ? 'green' : 'red';
   }
 
   const sortedLaws = computed(() => Object.entries(props.lawnames).sort(([, a], [, b]) => a.Name.localeCompare(b.Name)))
