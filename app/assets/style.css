@@ -36,6 +36,12 @@ body {
   color: var(--ron-text);
 }
 
+@media screen and (max-width: 576px) {
+  .ron-card {
+    padding: 0.5rem;
+  }
+}
+
 /* Override Bootstrap's Dark Theme Background */
 [data-bs-theme="dark"] {
   --bs-body-bg: var(--ron-dark-2);
