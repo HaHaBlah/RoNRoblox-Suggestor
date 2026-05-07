@@ -82,8 +82,8 @@
 
   // Returns Bootstrap variants instead of CSS classes
   function ideologyVariant(ideology: string): string {
-   if (props.flag.Ideologies.length === 0) {
-        return 'yellow';
+    if (props.flag.Ideologies.length === 0) {
+      return 'yellow';
     }
 
     // If not empty, check for the specific ideology
@@ -161,7 +161,8 @@
       <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
         @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
-          <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white" style="width: 120px; height: auto;">
+          <NuxtImg :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white"
+            style="width: 120px; height: auto;" />
           <h5 class="ms-3 mb-0">{{ flag.FlagName || 'Flag Name' }}</h5>
         </div>
         <div class="flex-grow-1 small mt-2 mt-md-0">
@@ -176,8 +177,7 @@
     <!-- Flag Contents -->
     <BCollapse v-model="isExpanded">
       <BCardBody class="position-relative">
-        <BButton variant="red" size="sm" class="position-absolute top-0 end-0 m-3 z-3"
-          @click="emit('remove', index)">
+        <BButton variant="red" size="sm" class="position-absolute top-0 end-0 m-3 z-3" @click="emit('remove', index)">
           Delete Flag
         </BButton>
 

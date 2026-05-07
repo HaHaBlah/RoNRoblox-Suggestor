@@ -79,7 +79,7 @@
 
         <!-- Nation Overview -->
         <div class="text-center mb-4">
-          <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;">
+          <NuxtImg :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;"/>
           <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
             <BFormInput id="nation-name" v-model="state.NationName" placeholder="Click a country on the left or write here" />
           </BFormGroup>
