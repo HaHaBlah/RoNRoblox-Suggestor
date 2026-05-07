@@ -177,7 +177,7 @@
 
     <!-- Flag Contents -->
     <BCollapse v-model="isExpanded">
-      <BCardBody class="position-relative">
+      <BCardBody class="position-relative p-2 p-md-3">
         <BButton variant="red" size="sm" class="position-absolute top-0 end-0 m-3 z-3" @click="emit('remove', index)">
           Delete Flag
         </BButton>
@@ -213,7 +213,7 @@
             }">
               <template #default="{ node }">
                 <BButton :variant="ideologyVariant(node.key)" size="sm" class="ron-button ideology-btn"
-                  @click.stop="toggleIdeology(node.key)" style="min-width: 8em;">
+                  @click.stop="toggleIdeology(node.key)">
                   {{ node.label }}
                 </BButton>
               </template>
@@ -257,7 +257,7 @@
 
   @media (max-width: 576px) {
     .ideology-btn {
-      min-width: 5.5em;
+      min-width: 7em;
       font-size: 0.75rem;
       padding: 0.2rem 0.4rem;
     }
@@ -308,17 +308,11 @@
   }
 
   @media (max-width: 576px) {
-    .chart-container {
-
-      /* Adjust Vertical Distance */
-    --p-organizationchart-connector-height: 0.25em;
-
-    /* Adjust Horizontal Distance */
-    --p-organizationchart-gutter: 0.1em;
-
-    /* Line thiccness */
-      --ron-connector-width: 4px;
-    }
+     .chart-container {
+       --p-organizationchart-connector-height: 0.25em;
+       --p-organizationchart-gutter: 0.1em;
+       --ron-connector-width: 4px;
+     }
   }
 
   .p-organizationchart-connector-down {
