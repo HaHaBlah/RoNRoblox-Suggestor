@@ -307,6 +307,20 @@
     --ron-connector-width: 6px;
   }
 
+  @media (max-width: 576px) {
+    .chart-container {
+
+      /* Adjust Vertical Distance */
+    --p-organizationchart-connector-height: 0.25em;
+
+    /* Adjust Horizontal Distance */
+    --p-organizationchart-gutter: 0.1em;
+
+    /* Line thiccness */
+      --ron-connector-width: 4px;
+    }
+  }
+
   .p-organizationchart-connector-down {
     width: var(--ron-connector-width) !important;
   }
