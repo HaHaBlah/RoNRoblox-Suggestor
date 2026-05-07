@@ -163,8 +163,7 @@
       <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
         @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
-          <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white"
-            style="width: 120px; height: auto;" />
+          <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white" style="width: 120px; height: auto;" />
           <h5 class="ms-3 mb-0">{{ flag.FlagName || 'Flag Name' }}</h5>
         </div>
         <div class="flex-grow-1 small mt-2 mt-md-0">
@@ -205,7 +204,7 @@
         <!-- Ideology Tree (Uses layout classes) -->
         <div class="mb-4">
           <h6 class="fw-bold mb-2 text-center">Ideologies</h6>
-          <div class="chart-container">
+          <div class="chart-container overflow-auto w-100 pb-2">
             <POrganizationChart :value="ideologyTree" :pt="{
               // Remove Node backgrounds and padding
               node: {
@@ -213,7 +212,7 @@
               },
             }">
               <template #default="{ node }">
-                <BButton :variant="ideologyVariant(node.key)" size="sm" class="ron-button"
+                <BButton :variant="ideologyVariant(node.key)" size="sm" class="ron-button ideology-btn"
                   @click.stop="toggleIdeology(node.key)" style="min-width: 8em;">
                   {{ node.label }}
                 </BButton>
@@ -252,6 +251,18 @@
 </template>
 
 <style scoped>
+  .ideology-btn {
+    min-width: 8em;
+  }
+
+  @media (max-width: 576px) {
+    .ideology-btn {
+      min-width: 5.5em;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.4rem;
+    }
+  }
+
 
   /* Ideology colours */
   .ideology-socialism button {
