@@ -2,23 +2,25 @@
 <script setup lang="ts">
   import type { FlagSpec } from '~/composables/useDynFlagger'
 
+  import unknownFlag from '~/assets/images/Unknown Flag.png'
+
   export interface LawEntry { Name: string; Types: Record<string, string> }
 
   const props = defineProps<{ flag: FlagSpec; index: number; lawnames: Record<string, LawEntry> }>()
   const emit = defineEmits<{ remove: [index: number] }>()
 
   const isExpanded = ref(true)
-  const thumbnailSrc = ref('Unknown Flag.png')
+  const thumbnailSrc = ref(unknownFlag)
 
   watch(
     () => props.flag.FlagID,
     async (id) => {
-      if (!id) { thumbnailSrc.value = 'Unknown Flag.png'; return }
+      if (!id) { thumbnailSrc.value = unknownFlag; return }
       try {
         const data = await $fetch<{ imageUrl: string }>(`/api/roblox-thumbnail?assetid=${encodeURIComponent(id)}&size=700x700`)
         thumbnailSrc.value = data.imageUrl
       } catch {
-        thumbnailSrc.value = 'Unknown Flag.png'
+        thumbnailSrc.value = unknownFlag
       }
     },
     { immediate: true },
@@ -161,7 +163,7 @@
       <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
         @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
-          <NuxtImg :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white"
+          <img :src="thumbnailSrc" alt="Flag thumbnail" class="border bg-white"
             style="width: 120px; height: auto;" />
           <h5 class="ms-3 mb-0">{{ flag.FlagName || 'Flag Name' }}</h5>
         </div>

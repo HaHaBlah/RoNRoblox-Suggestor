@@ -3,6 +3,8 @@
   import { useDynFlagger } from '~/composables/useDynFlagger'
   import { useFlagUrl } from '~/composables/useFlagUrl'
 
+  import unknownFlag from '~/assets/images/Unknown Flag.png'
+
   const { state, addFlag, removeFlag } = useDynFlagger()
   const { getFlagData } = useFlagUrl()
 
@@ -14,7 +16,7 @@
   const { data: fandomData } = await useFetch<FandomData>('/api/fandom-data')
   const lawnames = computed(() => fandomData.value?.Lawnames?.lawNames ?? {})
 
-  const nationFlagSrc = ref('Unknown Flag.png')
+  const nationFlagSrc = ref(unknownFlag)
   let nationFlagController: AbortController | null = null
 
   watch(
@@ -24,18 +26,19 @@
       nationFlagController = new AbortController()
 
       if (!name) {
-        nationFlagSrc.value = 'Unknown Flag.png'
+        nationFlagSrc.value = unknownFlag
         return
       }
 
       try {
         const url = await getFlagData(name)
         if (!nationFlagController.signal.aborted) {
-          nationFlagSrc.value = url || 'Unknown Flag.png'
+          // If getFlagData fails or returns empty, use the imported asset
+          nationFlagSrc.value = url || unknownFlag
         }
       } catch {
         if (!nationFlagController.signal.aborted) {
-          nationFlagSrc.value = 'Unknown Flag.png'
+          nationFlagSrc.value = unknownFlag
         }
       }
     },
@@ -71,7 +74,8 @@
       <BCol lg="9" cols="12">
         <!-- Mobile Sidebar Toggle -->
         <BButton variant="outline-primary" class="d-lg-none mb-3 w-100" @click="mobileRailOpen = true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            class="me-2">
             <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
           Select Nation
@@ -79,14 +83,16 @@
 
         <!-- Nation Overview -->
         <div class="text-center mb-4">
-          <NuxtImg :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;"/>
+          <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;" />
           <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
-            <BFormInput id="nation-name" v-model="state.NationName" placeholder="Click a country on the left or write here" />
+            <BFormInput id="nation-name" v-model="state.NationName"
+              placeholder="Click a country on the left or write here" />
           </BFormGroup>
         </div>
 
         <!-- Flag Cards -->
-        <CompFlag v-for="(flag, i) in state.Flags" :key="i" :flag="flag" :index="i" :lawnames="lawnames" @remove="removeFlag" />
+        <CompFlag v-for="(flag, i) in state.Flags" :key="i" :flag="flag" :index="i" :lawnames="lawnames"
+          @remove="removeFlag" />
 
         <!-- Add Flag Button -->
         <div class="text-center my-4">
