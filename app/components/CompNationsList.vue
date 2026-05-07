@@ -66,9 +66,8 @@
       <BListGroup v-else>
         <BListGroupItem v-for="name in filteredList" :key="name" button class="d-flex align-items-center"
           @click="emit('select', name)">
-          <img v-if="data?.flagMap?.[name]" :src="data.flagMap[name]" :alt="name" class="me-3 border"
+          <img :src="`/api/flag/${encodeURIComponent(name)}`" :alt="name" class="me-3 border bg-secondary"
             style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
-          <div v-else class="me-3 bg-secondary" style="width: 36px; height: 24px;"></div>
           {{ name }}
         </BListGroupItem>
         <BListGroupItem v-if="filteredList.length === 0" class="text-muted fst-italic text-center">

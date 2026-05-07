@@ -6,76 +6,16 @@ let cacheTime: number | null = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
 export default defineEventHandler(async (event) => {
-  if (
-    cachedFandomData &&
-    cacheTime &&
-    Date.now() - cacheTime < CACHE_DURATION
-  ) {
+  if (cachedFandomData && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
     return cachedFandomData;
   }
 
   const origin = getRequestURL(event).origin;
   const data = await getFandomData(origin);
 
-  // 1. Safe access to Nationdata
-  // Use optional chaining and nullish coalescing to avoid 'undefined' errors
-  const nationKeys = data?.Nationdata?.nationdata
-    ? Object.keys(data.Nationdata.nationdata)
-    : [];
-
-  // 2. Safe access to Tagdata/Tags
-  // We cast the values to 'any' temporarily or a specific interface
-  // to access 'FormableName' without the LuaTable union error
-  const tagEntries = data?.Tagdata?.Tags
-    ? Object.values(data.Tagdata.Tags)
-    : [];
-
-  const formables = tagEntries
-    .map((f: any) => {
-      // Check if f is an object and has the property we need
-      if (f && typeof f === "object" && "FormableName" in f) {
-        return f.FormableName;
-      }
-      return null;
-    })
-    .filter((name): name is string => Boolean(name));
-
-  // 3. Merge and deduplicate
-  const allNames = Array.from(new Set([...nationKeys, ...formables]));
-  const flagMap: Record<string, string> = {};
-
-  // 4. Batch fetch URLs in chunks to avoid Cloudflare subrequest limits
-  const CHUNK_SIZE = 10; // Keep safely under the 50 limit
-
-  for (let i = 0; i < allNames.length; i += CHUNK_SIZE) {
-    const chunk = allNames.slice(i, i + CHUNK_SIZE);
-
-    await Promise.all(
-      chunk.map(async (name) => {
-        try {
-          const filename = `${name}_Flag.png`;
-          const fandomRes = await $fetch<any>(
-            `https://ronroblox.fandom.com/rest.php/v1/file/File:${encodeURIComponent(filename)}`,
-          );
-
-          if (fandomRes?.preferred?.url) {
-            flagMap[name] =
-              `/api/fandom-image?proxy=true&url=${encodeURIComponent(fandomRes.preferred.url)}`;
-          }
-        } catch (e) {
-          flagMap[name] = "";
-        }
-      }),
-    );
-
-    // Crucial: Add a tiny delay between chunks so Fandom doesn't rate-limit your worker
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-
-  const response = { ...data, flagMap };
-
-  cachedFandomData = response;
+  // We no longer build flagMap here! Just return the data.
+  cachedFandomData = data;
   cacheTime = Date.now();
 
-  return response;
+  return data;
 });
