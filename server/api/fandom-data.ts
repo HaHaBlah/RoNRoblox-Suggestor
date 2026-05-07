@@ -44,24 +44,33 @@ export default defineEventHandler(async (event) => {
   const allNames = Array.from(new Set([...nationKeys, ...formables]));
   const flagMap: Record<string, string> = {};
 
-  // 4. Batch fetch URLs
-  await Promise.all(
-    allNames.map(async (name) => {
-      try {
-        const filename = `${name}_Flag.png`;
-        const fandomRes = await $fetch<any>(
-          `https://ronroblox.fandom.com/rest.php/v1/file/File:${encodeURIComponent(filename)}`,
-        );
+  // 4. Batch fetch URLs in chunks to avoid Cloudflare subrequest limits
+  const CHUNK_SIZE = 10; // Keep safely under the 50 limit
 
-        if (fandomRes?.preferred?.url) {
-          flagMap[name] =
-            `/api/fandom-image?proxy=true&url=${encodeURIComponent(fandomRes.preferred.url)}`;
+  for (let i = 0; i < allNames.length; i += CHUNK_SIZE) {
+    const chunk = allNames.slice(i, i + CHUNK_SIZE);
+
+    await Promise.all(
+      chunk.map(async (name) => {
+        try {
+          const filename = `${name}_Flag.png`;
+          const fandomRes = await $fetch<any>(
+            `https://ronroblox.fandom.com/rest.php/v1/file/File:${encodeURIComponent(filename)}`,
+          );
+
+          if (fandomRes?.preferred?.url) {
+            flagMap[name] =
+              `/api/fandom-image?proxy=true&url=${encodeURIComponent(fandomRes.preferred.url)}`;
+          }
+        } catch (e) {
+          flagMap[name] = "";
         }
-      } catch (e) {
-        flagMap[name] = "";
-      }
-    }),
-  );
+      }),
+    );
+
+    // Crucial: Add a tiny delay between chunks so Fandom doesn't rate-limit your worker
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 
   const response = { ...data, flagMap };
 
