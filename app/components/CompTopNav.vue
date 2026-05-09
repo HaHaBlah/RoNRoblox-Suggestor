@@ -23,6 +23,7 @@
         <BNavItem to="/Credits">Credits</BNavItem>
         <BNavItem to="/Formabler">Formabler</BNavItem>
         <BNavItem to="/Dyn-Flagger">Dyn-Flagger</BNavItem>
+        <BNavItem to="/Cityer">Cityer</BNavItem>
       </BNavbarNav>
     </BCollapse>
   </BNavbar>

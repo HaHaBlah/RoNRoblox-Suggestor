@@ -159,7 +159,7 @@
 <template>
   <BCard no-body class="mb-4 border-yellow rounded-0">
     <!-- Collapse Header / Overview -->
-    <BCardHeader class="p-0 bg-primary bg-opacity-10 hover-overlay">
+    <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
       <BButton variant="link" class="w-100 text-decoration-none text-start d-flex flex-wrap p-3"
         @click="isExpanded = !isExpanded">
         <div class="d-flex align-items-center me-4">
@@ -196,7 +196,8 @@
           </BCol>
           <BCol cols="12">
             <BFormGroup label="Description/Sources:" class="fw-bold">
-              <BFormTextarea v-model="flag.Description" placeholder="Input Flag Description here" rows="2" />
+              <BFormTextarea v-model="flag.Description" placeholder="Input Flag Description here" rows="2"
+                max-rows="8" />
             </BFormGroup>
           </BCol>
         </BRow>
@@ -238,7 +239,7 @@
           <div v-if="selectedLawName" class="mt-4 border-top pt-3 text-center">
             <h6 class="fw-bold mb-2">{{ selectedLawName }}</h6>
             <div class="d-flex flex-wrap gap-2 justify-content-center">
-              <BButton class="ron-button" v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
+              <BButton class="ron-button" v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey" size="sm"
                 :variant="levelVariant(String(levelKey))" @click="toggleLawLevel(String(levelKey))">
                 {{ levelText }}
               </BButton>
@@ -288,6 +289,8 @@
   .ideology-fascism button {
     color: #7B7B7B;
   }
+
+
 </style>
 <style>
 
@@ -308,11 +311,11 @@
   }
 
   @media (max-width: 576px) {
-     .chart-container {
-       --p-organizationchart-connector-height: 0.25em;
-       --p-organizationchart-gutter: 0.1em;
-       --ron-connector-width: 4px;
-     }
+    .chart-container {
+      --p-organizationchart-connector-height: 0.25em;
+      --p-organizationchart-gutter: 0.1em;
+      --ron-connector-width: 4px;
+    }
   }
 
   .p-organizationchart-connector-down {
@@ -338,4 +341,6 @@
     border-inline-start: var(--ron-connector-width) solid var(--p-organizationchart-connector-color);
     border-start-start-radius: var(--p-organizationchart-connector-border-radius);
   }
+
+
 </style>

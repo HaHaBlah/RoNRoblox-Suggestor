@@ -1,5 +1,8 @@
 <!-- index.vue -->
 <script setup>
+useHead({
+  title: "Suggestor",
+})
 </script>
 
 <template>

@@ -20,6 +20,7 @@ $ron-text: #fff;
 $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "red": $ron-red,
       "yellow": $ron-yellow,
+      "grey-active": $ron-button-dark-active,
       "mixed": $ron-green,
     ));
 

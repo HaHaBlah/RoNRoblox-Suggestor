@@ -4,12 +4,10 @@ useHead({
   title: "Dyn-Flagger",
   meta: [
     { property: "og:title", content: "Dyn-Flagger" },
-    { property: "og:type", content: "website" },
     {
       property: "og:url",
       content: "https://ronroblox-suggestor.pages.dev/Dyn-Flagger",
     },
-    { property: "og:image", content: "https://i.imgur.com/NQS7FDH.png" },
     {
       property: "og:description",
       content:

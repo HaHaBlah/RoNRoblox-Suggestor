@@ -1,15 +1,15 @@
 // nuxt.config.ts
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import Aura from '@primeuix/themes/aura'
+import Aura from "@primeuix/themes/aura";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   modules: [
     "nitro-cloudflare-dev",
     "@bootstrap-vue-next/nuxt",
-    "@nuxt/image",
-    // "@nuxt/ui",
+    "@nuxt/image", // "@nuxt/ui",
     "@primevue/nuxt-module",
+    "nuxt-maplibre",
   ],
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
@@ -27,9 +27,9 @@ export default defineNuxtConfig({
       },
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
       meta: [
-        { 
-          name: "viewport", 
-          content: "width=device-width, initial-scale=1" 
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1",
         },
         {
           name: "description",
@@ -78,6 +78,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     robloxApiKey: process.env.ROBLOX_API_KEY ?? "",
     public: {
+      mapTilerApiKey: process.env.MAPTILER_API_KEY ?? "",
       apiBase:
         process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8787",
     },
