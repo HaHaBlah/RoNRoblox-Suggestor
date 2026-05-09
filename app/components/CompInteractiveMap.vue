@@ -54,12 +54,14 @@
             const popupContainer = document.createElement('div');
             popupContainer.className = 'p-2';
             popupContainer.innerHTML = `
+                <div class="text-dark p-3">
                 <h5 class="fw-bold mb-1">Pin Location</h5>
                 <p class="small text-secondary mb-2">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</p>
                 <button class="btn btn-primary btn-sm w-100">
                     Save to Database 
                 </button>
                 <p>(Proof of concept rn, doesn't actually do anything yet)</p>
+                </div>
             `;
 
             // Attach the click event directly to the button element inside our container
