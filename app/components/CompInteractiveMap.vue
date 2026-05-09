@@ -57,14 +57,15 @@
                 <h5 class="fw-bold mb-1">Pin Location</h5>
                 <p class="small text-secondary mb-2">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</p>
                 <button class="btn btn-primary btn-sm w-100">
-                    Save to Database
+                    Save to Database 
                 </button>
+                <p>(Proof of concept rn, doesn't actually do anything yet)</p>
             `;
 
             // Attach the click event directly to the button element inside our container
             const saveBtn = popupContainer.querySelector('button');
             saveBtn.addEventListener('click', () => {
-                alert(`Time to hit your API endpoint with Lng: ${lng}, Lat: ${lat}!`)
+                alert(`Lng: ${lng}, Lat: ${lat}`)
             });
 
             // Use setDOMContent instead of setHTML
