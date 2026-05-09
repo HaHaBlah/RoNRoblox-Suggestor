@@ -23,7 +23,7 @@
         // 1. Initialize Map
         map.value = markRaw(new maplibregl.Map({
             container: mapContainer.value,
-            style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${config.public.mapTilerApiKey}`,
+            style: `https://api.maptiler.com/maps/hybrid-v4/style.json?key=${config.public.mapTilerApiKey}`,
             center: [0, 20],
             zoom: 1.5,
         }))
@@ -102,7 +102,7 @@
         position: relative;
         width: 100vw;
         height: 100vh;
-        background-color: black;
+        background-color: gray;
     }
 
     .map-container {
