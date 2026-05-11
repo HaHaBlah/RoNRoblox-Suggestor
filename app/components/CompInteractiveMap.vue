@@ -3,43 +3,32 @@
     import { shallowRef, onMounted, onUnmounted, markRaw } from 'vue'
     import { useRuntimeConfig } from '#app'
 
-    // Import MapLibre engine and CSS
-    import maplibregl from 'maplibre-gl'
-    import 'maplibre-gl/dist/maplibre-gl.css'
 
-    // FIX 1 & 2: Import the specific maplibregl control and its CSS
-    import { GeocodingControl } from "@maptiler/geocoding-control/maplibregl";
-    // import '@maptiler/geocoding-control/style.css';
+    import * as maptilersdk from '@maptiler/sdk'
+    import '@maptiler/sdk/dist/maptiler-sdk.css'
+
+
+    import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
 
     const config = useRuntimeConfig()
-    const mapContainer = shallowRef(null)
 
     const map = shallowRef(null)
     const currentMarker = shallowRef(null)
 
     onMounted(() => {
-        if (!mapContainer.value) return
+        maptilersdk.config.apiKey = config.public.mapTilerApiKey;
 
-        // 1. Initialize Map
-        map.value = markRaw(new maplibregl.Map({
-            container: mapContainer.value,
-            style: `https://api.maptiler.com/maps/hybrid-v4/style.json?key=${config.public.mapTilerApiKey}`,
-            center: [0, 20],
-            zoom: 1.5,
+        // Initialize Map
+        map.value = markRaw(new maptilersdk.Map({
+            container: "mapContainer",
+            style: "https://api.maptiler.com/maps/019e109b-e359-7208-8d7f-b81a924e0bac/style.json",
         }))
 
-        map.value.on('style.load', () => {
-            map.value.setProjection({ type: 'globe' })
-        })
-
-        // 2. Add the Search Bar (Geocoder)
-        const geocoder = new GeocodingControl({
-            apiKey: config.public.mapTilerApiKey,
-            // maplibregl property is no longer strictly needed here since we import the maplibregl-specific control
-        })
+        // Geocoder Search bar
+        const geocoder = new GeocodingControl()
         map.value.addControl(geocoder, 'top-left')
 
-        // 3. Handle Map Clicks to Add Markers
+        // Handle Map Clicks to Add Markers
         map.value.on('click', (e) => {
             const { lng, lat } = e.lngLat
 
@@ -48,9 +37,6 @@
                 currentMarker.value.remove()
             }
 
-            // FIX 3 & 4: Create a DOM element directly instead of a string.
-            // This allows safe event binding without searching the DOM later.
-            // Also switched Tailwind classes to Bootstrap classes based on your Nuxt config.
             const popupContainer = document.createElement('div');
             popupContainer.className = 'p-2';
             popupContainer.innerHTML = `
@@ -60,7 +46,7 @@
                 <button class="btn btn-primary btn-sm w-100">
                     Save to Database 
                 </button>
-                <p>(Proof of concept rn, doesn't actually do anything yet)</p>
+                <p class="mt-2 mb-0 small text-muted">(Proof of concept rn, doesn't actually do anything yet)</p>
                 </div>
             `;
 
@@ -70,11 +56,10 @@
                 alert(`Lng: ${lng}, Lat: ${lat}`)
             });
 
-            // Use setDOMContent instead of setHTML
-            const popup = new maplibregl.Popup({ offset: 25 }).setDOMContent(popupContainer)
+            const popup = new maptilersdk.Popup({ offset: 25 }).setDOMContent(popupContainer)
 
             // Add physical marker
-            currentMarker.value = markRaw(new maplibregl.Marker({ color: "#FF0000" })
+            currentMarker.value = markRaw(new maptilersdk.Marker({ color: "#FF0000" })
                 .setLngLat([lng, lat])
                 .setPopup(popup)
                 .addTo(map.value))
@@ -93,7 +78,7 @@
 
 <template>
     <div class="map-wrapper">
-        <div ref="mapContainer" class="map-container"></div>
+        <div id="mapContainer" class="map-container"></div>
     </div>
 </template>
 
@@ -102,7 +87,7 @@
         position: relative;
         width: 100vw;
         height: 100vh;
-        background-color: gray;
+        background-color: black;
     }
 
     .map-container {
@@ -111,5 +96,6 @@
         bottom: 0;
         left: 0;
         right: 0;
+        width: 100%;
     }
 </style>
