@@ -4,7 +4,6 @@
     import type { FlagSpec } from '~/composables/useDynFlagger'
 
     const { state } = useDynFlagger()
-    const ITEMS_PER_IMAGE_ROW = 3
     const TAB = '    '
 
     const thumbnailCache = reactive<Record<string, string | null>>({})
@@ -61,9 +60,9 @@
     )
 
     const outputText = computed(() => {
-        if (!luaCode.value) return 'Please input the Nation Name and fill out all flag names and image IDs.'
+        if (!luaCode.value) return ''
         const descriptions = state.Flags.filter(f => f.Description).map(f => `**${f.FlagName}:** ${f.Description}`).join('\n')
-        const imagesBlock = chunk(imageLinks.value, ITEMS_PER_IMAGE_ROW).map(row => row.join(', ')).join('\n')
+        const imagesBlock = imageLinks.value.join(', ')
 
         return [
             '```lua', luaCode.value, '```', '--[[', '# __Description/Sources__', descriptions, '# __Images__', imagesBlock, '> -# *Made using [Dyn-Flagger](https://ronroblox-suggestor.pages.dev/Dyn-Flagger/ )*', ']]',
@@ -86,6 +85,7 @@
         </BButton>
 
         <pre class="mb-0 p-3 text-light"
-            style="font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto;">{{ outputText }}</pre>
+            style="font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto;"><template v-if="luaCode">{{ outputText }}</template><template
+    v-else><slot /></template></pre>
     </BCard>
 </template>

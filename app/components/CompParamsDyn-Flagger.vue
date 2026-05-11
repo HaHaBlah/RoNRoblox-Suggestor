@@ -33,7 +33,7 @@
       try {
         const url = await getFlagData(name)
         if (!nationFlagController.signal.aborted) {
-          // If getFlagData fails or returns empty, use the imported asset
+          // If getFlagData fails or returns empty, use unknown flag
           nationFlagSrc.value = url || unknownFlag
         }
       } catch {
@@ -64,7 +64,7 @@
     <BRow>
       <!-- Desktop Sidebar -->
       <BCol lg="3" class="d-none d-lg-block border-end">
-        <!-- Add a wrapper div with sticky-top and overflow properties -->
+        <!-- Add a wrapper div with sticky-top properties -->
         <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 1rem); overflow-y: auto;">
           <CompNationsList @select="name => state.NationName = name" />
         </div>
@@ -105,7 +105,7 @@
         </div>
 
         <!-- Output Component -->
-        <CompOutput />
+        <CompOutput>Please input the Nation Name and fill out all flag names and image IDs.</CompOutput>
       </BCol>
     </BRow>
   </BContainer>
