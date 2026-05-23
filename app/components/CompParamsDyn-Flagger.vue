@@ -1,11 +1,13 @@
 <!-- components/CompParamsDyn-Flagger.vue -->
 <script setup lang="ts">
   import { useDynFlagger } from '~/composables/useDynFlagger'
+  import { useDynFlaggerOutput } from '~/composables/useDynFlaggerOutput'
   import { useFlagUrl } from '~/composables/useFlagUrl'
 
   import unknownFlag from '~/assets/images/Unknown Flag.png'
 
   const { state, addFlag, removeFlag } = useDynFlagger()
+  const { outputText } = useDynFlaggerOutput()
   const { getFlagData } = useFlagUrl()
 
   interface LawEntry { Name: string; Types: Record<string, string> }
@@ -105,7 +107,9 @@
         </div>
 
         <!-- Output Component -->
-        <CompOutput>Please input the Nation Name and fill out all flag names and image IDs.</CompOutput>
+        <CompOutput :content="outputText">
+        Please input the Nation Name and fill out all flag names and image IDs.
+    </CompOutput>
       </BCol>
     </BRow>
   </BContainer>

@@ -41,12 +41,12 @@
   <div class="h-100 d-flex flex-column">
 
     <div class="sticky-top">
-      <BNav pills justified class="mb-3">
-        <BNavItem v-for="tab in (['Nations', 'Releasables', 'Formables'] as const)" :key="tab"
-          :active="tabIndex === tab" @click="tabIndex = tab">
+      <div class="d-flex flex-wrap mb-3 gap-2">
+        <BButton v-for="tab in (['Nations', 'Releasables', 'Formables'] as const)" :key="tab" variant="primary"
+          class="flex-fill" :class="{ 'active': tabIndex === tab }" @click="tabIndex = tab">
           {{ tab }}
-        </BNavItem>
-      </BNav>
+        </BButton>
+      </div>
 
 
       <BFormGroup class="mb-2">
@@ -63,14 +63,15 @@
       <BAlert v-else-if="error" variant="danger" show>
         Failed to load: {{ error.message }}
       </BAlert>
-      <BListGroup v-else>
-        <BListGroupItem v-for="name in filteredList" :key="name" button class="d-flex align-items-center"
-          @click="emit('select', name)">
+      <BListGroup class="nations-list" v-else>
+        <BListGroupItem v-for="name in filteredList" :key="name" button
+          class="d-flex align-items-center custom-nation-btn" @click="emit('select', name)">
           <img :src="`/api/flag/${encodeURIComponent(name)}`" :alt="name" class="me-3 border bg-secondary"
             style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
           {{ name }}
         </BListGroupItem>
-        <BListGroupItem v-if="filteredList.length === 0" class="text-muted fst-italic text-center">
+
+        <BListGroupItem v-if="filteredList.length === 0" class="text-muted fst-italic text-center empty-nation-btn">
           No results for "{{ searchQuery }}"
         </BListGroupItem>
       </BListGroup>
@@ -81,5 +82,49 @@
 <style scoped>
   .sticky-top {
     background-color: var(--bs-body-bg);
+  }
+
+  /* Container reset (matches the old .nations-list) */
+  .nations-list {
+    padding-left: 0;
+    margin: 0;
+    display: block;
+    list-style-type: none;
+    border-radius: 0;
+  }
+
+  /* Override Bootstrap's default list-group-item styles */
+  .nations-list .list-group-item.custom-nation-btn {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 6px;
+    padding: 4px;
+    background-color: var(--ron-button-dark);
+    color: white;
+    border: none;
+    /* Removes Bootstrap's default grey border */
+    border-radius: 0;
+  }
+
+  /* Hover state */
+  .nations-list .list-group-item.custom-nation-btn:hover,
+  .nations-list .list-group-item.custom-nation-btn:focus {
+    background-color: var(--ron-button-dark-hover);
+    color: white;
+    /* Prevents Bootstrap from changing text to dark grey on hover */
+    outline: none;
+  }
+
+  /* Active/Click state */
+  .nations-list .list-group-item.custom-nation-btn:active {
+    background-color: var(--ron-button-dark-active);
+    color: white;
+  }
+
+  /* Optional: Clean up the empty state to match the list style */
+  .nations-list .empty-nation-btn {
+    background-color: transparent;
+    border: none;
+    padding: 12px;
   }
 </style>

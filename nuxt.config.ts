@@ -80,7 +80,10 @@ export default defineNuxtConfig({
     public: {
       mapTilerApiKey: process.env.MAPTILER_API_KEY ?? "",
       apiBase:
-        process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8787",
+        process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:6767",
     },
+  },
+  devServer: {
+    port: 6767,
   },
 });
