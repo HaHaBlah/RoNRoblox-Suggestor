@@ -1,4 +1,4 @@
-<!-- components/CompInteractiveMap.vue -->
+<!-- components/CompInteractiveMap.client.vue -->
 <script setup>
     import { shallowRef, onMounted, onUnmounted, markRaw } from 'vue'
     import { useRuntimeConfig } from '#app'

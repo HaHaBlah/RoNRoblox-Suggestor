@@ -1,4 +1,4 @@
-<!-- components/CompNationsList.vue -->
+<!-- components/CompNationsList.client.vue -->
 <script setup lang="ts">
   import { ref, computed } from 'vue'
 
