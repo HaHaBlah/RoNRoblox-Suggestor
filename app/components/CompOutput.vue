@@ -29,7 +29,7 @@ async function copyOutput() {
 
         <pre
             class="mb-0 p-3 text-light"
-            style="font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto;"
+            style="font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; tab-size: 4; -moz-tab-size: 4;"
         ><template v-if="content">{{ content }}</template><template v-else><slot /></template></pre>
     </BCard>
 </template>

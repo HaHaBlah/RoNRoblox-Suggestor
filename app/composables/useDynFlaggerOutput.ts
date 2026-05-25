@@ -2,7 +2,7 @@
 import { useDynFlagger } from "~/composables/useDynFlagger";
 import type { FlagSpec } from "~/composables/useDynFlagger";
 
-const TAB = "    ";
+const TAB = "\t";
 
 // Cache lives at module level so it survives across composable calls
 const thumbnailCache = reactive<Record<string, string | null>>({});

@@ -55,7 +55,6 @@
 
 <template>
   <BContainer fluid class="py-3">
-    <!-- Mobile Offcanvas Sidebar -->
     <BOffcanvas v-model="mobileRailOpen" title="Select Nation" placement="start">
       <CompNationsList @select="name => {
         state.NationName = name
@@ -64,17 +63,13 @@
     </BOffcanvas>
 
     <BRow>
-      <!-- Desktop Sidebar -->
       <BCol lg="3" class="d-none d-lg-block border-end">
-        <!-- Add a wrapper div with sticky-top properties -->
         <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 1rem); overflow-y: auto;">
           <CompNationsList @select="name => state.NationName = name" />
         </div>
       </BCol>
 
-      <!-- Main Content -->
       <BCol lg="9" cols="12">
-        <!-- Mobile Sidebar Toggle -->
         <BButton variant="outline-primary" class="d-lg-none mb-3 w-100" @click="mobileRailOpen = true">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             class="me-2">
@@ -83,7 +78,6 @@
           Select Nation
         </BButton>
 
-        <!-- Nation Overview -->
         <div class="text-center mb-4">
           <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;" />
           <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
@@ -92,11 +86,9 @@
           </BFormGroup>
         </div>
 
-        <!-- Flag Cards -->
         <CompFlag v-for="(flag, i) in state.Flags" :key="i" :flag="flag" :index="i" :lawnames="lawnames"
           @remove="removeFlag" />
 
-        <!-- Add Flag Button -->
         <div class="text-center my-4">
           <BButton variant="green" size="lg" @click="addFlag()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="me-2">
@@ -106,7 +98,6 @@
           </BButton>
         </div>
 
-        <!-- Output Component -->
         <CompOutput :content="outputText">
         Please input the Nation Name and fill out all flag names and image IDs.
     </CompOutput>
