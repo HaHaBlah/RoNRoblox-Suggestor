@@ -55,6 +55,7 @@
 
 <template>
   <BContainer fluid class="py-3">
+    <!-- Mobile Rail -->
     <BOffcanvas v-model="mobileRailOpen" title="Select Nation" placement="start">
       <CompNationsList @select="name => {
         state.NationName = name
@@ -62,13 +63,16 @@
       }" />
     </BOffcanvas>
 
+
     <BRow>
+      <!-- Desktop Rail -->
       <BCol lg="3" class="d-none d-lg-block border-end">
-        <div class="sticky-top" style="top: 1rem; max-height: calc(100vh - 1rem); overflow-y: auto;">
+        <div class="sticky-top" style="top: 1rem; height: calc(100vh - 2rem);">
           <CompNationsList @select="name => state.NationName = name" />
         </div>
       </BCol>
 
+      <!-- Main Content -->
       <BCol lg="9" cols="12">
         <BButton variant="outline-primary" class="d-lg-none mb-3 w-100" @click="mobileRailOpen = true">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -99,8 +103,8 @@
         </div>
 
         <CompOutput :content="outputText">
-        Please input the Nation Name and fill out all flag names and image IDs.
-    </CompOutput>
+          Please input the Nation Name and fill out all flag names and image IDs.
+        </CompOutput>
       </BCol>
     </BRow>
   </BContainer>
