@@ -1,6 +1,7 @@
 // composables/useDynFlagger.ts
 
 export interface FlagSpec {
+  _id: string;
   FlagName: string;
   FlagID: string;
   Description: string;
@@ -23,6 +24,7 @@ const state = reactive<FlaggerState>({
 export function useDynFlagger() {
   function addFlag(data: Partial<FlagSpec> = {}): FlagSpec {
     const newFlag: FlagSpec = {
+      _id: crypto.randomUUID(),
       FlagName: data.FlagName ?? "",
       FlagID: data.FlagID ?? "",
       Description: data.Description ?? "",

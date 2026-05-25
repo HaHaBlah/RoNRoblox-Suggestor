@@ -86,7 +86,7 @@
           </BFormGroup>
         </div>
 
-        <CompFlag v-for="(flag, i) in state.Flags" :key="i" :flag="flag" :index="i" :lawnames="lawnames"
+        <CompFlag v-for="(flag, i) in state.Flags" :key="flag._id" :flag="flag" :index="i" :lawnames="lawnames"
           @remove="removeFlag" />
 
         <div class="text-center my-4">

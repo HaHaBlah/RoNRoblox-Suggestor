@@ -29,6 +29,20 @@
   const imageInputRaw = ref(props.flag.FlagID)
   let imageAbortController: AbortController | null = null
 
+  //Keeps the local input ref synced with the parent prop
+  watch(
+    () => props.flag.FlagID,
+    (newId) => {
+      const match = imageInputRaw.value.trim().match(/\d+/)
+      const currentParsed = match ? match[0] : imageInputRaw.value
+
+      // Only update if it doesn't match the current parsed input to prevent overwriting mid-typing
+      if (newId !== currentParsed) {
+        imageInputRaw.value = newId
+      }
+    }
+  )
+
   async function onImageInput(value: string) {
     imageInputRaw.value = value
     imageAbortController?.abort()
