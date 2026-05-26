@@ -1,4 +1,4 @@
-<!-- index.vue -->
+<!-- pages/index.vue -->
 <script setup>
 useHead({
   title: "Suggestor",

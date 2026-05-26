@@ -1,4 +1,4 @@
-<!-- PageFormabler.vue -->
+<!-- pages/Formabler.vue -->
 <script setup>
   useHead({
     title: 'Formabler',

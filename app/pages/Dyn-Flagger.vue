@@ -1,4 +1,4 @@
-<!-- PageDyn-Flagger.vue -->
+<!-- pages/Dyn-Flagger.vue -->
 <script setup>
 useHead({
   title: "Dyn-Flagger",

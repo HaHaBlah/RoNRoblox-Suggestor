@@ -28,3 +28,6 @@ logs
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# VSCode settings
+.vscode

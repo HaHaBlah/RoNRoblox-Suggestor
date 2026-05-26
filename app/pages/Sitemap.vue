@@ -1,4 +1,4 @@
-<!-- PageSitemap.vue -->
+<!-- pages/Sitemap.vue -->
 <script setup>
 useHead({
   title: "Sitemap",

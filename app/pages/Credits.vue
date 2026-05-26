@@ -1,4 +1,4 @@
-<!-- PageCredits.vue -->
+<!-- pages/Credits.vue -->
 <script setup>
 useHead({
   title: "Credits",
