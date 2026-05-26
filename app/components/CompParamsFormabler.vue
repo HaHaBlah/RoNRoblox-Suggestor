@@ -11,7 +11,7 @@
     import 'swiper/css/effect-coverflow';
     import 'swiper/css/pagination';
     import 'swiper/css/navigation';
-    import '~/assets/style.css'; 
+    import '~/assets/style.css';
 
     // Image imports
     import unknownFlag from '~/assets/images/Unknown Flag.png';
@@ -39,6 +39,14 @@
     const FormableName = ref('');
     const Demonym = ref('');
     const FlagID = ref('');
+    const ButtonTitle = ref('');
+    const ButtonDescription = ref('');
+    const AlertTitle = ref('');
+    const AlertDescription = ref('');
+    const CountriesThatCanForm = ref('');
+    const RequiredTerritory = ref('');
+    const ExclusiveFormables = ref('');
+    const Modifiers = ref('');
 
     // Update src when Swiper slide changes
     const onSlideChange = (swiper) => {
@@ -72,17 +80,17 @@
     </div>
 
     <BRow>
-        <BCol md="6">
+        <BCol md="12">
             <BFormGroup :label="`${formableType} Name:`" class="fw-bold">
                 <BFormInput v-model="FormableName" :placeholder="`${formableType} Name`" />
             </BFormGroup>
         </BCol>
-        <BCol md="6">
+        <BCol md="12">
             <BFormGroup v-if="formableType == 'Formable'" label="Demonym:" class="fw-bold">
                 <BFormInput v-model="Demonym" placeholder="Demonym" />
             </BFormGroup>
         </BCol>
-        <BCol md="6" v-if="formableType === 'Formable'">
+        <BCol md="12" v-if="formableType === 'Formable'">
             <BFormGroup label="Flag ID:" class="fw-bold">
                 <BFormInput v-model="FlagID" placeholder="Flag ID" />
             </BFormGroup>
@@ -94,7 +102,7 @@
         </BCol>
         <BCol md="12">
             <BFormGroup label="Button Description:" class="fw-bold">
-                <BFormInput v-model="ButtonDescription" placeholder="Button Description" />
+                <BFormTextarea v-model="ButtonDescription" placeholder="Button Description" rows="2" max-rows="8" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
@@ -104,12 +112,27 @@
         </BCol>
         <BCol md="12">
             <BFormGroup label="Alert Description:" class="fw-bold">
-                <BFormInput v-model="AlertDescription" placeholder="Alert Description" />
+                <BFormTextarea v-model="AlertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
-            <BFormGroup label="Alert Button Text:" class="fw-bold">
-                <BFormInput v-model="AlertButtonText" placeholder="Alert Button Text" />
+            <BFormGroup label="Countries that can form:" class="fw-bold">
+                <BFormInput v-model="CountriesThatCanForm" placeholder="Countries that can form" />
+            </BFormGroup>
+        </BCol>
+        <BCol md="12">
+            <BFormGroup label="Required Territory:" class="fw-bold">
+                <BFormInput v-model="RequiredTerritory" placeholder="Required Territory" />
+            </BFormGroup>
+        </BCol>
+        <BCol md="12">
+            <BFormGroup label="Exclusive Formables:" class="fw-bold">
+                <BFormInput v-model="ExclusiveFormables" placeholder="Exclusive Formables" />
+            </BFormGroup>
+        </BCol>
+        <BCol md="12">
+            <BFormGroup label="Modifiers:" class="fw-bold">
+                <BFormInput v-model="Modifiers" placeholder="Modifiers" />
             </BFormGroup>
         </BCol>
     </BRow>
