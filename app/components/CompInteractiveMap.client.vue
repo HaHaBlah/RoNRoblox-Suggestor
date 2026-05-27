@@ -1,6 +1,6 @@
 <!-- components/CompInteractiveMap.client.vue -->
 <script setup>
-    import { shallowRef, onMounted, onUnmounted, markRaw } from 'vue'
+    import { ref, shallowRef, onMounted, onUnmounted, markRaw, nextTick } from 'vue'
     import { useRuntimeConfig } from '#app'
     import * as maptilersdk from '@maptiler/sdk'
     import '@maptiler/sdk/dist/maptiler-sdk.css'
@@ -14,12 +14,22 @@
     const currentMarker = shallowRef(null)
     const permanentMarkers = shallowRef([]) // Store saved markers
 
-    onMounted(() => {
+    const mapContainerRef = ref(null)
+
+    onMounted( async () => {
+        await nextTick(); // Ensure the DOM is updated
+
+        // Abort if the container STILL isn't ready
+        if (!mapContainerRef.value) {
+            console.error("Map container DOM element is not ready.")
+            return
+        }
+
         maptilersdk.config.apiKey = config.public.mapTilerApiKey;
 
         // Initialize Map
         map.value = markRaw(new maptilersdk.Map({
-            container: "mapContainer",
+            container: mapContainerRef.value,
             style: "https://api.maptiler.com/maps/019e109b-e359-7208-8d7f-b81a924e0bac/style.json",
         }))
 
@@ -109,7 +119,7 @@
 
 <template>
     <div class="map-wrapper">
-        <div id="mapContainer" class="map-container"></div>
+        <div ref="mapContainerRef" class="map-container"></div>
     </div>
 </template>
 
