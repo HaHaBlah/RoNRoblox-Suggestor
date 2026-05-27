@@ -4,7 +4,6 @@ import type { FlagSpec } from "~/composables/useDynFlagger";
 
 const TAB = "\t";
 
-// Cache lives at module level so it survives across composable calls
 const thumbnailCache = reactive<Record<string, string | null>>({});
 
 async function fetchThumbnail(flagId: string): Promise<string | null> {
@@ -20,9 +19,11 @@ async function fetchThumbnail(flagId: string): Promise<string | null> {
   return thumbnailCache[flagId];
 }
 
-function buildSingleFlag(flag: FlagSpec): string {
-  const id = flag.FlagID ? `rbxassetid://${flag.FlagID}` : "";
-  const name = flag.FlagName ?? "";
+function buildSingleFlag(flag: FlagSpec, index: number): string {
+  const id = flag.FlagID
+    ? `rbxassetid://${flag.FlagID}`
+    : `MISSING_ID_FLAG_${index + 1}`;
+  const name = flag.FlagName?.trim() || `MISSING_NAME_FLAG_${index + 1}`;
   const hasIdeologies = flag.Ideologies?.length > 0;
   const hasLaws = Object.keys(flag.Laws ?? {}).length > 0;
   const hasNOTLaws = Object.keys(flag.NOTLaws ?? {}).length > 0;
@@ -54,34 +55,68 @@ function buildSingleFlag(flag: FlagSpec): string {
 export function useDynFlaggerOutput() {
   const { state } = useDynFlagger();
 
-  const validFlags = computed(() =>
-    state.Flags.filter((f) => f.FlagName && f.FlagID),
-  );
+  const validation = computed(() => {
+    const isNationMissing = !state.NationName?.trim();
+    const errors: string[] = [];
+
+    if (isNationMissing) errors.push("Nation Name");
+
+    const flagErrors = state.Flags.map((f, i) => {
+      const missingName = !f.FlagName?.trim();
+      const missingId = !f.FlagID?.trim();
+
+      if (missingName) errors.push(`Flag ${i + 1} Name`);
+      if (missingId) errors.push(`Flag ${i + 1} Image ID`);
+
+      return { missingName, missingId };
+    });
+
+    return {
+      hasErrors: errors.length > 0,
+      errors,
+      isNationMissing,
+      flagErrors,
+    };
+  });
 
   const luaCode = computed(() => {
-    if (!validFlags.value.length || !state.NationName) return "";
-    return `["${state.NationName}"] = {\n${validFlags.value.map(buildSingleFlag).join("\n")}\n},`;
+    if (!state.Flags.length) return "";
+
+    const nationName = state.NationName?.trim() || "MISSING_NATION_NAME";
+    const flagBlocks = state.Flags.map((f, i) => buildSingleFlag(f, i)).join(
+      "\n",
+    );
+
+    // We removed the warningHeader injection here so the Lua stays clean
+    return `["${nationName}"] = {\n${flagBlocks}\n},`;
   });
 
   const imageLinks = ref<string[]>([]);
 
   watch(
-    validFlags,
+    () => state.Flags,
     async (flags) => {
       const urls = await Promise.all(
-        flags.map((f) => fetchThumbnail(f.FlagID)),
+        flags.map((f) =>
+          f.FlagID ? fetchThumbnail(f.FlagID) : Promise.resolve(null),
+        ),
       );
       imageLinks.value = flags
-        .map((f, i) => (urls[i] ? `[${f.FlagName}](${urls[i]})` : null))
+        .map((f, i) =>
+          urls[i] ? `[${f.FlagName || `Flag ${i + 1}`}](${urls[i]})` : null,
+        )
         .filter((x): x is string => Boolean(x));
     },
     { deep: true, immediate: true },
   );
 
   const outputText = computed(() => {
-    if (!luaCode.value) return "";
+    // Return empty string if invalid. This automatically triggers your slot
+    // and natively disables the Copy Button in CompOutput!
+    if (validation.value.hasErrors || !luaCode.value) return "";
+
     const descriptions = state.Flags.filter((f) => f.Description)
-      .map((f) => `**${f.FlagName}:** ${f.Description}`)
+      .map((f) => `**${f.FlagName || "Unnamed Flag"}:** ${f.Description}`)
       .join("\n");
     const imagesBlock = imageLinks.value.join(", ");
 
@@ -91,13 +126,13 @@ export function useDynFlaggerOutput() {
       "```",
       "--[[",
       "# __Description/Sources__",
-      descriptions,
+      descriptions || "None",
       "# __Images__",
-      imagesBlock,
+      imagesBlock || "None",
       "> -# *Made using [Dyn-Flagger](https://ronroblox-suggestor.pages.dev/Dyn-Flagger/ )*",
       "]]",
     ].join("\n");
   });
 
-  return { outputText, luaCode };
+  return { outputText, luaCode, validation };
 }

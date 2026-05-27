@@ -6,7 +6,12 @@
 
   export interface LawEntry { Name: string; Types: Record<string, string> }
 
-  const props = defineProps<{ flag: FlagSpec; index: number; lawnames: Record<string, LawEntry> }>()
+  const props = defineProps<{
+    flag: FlagSpec;
+    index: number;
+    lawnames: Record<string, LawEntry>;
+    errors?: { missingName: boolean; missingId: boolean };
+  }>()
   const emit = defineEmits<{ remove: [index: number] }>()
 
   const isExpanded = ref(true)
@@ -199,13 +204,16 @@
         <BRow class="g-3 mb-4">
           <BCol md="6">
             <BFormGroup label="Name:" class="fw-bold">
-              <BFormInput v-model="flag.FlagName" placeholder="Input Flag Name here" />
+              <BFormInput v-model="flag.FlagName" :state="errors?.missingName ? false : null"
+                placeholder="Input Flag Name here" />
+              <BFormInvalidFeedback>Flag Name is required.</BFormInvalidFeedback>
             </BFormGroup>
           </BCol>
           <BCol md="6">
             <BFormGroup label="Image ID:" class="fw-bold">
-              <BFormInput :model-value="imageInputRaw" placeholder="Input Decal/Image ID here"
-                @update:model-value="onImageInput" />
+              <BFormInput :model-value="imageInputRaw" :state="errors?.missingId ? false : null"
+                placeholder="Input Decal/Image ID here" @update:model-value="onImageInput" />
+              <BFormInvalidFeedback>Image ID is required.</BFormInvalidFeedback>
             </BFormGroup>
           </BCol>
           <BCol cols="12">

@@ -7,7 +7,7 @@
   import unknownFlag from '~/assets/images/Unknown Flag.png'
 
   const { state, addFlag, removeFlag } = useDynFlagger()
-  const { outputText } = useDynFlaggerOutput()
+  const { outputText, validation } = useDynFlaggerOutput()
   const { getFlagData } = useFlagUrl()
 
   interface LawEntry { Name: string; Types: Record<string, string> }
@@ -85,13 +85,14 @@
         <div class="text-center mb-4">
           <img :src="nationFlagSrc" alt="Nation flag" class="img-fluid mb-3 shadow-sm" style="max-height: 150px;" />
           <BFormGroup label="Nation name:" label-for="nation-name" class="fw-bold mx-auto" style="max-width: 400px;">
-            <BFormInput id="nation-name" v-model="state.NationName"
+            <BFormInput id="nation-name" v-model="state.NationName" :state="validation.isNationMissing ? false : null"
               placeholder="Click a country on the left or write here" />
+            <BFormInvalidFeedback>Nation Name is required.</BFormInvalidFeedback>
           </BFormGroup>
         </div>
 
         <CompFlag v-for="(flag, i) in state.Flags" :key="flag._id" :flag="flag" :index="i" :lawnames="lawnames"
-          @remove="removeFlag" />
+          :errors="validation.flagErrors[i]" @remove="removeFlag" />
 
         <div class="text-center my-4">
           <BButton variant="green" size="lg" @click="addFlag()">
@@ -103,7 +104,15 @@
         </div>
 
         <CompOutput :content="outputText">
-          Please input the Nation Name and fill out all flag names and image IDs.
+          <div v-if="validation.hasErrors" class="text-danger pt-2">
+            <h6 class="fw-bold mb-3">Missing required inputs:</h6>
+            <ul class="mb-0 text-start d-inline-block">
+              <li v-for="(error, idx) in validation.errors" :key="idx">{{ error }}</li>
+            </ul>
+          </div>
+          <div v-else>
+            Please input the Nation Name and fill out all flag names and image IDs.
+          </div>
         </CompOutput>
       </BCol>
     </BRow>
