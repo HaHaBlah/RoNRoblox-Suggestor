@@ -87,7 +87,7 @@ export function useDynFlaggerOutput() {
       "\n",
     );
 
-    // We removed the warningHeader injection here so the Lua stays clean
+    //  The outer block is required for proper Lua table formatting, but the inner blocks are optional based on the presence of requirements.
     return `["${nationName}"] = {\n${flagBlocks}\n},`;
   });
 
@@ -111,8 +111,7 @@ export function useDynFlaggerOutput() {
   );
 
   const outputText = computed(() => {
-    // Return empty string if invalid. This automatically triggers your slot
-    // and natively disables the Copy Button in CompOutput!
+    // Return empty string if invalid
     if (validation.value.hasErrors || !luaCode.value) return "";
 
     const descriptions = state.Flags.filter((f) => f.Description)

@@ -104,7 +104,7 @@
         </div>
 
         <CompOutput :content="outputText">
-          <div v-if="validation.hasErrors" class="text-danger pt-2">
+          <div v-if="validation.hasErrors" class="text-red pt-2">
             <h6 class="fw-bold mb-3">Missing required inputs:</h6>
             <ul class="mb-0 text-start d-inline-block">
               <li v-for="(error, idx) in validation.errors" :key="idx">{{ error }}</li>
