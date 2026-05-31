@@ -1,6 +1,6 @@
 <!-- CompParamsFormabler.vue -->
 <script setup>
-    import { computed, ref } from 'vue';
+    import { computed, ref, reactive } from 'vue';
 
     // Import Swiper Vue.js components and modules
     import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -16,6 +16,9 @@
     // Image imports
     import unknownFlag from '~/assets/images/Unknown Flag.png';
 
+    // Import our new composable
+    import { FormablerOutput } from '~/composables/FormablerOutput';
+
     // Swiper modules
     const modules = [EffectCoverflow, Pagination, Navigation];
 
@@ -27,77 +30,111 @@
         { id: 'abstract_3', src: 'https://swiperjs.com/demos/images/abstract-3.jpg', name: 'Flag 3' },
     ]);
 
-    const formableType = ref('Formable');
+    // Reactive State
+    const state = reactive({
+        type: 'Formable',
+        name: '',
+        demonym: '',
+        flagId: '',
+        buttonTitle: '',
+        buttonDescription: '',
+        alertTitle: '',
+        alertDescription: '',
+        alertButton: '',
+        countriesThatCanForm: '',
+        requiredNations: '',
+        exclusiveFormables: '',
+        modifiers: ''
+    });
+
+    // Pass the state to our new composable
+    const stateRef = computed(() => state);
+    const { outputText, validation } = FormablerOutput(stateRef);
 
     // Toggle between 'Formable' and 'Mission'
     const toggleFormableType = () => {
-        formableType.value = formableType.value === 'Formable' ? 'Mission' : 'Formable';
+        state.type = state.type === 'Formable' ? 'Mission' : 'Formable';
     };
 
-    // State variables
     const nationFlagSrc = ref(availableFlags.value[0].src);
-    const FormableName = ref('');
-    const Demonym = ref('');
-    const FlagID = ref('');
-    const ButtonTitle = ref('');
-    const ButtonDescription = ref('');
-    const AlertTitle = ref('');
-    const AlertDescription = ref('');
-    const CountriesThatCanForm = ref('');
-    const RequiredTerritory = ref('');
-    const ExclusiveFormables = ref('');
-    const Modifiers = ref('');
-
-    // --- AUTOCOMPLETE LOGIC START ---
-    const showCountriesDropdown = ref(false);
 
     // Fetch the fandom data
     const { data: fandomData } = await useFetch('/api/fandom-data');
 
-    // Combine Nations, Releasables, and Formables into one master list
+    // --- LIST GENERATION START ---
+    
+    // List 1: EVERYTHING (For "Countries That Can Form")
     const allCountriesList = computed(() => {
         if (!fandomData.value) return [];
-
-        const nations = Object.entries(fandomData.value.Nationdata.nationdata)
+        const nations = Object.entries(fandomData.value.Nationdata?.nationdata || {})
             .filter(([, v]) => v.nation === true).map(([k]) => k);
-        const releasables = Object.entries(fandomData.value.Nationdata.nationdata)
+        const releasables = Object.entries(fandomData.value.Nationdata?.nationdata || {})
             .filter(([, v]) => v.nation === false).map(([k]) => k);
-        const formables = Object.values(fandomData.value.Tagdata.Tags)
+        const formables = Object.values(fandomData.value.Tagdata?.Tags || {})
             .filter(f => f.FormableName && !f.Removed).map(f => f.FormableName);
 
-        // Use a Set to remove any accidental duplicates, then sort alphabetically
         return [...new Set([...nations, ...releasables, ...formables])].sort();
     });
 
-    // Filter logic that respects comma-separated values
-    const filteredCountries = computed(() => {
-        // Split by comma to get the *current* word the user is typing
-        const parts = CountriesThatCanForm.value.split(',');
+    // List 2: BASE NATIONS & RELEASABLES ONLY (For "Countries Required to Form")
+    const baseCountriesList = computed(() => {
+        if (!fandomData.value) return [];
+        const nations = Object.entries(fandomData.value.Nationdata?.nationdata || {})
+            .filter(([, v]) => v.nation === true).map(([k]) => k);
+        const releasables = Object.entries(fandomData.value.Nationdata?.nationdata || {})
+            .filter(([, v]) => v.nation === false).map(([k]) => k);
+            
+        return [...new Set([...nations, ...releasables])].sort();
+    });
+    // --- LIST GENERATION END ---
+
+
+    // COUNTRIES THAT CAN FORM
+    const showCanFormDropdown = ref(false);
+
+    const filteredCanForm = computed(() => {
+        const parts = state.countriesThatCanForm.split(',');
         const currentQuery = parts[parts.length - 1].trim().toLowerCase();
-
-        // If they haven't typed anything after the comma, show the top 50
         if (!currentQuery) return allCountriesList.value.slice(0, 50);
-
-        // Filter based on the current query, limited to 50 for performance
         return allCountriesList.value
             .filter(c => c.toLowerCase().includes(currentQuery))
             .slice(0, 50);
     });
 
-    // Append the selected country to the comma-separated list
-    const selectCountry = (country) => {
-        const parts = CountriesThatCanForm.value.split(',');
+    const selectCanForm = (country) => {
+        const parts = state.countriesThatCanForm.split(',');
         parts[parts.length - 1] = (parts.length > 1 ? ' ' : '') + country;
-        CountriesThatCanForm.value = parts.join(',');
-        showCountriesDropdown.value = false;
+        state.countriesThatCanForm = parts.join(',');
+        showCanFormDropdown.value = false;
     };
 
-    const handleCountryBlur = () => {
-        setTimeout(() => {
-            showCountriesDropdown.value = false;
-        }, 150);
+    const handleCanFormBlur = () => {
+        setTimeout(() => showCanFormDropdown.value = false, 150);
     };
-    // --- AUTOCOMPLETE LOGIC END ---
+
+
+    // NATIONS REQUIRED TO FORM
+    const showRequiredDropdown = ref(false);
+
+    const filteredRequired = computed(() => {
+        const parts = state.requiredNations.split(',');
+        const currentQuery = parts[parts.length - 1].trim().toLowerCase();
+        if (!currentQuery) return baseCountriesList.value.slice(0, 50);
+        return baseCountriesList.value
+            .filter(c => c.toLowerCase().includes(currentQuery))
+            .slice(0, 50);
+    });
+
+    const selectRequired = (country) => {
+        const parts = state.requiredNations.split(',');
+        parts[parts.length - 1] = (parts.length > 1 ? ' ' : '') + country;
+        state.requiredNations = parts.join(',');
+        showRequiredDropdown.value = false;
+    };
+
+    const handleRequiredBlur = () => {
+        setTimeout(() => showRequiredDropdown.value = false, 150);
+    };
 
     // Update src when Swiper slide changes
     const onSlideChange = (swiper) => {
@@ -109,10 +146,10 @@
 </script>
 
 <template>
-    <h1>Warning, This Page is a Work In Progress. Does not work.</h1>
-    <div class="text-center mb-4">
+    <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT WORK YET</h1>
+    <div class="text-center mb-4 mt-3">
         <BButton variant="primary" class="mb-3" @click="toggleFormableType">
-            {{ formableType }}
+            {{ state.type }}
         </BButton>
 
         <swiper :effect="'coverflow'" :grabCursor="true" :centeredSlides="true" :slidesPerView="'auto'"
@@ -125,63 +162,57 @@
             }" :pagination="{ type: 'fraction' }" :modules="modules" @slideChange="onSlideChange"
             class="mySwiper mb-3 shadow-sm">
             <swiper-slide v-for="(flag, index) in availableFlags" :key="index">
-                <img :src="flag.src" :alt="`${formableType} Flag - ${flag.name}`" style="max-height: 150px;" />
+                <img :src="flag.src" :alt="`${state.type} Flag - ${flag.name}`" style="max-height: 150px;" />
             </swiper-slide>
         </swiper>
     </div>
 
     <BRow>
         <BCol md="12">
-            <BFormGroup :label="`${formableType} Name:`" class="fw-bold">
-                <BFormInput v-model="FormableName" :placeholder="`${formableType} Name`" />
+            <BFormGroup :label="`${state.type} Name:`" class="fw-bold">
+                <BFormInput v-model="state.name" :placeholder="`${state.type} Name`" :state="state.name ? null : false" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
-            <BFormGroup v-if="formableType == 'Formable'" label="Demonym:" class="fw-bold">
-                <BFormInput v-model="Demonym" placeholder="Demonym" />
+            <BFormGroup v-if="state.type == 'Formable'" label="Demonym:" class="fw-bold">
+                <BFormInput v-model="state.demonym" placeholder="Demonym" />
             </BFormGroup>
         </BCol>
-        <BCol md="12" v-if="formableType === 'Formable'">
+        <BCol md="12" v-if="state.type === 'Formable'">
             <BFormGroup label="Flag ID:" class="fw-bold">
-                <BFormInput v-model="FlagID" placeholder="Flag ID" />
+                <BFormInput v-model="state.flagId" placeholder="Flag ID" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
             <BFormGroup label="Button Title:" class="fw-bold">
-                <BFormInput v-model="ButtonTitle" placeholder="Button Title" />
+                <BFormInput v-model="state.buttonTitle" placeholder="Button Title" :state="state.buttonTitle ? null : false" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
             <BFormGroup label="Button Description:" class="fw-bold">
-                <BFormTextarea v-model="ButtonDescription" placeholder="Button Description" rows="2" max-rows="8" />
+                <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="2" max-rows="8" :state="state.buttonDescription ? null : false" />
             </BFormGroup>
         </BCol>
-        <BCol md="12">
-            <BFormGroup label="Alert Title:" class="fw-bold">
-                <BFormInput v-model="AlertTitle" placeholder="Alert Title" />
-            </BFormGroup>
-        </BCol>
-        <BCol md="12">
-            <BFormGroup label="Alert Description:" class="fw-bold">
-                <BFormTextarea v-model="AlertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
-            </BFormGroup>
-        </BCol>
+        
         <BCol md="12">
             <BFormGroup label="Countries that can form:" class="fw-bold">
                 <div class="position-relative">
-                    <BFormInput v-model="CountriesThatCanForm" placeholder="e.g. England, France, Spain"
-                        @focus="showCountriesDropdown = true" @blur="handleCountryBlur" autocomplete="off" />
+                    <BFormInput v-model="state.countriesThatCanForm" placeholder="e.g. United States, Scotland, Byzantine Empire"
+                        @focus="showCanFormDropdown = true" @blur="handleCanFormBlur" autocomplete="off" :state="state.countriesThatCanForm ? null : false" />
 
-                    <BListGroup v-if="showCountriesDropdown && filteredCountries.length > 0"
+                    <BListGroup v-if="showCanFormDropdown && filteredCanForm.length > 0"
                         class="position-absolute w-100 shadow-sm mt-1"
                         style="max-height: 200px; overflow-y: auto; z-index: 1050;">
-                        <BListGroupItem v-for="country in filteredCountries" :key="country" button
-                            @mousedown.prevent="selectCountry(country)">
+                        <BListGroupItem v-for="country in filteredCanForm" :key="country" button
+                            class="d-flex align-items-center"
+                            @mousedown.prevent="selectCanForm(country)">
+                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country" class="me-3 border bg-secondary"
+                                style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
                             {{ country }}
                         </BListGroupItem>
                     </BListGroup>
 
-                    <BListGroup v-else-if="showCountriesDropdown && filteredCountries.length === 0"
+                    <BListGroup v-else-if="showCanFormDropdown && filteredCanForm.length === 0"
                         class="position-absolute w-100 shadow-sm mt-1" style="z-index: 1050;">
                         <BListGroupItem disabled>
                             No matching countries found
@@ -190,29 +221,78 @@
                 </div>
             </BFormGroup>
         </BCol>
+
         <BCol md="12">
-            <BFormGroup label="Required Territory:" class="fw-bold">
-                <BFormInput v-model="RequiredTerritory" placeholder="Required Territory" />
+            <BFormGroup label="Countries Required to Form:" class="fw-bold">
+                <div class="position-relative">
+                    <BFormInput v-model="state.requiredNations" placeholder="e.g. United States, Scotland, Algeria"
+                        @focus="showRequiredDropdown = true" @blur="handleRequiredBlur" autocomplete="off" />
+
+                    <BListGroup v-if="showRequiredDropdown && filteredRequired.length > 0"
+                        class="position-absolute w-100 shadow-sm mt-1"
+                        style="max-height: 200px; overflow-y: auto; z-index: 1050;">
+                        <BListGroupItem v-for="country in filteredRequired" :key="country" button
+                            class="d-flex align-items-center"
+                            @mousedown.prevent="selectRequired(country)">
+                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country" class="me-3 border bg-secondary"
+                                style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
+                            {{ country }}
+                        </BListGroupItem>
+                    </BListGroup>
+
+                    <BListGroup v-else-if="showRequiredDropdown && filteredRequired.length === 0"
+                        class="position-absolute w-100 shadow-sm mt-1" style="z-index: 1050;">
+                        <BListGroupItem disabled>
+                            No matching countries found
+                        </BListGroupItem>
+                    </BListGroup>
+                </div>
             </BFormGroup>
         </BCol>
+
         <BCol md="12">
             <BFormGroup label="Exclusive Formables:" class="fw-bold">
-                <BFormInput v-model="ExclusiveFormables" placeholder="Exclusive Formables" />
+                <BFormInput v-model="state.exclusiveFormables" placeholder="Exclusive Formables (comma-separated)" />
+            </BFormGroup>
+        </BCol>
+        
+        <BCol md="4">
+            <BFormGroup label="Alert Title:" class="fw-bold">
+                <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
+            </BFormGroup>
+        </BCol>
+        <BCol md="4">
+            <BFormGroup label="Alert Button Text:" class="fw-bold">
+                <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
+            <BFormGroup label="Alert Description:" class="fw-bold">
+                <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
+            </BFormGroup>
+        </BCol>
+        
+        <BCol md="12">
             <BFormGroup label="Modifiers:" class="fw-bold">
-                <BFormInput v-model="Modifiers" placeholder="Modifiers" />
+                <BFormInput v-model="state.modifiers" placeholder="Modifiers (comma-separated)" />
             </BFormGroup>
         </BCol>
     </BRow>
 
-    <CompOutput>Please input the {{ formableType }} Name and other required fields.</CompOutput>
+    <CompOutput :content="outputText">
+        <div v-if="validation.hasErrors" class="text-red pt-2">
+            <h6 class="fw-bold mb-3">Missing required inputs:</h6>
+            <ul class="mb-0 text-start d-inline-block">
+                <li v-for="(error, idx) in validation.errors" :key="idx">{{ error }}</li>
+            </ul>
+        </div>
+        <div v-else>
+            Please input the {{ state.type }} Name and fill out all required fields.
+        </div>
+    </CompOutput>
 </template>
 
 <style scoped>
-
-    /* Optional: Scope Swiper sizing so it doesn't take up the whole screen */
     .mySwiper {
         width: 100%;
         max-width: 600px;
