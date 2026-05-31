@@ -59,7 +59,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     const s = state.value;
     const isMission = s.type === "Mission";
-    const nameKey = isMission ? "MissionName" : "name";
+    const nameKey = isMission ? "MissionName" : "FormableName";
 
     const lines: string[] = [];
     lines.push(`{`);
@@ -70,6 +70,9 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     const reqNations = toLuaArray(s.RequiredCountries);
     if (reqNations) lines.push(`${TAB}RequiredCountries = ${reqNations},`);
+
+    const reqTiles = toLuaArray(s.RequiredTiles);
+    if (reqTiles) lines.push(`${TAB}RequiredTiles = ${reqTiles},`);
 
     const exclusive = toLuaArray(s.exclusiveFormables);
     if (exclusive) lines.push(`${TAB}ExclusiveFormables = ${exclusive},`);
