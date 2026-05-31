@@ -25,9 +25,9 @@
     // Mock data for flags 
     const availableFlags = ref([
         { id: 'unknown', src: unknownFlag, name: 'Unknown Flag' },
-        { id: 'abstract_1', src: 'https://swiperjs.com/demos/images/abstract-1.jpg', name: 'Flag 1' },
-        { id: 'abstract_2', src: 'https://swiperjs.com/demos/images/abstract-2.jpg', name: 'Flag 2' },
-        { id: 'abstract_3', src: 'https://swiperjs.com/demos/images/abstract-3.jpg', name: 'Flag 3' },
+        { id: 'abstract_1', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 1' },
+        { id: 'abstract_2', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 2' },
+        { id: 'abstract_3', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 3' },
     ]);
 
     // Reactive State
