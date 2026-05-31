@@ -207,8 +207,9 @@
                     :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
                     :clearOnSelect="false">
                     <template #chip="{ item, remove }">
-                        <span class="badge bg-primary d-flex align-items-center py-1 ps-2 pe-2"
-                            style="font-size: 0.85rem;">
+                        <span class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                            style="font-size: 0.85rem;" @click.stop="remove()">
+
                             <span class="d-flex me-2">
                                 <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
                                     :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation" :title="nation"
@@ -217,8 +218,10 @@
                                     :style="{ zIndex: nIdx }" loading="lazy">
                             </span>
                             {{ item }}
-                            <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.5em;"
-                                @click.stop="remove()" aria-label="Remove"></button>
+
+                            <button type="button" class="btn-close btn-close-white ms-2"
+                                style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                tabindex="-1"></button>
                         </span>
                     </template>
 
@@ -276,5 +279,14 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .deletable-chip {
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+    .deletable-chip:hover {
+        background-color: #dc3545 !important;
     }
 </style>

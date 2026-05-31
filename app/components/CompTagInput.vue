@@ -87,12 +87,15 @@
 <template>
     <div class="form-control d-flex flex-wrap align-items-center gap-2" :class="{ 'is-invalid': state === false }">
         <slot name="chip" v-for="(item, idx) in modelValue" :key="idx" :item="item" :remove="() => removeItem(idx)">
-            <span class="badge bg-primary d-flex align-items-center py-1 ps-1 pe-2" style="font-size: 0.85rem;">
+            <span class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-1 pe-2 deletable-chip"
+                style="font-size: 0.85rem;" @click.stop="removeItem(idx)">
+
                 <img :src="`/api/flag/${encodeURIComponent(item)}`" :alt="item" class="me-2 border bg-ron-button-dark"
                     style="width: 24px; height: 16px; object-fit: cover;" loading="lazy">
                 {{ item }}
-                <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.5em;"
-                    @click.stop="removeItem(idx)" aria-label="Remove"></button>
+
+                <button type="button" class="btn-close btn-close-white ms-2"
+                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove" tabindex="-1"></button>
             </span>
         </slot>
 
@@ -124,3 +127,15 @@
         </BListGroup>
     </div>
 </template>
+
+<style scoped>
+    .deletable-chip {
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+    .deletable-chip:hover {
+        background-color: #dc3545 !important;
+        /* Bootstrap danger red */
+    }
+</style>
