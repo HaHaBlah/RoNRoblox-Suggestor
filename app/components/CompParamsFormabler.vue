@@ -41,8 +41,8 @@
         alertTitle: '',
         alertDescription: '',
         alertButton: '',
-        countriesThatCanForm: '',
-        requiredNations: '',
+        countriesThatCanForm: [], // Array for chips
+        requiredNations: [],      // Array for chips
         exclusiveFormables: '',
         modifiers: ''
     });
@@ -62,7 +62,7 @@
     const { data: fandomData } = await useFetch('/api/fandom-data');
 
     // --- LIST GENERATION START ---
-    
+
     // List 1: EVERYTHING (For "Countries That Can Form")
     const allCountriesList = computed(() => {
         if (!fandomData.value) return [];
@@ -83,29 +83,59 @@
             .filter(([, v]) => v.nation === true).map(([k]) => k);
         const releasables = Object.entries(fandomData.value.Nationdata?.nationdata || {})
             .filter(([, v]) => v.nation === false).map(([k]) => k);
-            
+
         return [...new Set([...nations, ...releasables])].sort();
     });
     // --- LIST GENERATION END ---
 
 
-    // COUNTRIES THAT CAN FORM
+    // --- COUNTRIES THAT CAN FORM (TAG/CHIP LOGIC) ---
     const showCanFormDropdown = ref(false);
+    const canFormInput = ref('');
 
     const filteredCanForm = computed(() => {
-        const parts = state.countriesThatCanForm.split(',');
-        const currentQuery = parts[parts.length - 1].trim().toLowerCase();
-        if (!currentQuery) return allCountriesList.value.slice(0, 50);
-        return allCountriesList.value
+        const currentQuery = canFormInput.value.trim().toLowerCase();
+
+        // Filter out already selected countries
+        const availableCountries = allCountriesList.value.filter(
+            c => !state.countriesThatCanForm.includes(c)
+        );
+
+        if (!currentQuery) return availableCountries.slice(0, 50);
+        return availableCountries
             .filter(c => c.toLowerCase().includes(currentQuery))
             .slice(0, 50);
     });
 
-    const selectCanForm = (country) => {
-        const parts = state.countriesThatCanForm.split(',');
-        parts[parts.length - 1] = (parts.length > 1 ? ' ' : '') + country;
-        state.countriesThatCanForm = parts.join(',');
-        showCanFormDropdown.value = false;
+    const addCanForm = (country) => {
+        if (!country) return;
+        // Prevent duplicates
+        if (!state.countriesThatCanForm.includes(country)) {
+            state.countriesThatCanForm.push(country);
+        }
+        canFormInput.value = '';
+        showCanFormDropdown.value = true; // Keep open after selection
+    };
+
+    const removeCanForm = (index) => {
+        state.countriesThatCanForm.splice(index, 1);
+    };
+
+    const handleCanFormKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const val = canFormInput.value.trim();
+            // Optionally default to top search result if there is one
+            if (val) {
+                // Find case-insensitive match if they didn't click
+                const exactMatch = filteredCanForm.value.find(c => c.toLowerCase() === val.toLowerCase());
+                addCanForm(exactMatch || val);
+            }
+        } else if (e.key === 'Backspace' && !canFormInput.value) {
+            if (state.countriesThatCanForm.length > 0) {
+                state.countriesThatCanForm.pop();
+            }
+        }
     };
 
     const handleCanFormBlur = () => {
@@ -113,23 +143,50 @@
     };
 
 
-    // NATIONS REQUIRED TO FORM
+    // --- NATIONS REQUIRED TO FORM (TAG/CHIP LOGIC) ---
     const showRequiredDropdown = ref(false);
+    const requiredInput = ref('');
 
     const filteredRequired = computed(() => {
-        const parts = state.requiredNations.split(',');
-        const currentQuery = parts[parts.length - 1].trim().toLowerCase();
-        if (!currentQuery) return baseCountriesList.value.slice(0, 50);
-        return baseCountriesList.value
+        const currentQuery = requiredInput.value.trim().toLowerCase();
+
+        // Filter out already selected countries
+        const availableCountries = baseCountriesList.value.filter(
+            c => !state.requiredNations.includes(c)
+        );
+
+        if (!currentQuery) return availableCountries.slice(0, 50);
+        return availableCountries
             .filter(c => c.toLowerCase().includes(currentQuery))
             .slice(0, 50);
     });
 
-    const selectRequired = (country) => {
-        const parts = state.requiredNations.split(',');
-        parts[parts.length - 1] = (parts.length > 1 ? ' ' : '') + country;
-        state.requiredNations = parts.join(',');
-        showRequiredDropdown.value = false;
+    const addRequired = (country) => {
+        if (!country) return;
+        if (!state.requiredNations.includes(country)) {
+            state.requiredNations.push(country);
+        }
+        requiredInput.value = '';
+        showRequiredDropdown.value = true; // Keep open after selection
+    };
+
+    const removeRequired = (index) => {
+        state.requiredNations.splice(index, 1);
+    };
+
+    const handleRequiredKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const val = requiredInput.value.trim();
+            if (val) {
+                const exactMatch = filteredRequired.value.find(c => c.toLowerCase() === val.toLowerCase());
+                addRequired(exactMatch || val);
+            }
+        } else if (e.key === 'Backspace' && !requiredInput.value) {
+            if (state.requiredNations.length > 0) {
+                state.requiredNations.pop();
+            }
+        }
     };
 
     const handleRequiredBlur = () => {
@@ -170,7 +227,8 @@
     <BRow>
         <BCol md="12">
             <BFormGroup :label="`${state.type} Name:`" class="fw-bold">
-                <BFormInput v-model="state.name" :placeholder="`${state.type} Name`" :state="state.name ? null : false" />
+                <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
+                    :state="state.name ? null : false" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
@@ -185,28 +243,47 @@
         </BCol>
         <BCol md="12">
             <BFormGroup label="Button Title:" class="fw-bold">
-                <BFormInput v-model="state.buttonTitle" placeholder="Button Title" :state="state.buttonTitle ? null : false" />
+                <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
+                    :state="state.buttonTitle ? null : false" />
             </BFormGroup>
         </BCol>
         <BCol md="12">
             <BFormGroup label="Button Description:" class="fw-bold">
-                <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="2" max-rows="8" :state="state.buttonDescription ? null : false" />
+                <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="2" max-rows="8"
+                    :state="state.buttonDescription ? null : false" />
             </BFormGroup>
         </BCol>
-        
+
         <BCol md="12">
             <BFormGroup label="Countries that can form:" class="fw-bold">
-                <div class="position-relative">
-                    <BFormInput v-model="state.countriesThatCanForm" placeholder="e.g. United States, Scotland, Byzantine Empire"
-                        @focus="showCanFormDropdown = true" @blur="handleCanFormBlur" autocomplete="off" :state="state.countriesThatCanForm ? null : false" />
+                <div class="form-control d-flex flex-wrap align-items-center gap-2"
+                    :class="{ 'is-invalid': state.countriesThatCanForm.length === 0 }">
 
+                    <span v-for="(country, idx) in state.countriesThatCanForm" :key="idx"
+                        class="badge bg-primary d-flex align-items-center py-1 ps-1 pe-2" style="font-size: 0.85rem;">
+                        <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country"
+                            class="me-2 border bg-secondary rounded-1"
+                            style="width: 24px; height: 16px; object-fit: cover;" loading="lazy">
+                        {{ country }}
+                        <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.5em;"
+                            @click.stop="removeCanForm(idx)" aria-label="Remove"></button>
+                    </span>
+
+                    <input type="text" class="border-0 flex-grow-1"
+                        style="outline: none; min-width: 150px; background: transparent; color: inherit;"
+                        v-model="canFormInput" placeholder="e.g. United States, Scotland..."
+                        @focus="showCanFormDropdown = true" @blur="handleCanFormBlur" @keydown="handleCanFormKeyDown"
+                        autocomplete="off" />
+                </div>
+
+                <div class="position-relative">
                     <BListGroup v-if="showCanFormDropdown && filteredCanForm.length > 0"
                         class="position-absolute w-100 shadow-sm mt-1"
                         style="max-height: 200px; overflow-y: auto; z-index: 1050;">
                         <BListGroupItem v-for="country in filteredCanForm" :key="country" button
-                            class="d-flex align-items-center"
-                            @mousedown.prevent="selectCanForm(country)">
-                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country" class="me-3 border bg-secondary"
+                            class="d-flex align-items-center" @mousedown.prevent="addCanForm(country)">
+                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country"
+                                class="me-3 border bg-secondary rounded-1"
                                 style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
                             {{ country }}
                         </BListGroupItem>
@@ -224,17 +301,33 @@
 
         <BCol md="12">
             <BFormGroup label="Countries Required to Form:" class="fw-bold">
-                <div class="position-relative">
-                    <BFormInput v-model="state.requiredNations" placeholder="e.g. United States, Scotland, Algeria"
-                        @focus="showRequiredDropdown = true" @blur="handleRequiredBlur" autocomplete="off" />
+                <div class="form-control d-flex flex-wrap align-items-center gap-2">
 
+                    <span v-for="(country, idx) in state.requiredNations" :key="idx"
+                        class="badge bg-primary d-flex align-items-center py-1 ps-1 pe-2" style="font-size: 0.85rem;">
+                        <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country"
+                            class="me-2 border bg-secondary rounded-1"
+                            style="width: 24px; height: 16px; object-fit: cover;" loading="lazy">
+                        {{ country }}
+                        <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.5em;"
+                            @click.stop="removeRequired(idx)" aria-label="Remove"></button>
+                    </span>
+
+                    <input type="text" class="border-0 flex-grow-1"
+                        style="outline: none; min-width: 150px; background: transparent; color: inherit;"
+                        v-model="requiredInput" placeholder="e.g. United States, Scotland, Algeria"
+                        @focus="showRequiredDropdown = true" @blur="handleRequiredBlur" @keydown="handleRequiredKeyDown"
+                        autocomplete="off" />
+                </div>
+
+                <div class="position-relative">
                     <BListGroup v-if="showRequiredDropdown && filteredRequired.length > 0"
                         class="position-absolute w-100 shadow-sm mt-1"
                         style="max-height: 200px; overflow-y: auto; z-index: 1050;">
                         <BListGroupItem v-for="country in filteredRequired" :key="country" button
-                            class="d-flex align-items-center"
-                            @mousedown.prevent="selectRequired(country)">
-                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country" class="me-3 border bg-secondary"
+                            class="d-flex align-items-center" @mousedown.prevent="addRequired(country)">
+                            <img :src="`/api/flag/${encodeURIComponent(country)}`" :alt="country"
+                                class="me-3 border bg-secondary rounded-1"
                                 style="width: 36px; height: 24px; object-fit: cover;" loading="lazy">
                             {{ country }}
                         </BListGroupItem>
@@ -255,7 +348,7 @@
                 <BFormInput v-model="state.exclusiveFormables" placeholder="Exclusive Formables (comma-separated)" />
             </BFormGroup>
         </BCol>
-        
+
         <BCol md="4">
             <BFormGroup label="Alert Title:" class="fw-bold">
                 <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
@@ -271,7 +364,7 @@
                 <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
             </BFormGroup>
         </BCol>
-        
+
         <BCol md="12">
             <BFormGroup label="Modifiers:" class="fw-bold">
                 <BFormInput v-model="state.modifiers" placeholder="Modifiers (comma-separated)" />

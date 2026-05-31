@@ -11,8 +11,8 @@ export interface FormablerState {
   alertTitle: string;
   alertDescription: string;
   alertButton: string;
-  countriesThatCanForm: string;
-  requiredNations: string;
+  countriesThatCanForm: string[]; // Updated type
+  requiredNations: string[]; // Updated type
   exclusiveFormables: string;
   modifiers: string;
 }
@@ -20,13 +20,17 @@ export interface FormablerState {
 export function FormablerOutput(state: Ref<FormablerState>) {
   const TAB = "\t";
 
-  // Helper to turn comma-separated strings into Lua arrays: {"A", "B"}
-  const toLuaArray = (csv: string) => {
-    if (!csv) return null;
-    const items = csv
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+  // Helper to turn BOTH comma-separated strings AND arrays into Lua arrays: {"A", "B"}
+  const toLuaArray = (input: string | string[]) => {
+    if (!input || input.length === 0) return null;
+
+    const items = Array.isArray(input)
+      ? input.map((s) => s.trim()).filter(Boolean)
+      : input
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
     if (!items.length) return null;
     return `{${items.map((i) => `"${i}"`).join(", ")}}`;
   };
@@ -37,7 +41,10 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     if (!state.value.buttonTitle?.trim()) errors.push("Button Title");
     if (!state.value.buttonDescription?.trim())
       errors.push("Button Description");
-    if (!state.value.countriesThatCanForm?.trim())
+    if (
+      !state.value.countriesThatCanForm ||
+      state.value.countriesThatCanForm.length === 0
+    )
       errors.push("Countries That Can Form");
 
     return {
@@ -123,7 +130,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       "--[[",
       "# __Metadata__",
       metaData.length ? metaData.join("\n") : "None",
-      "> -# *Made using Formabler*",
+      "> -# *Made using [Formabler](https://ronroblox-suggestor.pages.dev/Formabler/ )*",
       "]]",
     ].join("\n");
   });

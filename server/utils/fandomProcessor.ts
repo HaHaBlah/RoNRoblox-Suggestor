@@ -6,6 +6,7 @@ const fandomModules: Record<string, string> = {
   Flagdata: "Flagdata",
   Nationdata: "Nationdata",
   Tagdata: "Tagdata",
+  Modifierdata: "Modifierdata",
 };
 
 export async function getFandomImageUrl(filename: string, baseUrl = "") {
@@ -49,6 +50,34 @@ async function extractValue(node: any): Promise<LuaValue> {
 
     case "NilLiteral":
       return null;
+
+    // 1. ADDED: Support for negative numbers (e.g., -10)
+    case "UnaryExpression": {
+      const argument = await extractValue(node.argument);
+      if (node.operator === "-" && typeof argument === "number") {
+        return -argument;
+      }
+      return null;
+    }
+
+    // 2. ADDED: Support for Color3.fromRGB(r, g, b)
+    case "CallExpression": {
+      if (
+        node.base.type === "MemberExpression" &&
+        node.base.base.type === "Identifier" &&
+        node.base.base.name === "Color3" &&
+        node.base.identifier.type === "Identifier" &&
+        node.base.identifier.name === "fromRGB"
+      ) {
+        const r = await extractValue(node.arguments[0]);
+        const g = await extractValue(node.arguments[1]);
+        const b = await extractValue(node.arguments[2]);
+
+        // Return as a 1-indexed object to seamlessly match how your extractTable handles {r, g, b}
+        return { 1: r, 2: g, 3: b };
+      }
+      return null;
+    }
 
     case "BinaryExpression": {
       const left = await extractValue(node.left);
