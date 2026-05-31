@@ -11,11 +11,16 @@ export interface FormablerState {
   alertTitle: string;
   alertDescription: string;
   alertButton: string;
-  CountriesCanForm: string[]; 
-  RequiredCountries: string[]; 
+  CountriesCanForm: string[];
+  RequiredCountries: string[];
   RequiredTiles: string[];
-  ExclusiveFormables: string[]; 
+  ExclusiveFormables: string[];
   Modifiers: string[];
+  // CustomAttributes
+  DoNotClearModifiers: boolean;
+  Stability_Gain: number;
+  PoliticalPower_Gain: number;
+  Stability_Requirement: number;
 }
 
 export function FormablerOutput(state: Ref<FormablerState>) {
@@ -47,6 +52,16 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       state.value.CountriesCanForm.length === 0
     )
       errors.push("Countries That Can Form");
+
+    // NEW LOGIC: Ensure at least one of the two requirements is populated
+    const hasReqCountries =
+      state.value.RequiredCountries && state.value.RequiredCountries.length > 0;
+    const hasReqTiles =
+      state.value.RequiredTiles && state.value.RequiredTiles.length > 0;
+
+    if (!hasReqCountries && !hasReqTiles) {
+      errors.push("Required Countries OR Required Tiles");
+    }
 
     return {
       hasErrors: errors.length > 0,
@@ -97,8 +112,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     }
 
     // Parse modifiers assuming a default length of -1 (indefinite)
-    const mods = s.Modifiers
-      .split(",")
+    const mods = s.Modifiers.split(",")
       .map((m) => m.trim())
       .filter(Boolean);
     if (mods.length > 0) {
@@ -124,7 +138,9 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       if (state.value.Demonym)
         metaData.push(`Demonym: [${state.value.Demonym}]`);
       if (state.value.FlagId)
-        metaData.push(`Flag: [https://create.roblox.com/store/asset/${state.value.FlagId}]`);
+        metaData.push(
+          `Flag: [https://create.roblox.com/store/asset/${state.value.FlagId}]`,
+        );
     }
 
     return [

@@ -18,6 +18,11 @@
         emptyMessage: {
             type: String,
             default: 'No matching items found'
+        },
+        // NEW: Accept a state prop to control the validation outline
+        state: {
+            type: Boolean,
+            default: null
         }
     });
 
@@ -26,18 +31,12 @@
     const showDropdown = ref(false);
     const inputValue = ref('');
 
+    // ... (Keep the rest of your existing JS logic exactly the same) ...
     const filteredOptions = computed(() => {
         const currentQuery = inputValue.value.trim().toLowerCase();
-
-        // Filter out already selected items
-        const available = props.options.filter(
-            c => !props.modelValue.includes(c)
-        );
-
+        const available = props.options.filter(c => !props.modelValue.includes(c));
         if (!currentQuery) return available.slice(0, 50);
-        return available
-            .filter(c => c.toLowerCase().includes(currentQuery))
-            .slice(0, 50);
+        return available.filter(c => c.toLowerCase().includes(currentQuery)).slice(0, 50);
     });
 
     const addItem = (item) => {
@@ -78,8 +77,7 @@
 </script>
 
 <template>
-    <div class="form-control d-flex flex-wrap align-items-center gap-2"
-        :class="{ 'is-invalid': modelValue.length === 0 }">
+    <div class="form-control d-flex flex-wrap align-items-center gap-2" :class="{ 'is-invalid': state === false }">
         <slot name="chip" v-for="(item, idx) in modelValue" :key="idx" :item="item" :remove="() => removeItem(idx)">
             <span class="badge bg-primary d-flex align-items-center py-1 ps-1 pe-2" style="font-size: 0.85rem;">
                 <img :src="`/api/flag/${encodeURIComponent(item)}`" :alt="item" class="me-2 border bg-ron-button-dark"

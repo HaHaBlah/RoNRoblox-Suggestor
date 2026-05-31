@@ -155,7 +155,7 @@
         <BCol md="6">
             <BFormGroup label="Button Title:" class="fw-bold">
                 <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
-                    :state="state.buttonTitle ? null : false"  />
+                    :state="state.buttonTitle ? null : false" />
             </BFormGroup>
         </BCol>
 
@@ -187,21 +187,24 @@
         <BCol md="12">
             <BFormGroup label="Countries that can form:" class="fw-bold">
                 <CompTagInput v-model="state.CountriesCanForm" :options="allCountriesList"
-                    placeholder="e.g. United States, Scotland, Byzantine Empire" />
+                    placeholder="e.g. United States, Scotland, Byzantine Empire"
+                    :state="state.CountriesCanForm.length > 0 ? null : false" />
             </BFormGroup>
         </BCol>
 
         <BCol md="6">
             <BFormGroup label="Countries Required to Form:" class="fw-bold">
                 <CompTagInput v-model="state.RequiredCountries" :options="baseCountriesList"
-                    placeholder="e.g. United States, Scotland, Algeria" />
+                    placeholder="e.g. United States, Scotland, Algeria"
+                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false" />
             </BFormGroup>
         </BCol>
 
         <BCol md="6">
             <BFormGroup label="Tiles Required to Form:" class="fw-bold">
                 <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
-                    placeholder="e.g. UnitedStates.001, Swisterland.003" emptyMessage="No matching tiles found">
+                    placeholder="e.g. UnitedStates.001, Swisterland.003" emptyMessage="No matching tiles found"
+                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false">
                     <template #chip="{ item, remove }">
                         <span class="badge bg-primary d-flex align-items-center py-1 ps-2 pe-2"
                             style="font-size: 0.85rem;">
