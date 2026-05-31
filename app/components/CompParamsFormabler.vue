@@ -204,7 +204,8 @@
             <BFormGroup label="Tiles Required to Form:" class="fw-bold">
                 <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
                     placeholder="e.g. UnitedStates.001, Swisterland.003" emptyMessage="No matching tiles found"
-                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false">
+                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
+                    :clearOnSelect="false">
                     <template #chip="{ item, remove }">
                         <span class="badge bg-primary d-flex align-items-center py-1 ps-2 pe-2"
                             style="font-size: 0.85rem;">
@@ -212,7 +213,7 @@
                                 <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
                                     :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation" :title="nation"
                                     class="border bg-ron-button-dark shadow-sm"
-                                    style="width: 24px; height: 16px; object-fit: cover; margin-left: -8px; position: relative;"
+                                    style="width: 24px; height: 16px; object-fit: cover; position: relative;"
                                     :style="{ zIndex: nIdx }" loading="lazy">
                             </span>
                             {{ item }}

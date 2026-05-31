@@ -19,10 +19,14 @@
             type: String,
             default: 'No matching items found'
         },
-        // NEW: Accept a state prop to control the validation outline
         state: {
             type: Boolean,
             default: null
+        },
+        // NEW: Allow parent to decide if input clears after selection
+        clearOnSelect: {
+            type: Boolean,
+            default: true
         }
     });
 
@@ -31,7 +35,6 @@
     const showDropdown = ref(false);
     const inputValue = ref('');
 
-    // ... (Keep the rest of your existing JS logic exactly the same) ...
     const filteredOptions = computed(() => {
         const currentQuery = inputValue.value.trim().toLowerCase();
         const available = props.options.filter(c => !props.modelValue.includes(c));
@@ -44,7 +47,12 @@
         if (!props.modelValue.includes(item)) {
             emit('update:modelValue', [...props.modelValue, item]);
         }
-        inputValue.value = '';
+
+        // NEW: Only clear if clearOnSelect is true
+        if (props.clearOnSelect) {
+            inputValue.value = '';
+        }
+
         showDropdown.value = true;
     };
 
