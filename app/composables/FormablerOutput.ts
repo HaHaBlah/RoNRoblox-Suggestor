@@ -119,9 +119,9 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     const metaData: string[] = [];
     if (state.value.type === "Formable") {
       if (state.value.Demonym)
-        metaData.push(`**Demonym:** [${state.value.Demonym}]`);
+        metaData.push(`Demonym: [${state.value.Demonym}]`);
       if (state.value.FlagId)
-        metaData.push(`**Flag:** [https://create.roblox.com/store/asset/${state.value.FlagId}]`);
+        metaData.push(`Flag: [https://create.roblox.com/store/asset/${state.value.FlagId}]`);
     }
 
     return [

@@ -1,6 +1,6 @@
 <!-- components/CompParamsFormabler.vue -->
 <script setup>
-    import { computed, ref, reactive } from 'vue';
+    import { computed, ref, reactive, watch } from 'vue'; // Added 'watch'
 
     // Swiper Imports
     import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -18,13 +18,6 @@
     import CompTagInput from '~/components/CompTagInput.vue';
 
     const modules = [EffectCoverflow, Pagination, Navigation];
-
-    const availableFlags = ref([
-        { id: 'unknown', src: unknownFlag, name: 'Unknown Flag' },
-        { id: 'abstract_1', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 1' },
-        { id: 'abstract_2', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 2' },
-        { id: 'abstract_3', src: 'https://designshack.net/wp-content/uploads/placehold.jpg', name: 'Flag 3' },
-    ]);
 
     const state = reactive({
         type: 'Formable',
@@ -54,6 +47,57 @@
         allTilesList,
         tileOwnersMap
     } = await FandomLists();
+
+    // Dynamically populated flags
+    const availableFlags = ref([
+        { id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }
+    ]);
+
+    let flagAbortController = null;
+
+    // Watch for changes to update flags dynamically
+    watch(
+        [() => state.type, () => state.FlagId, () => state.CountriesCanForm],
+        async ([newType, newFlagId, newCountries]) => {
+            if (newType === 'Mission') {
+                // If Mission, populate Swiper with all CountriesCanForm flags
+                if (newCountries && newCountries.length > 0) {
+                    availableFlags.value = newCountries.map(country => ({
+                        id: country,
+                        src: `/api/flag/${encodeURIComponent(country)}`,
+                        name: country
+                    }));
+                } else {
+                    availableFlags.value = [{ id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }];
+                }
+            } else {
+                // If Formable, fetch the Roblox thumbnail based on FlagId
+                if (!newFlagId) {
+                    availableFlags.value = [{ id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }];
+                    return;
+                }
+
+                // Extract the numeric ID from the URL or raw input
+                const match = newFlagId.match(/\d+/);
+                const parsedId = match ? match[0] : newFlagId;
+
+                flagAbortController?.abort();
+                flagAbortController = new AbortController();
+
+                try {
+                    const data = await $fetch(`/api/roblox-thumbnail?assetid=${encodeURIComponent(parsedId)}&size=700x700`, {
+                        signal: flagAbortController.signal
+                    });
+                    availableFlags.value = [{ id: parsedId, src: data.imageUrl, name: 'Formable Flag' }];
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                    // Fallback to unknown flag if the fetch fails
+                    availableFlags.value = [{ id: 'error', src: unknownFlag, name: 'Unknown Flag' }];
+                }
+            }
+        },
+        { immediate: true, deep: true }
+    );
 
     const nationFlagSrc = ref(availableFlags.value[0].src);
 
@@ -108,17 +152,35 @@
             </BFormGroup>
         </BCol>
 
-        <BCol md="12">
+        <BCol md="6">
             <BFormGroup label="Button Title:" class="fw-bold">
                 <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
-                    :state="state.buttonTitle ? null : false" />
+                    :state="state.buttonTitle ? null : false"  />
             </BFormGroup>
         </BCol>
 
-        <BCol md="12">
+        <BCol md="6">
             <BFormGroup label="Button Description:" class="fw-bold">
                 <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="2" max-rows="8"
                     :state="state.buttonDescription ? null : false" />
+            </BFormGroup>
+        </BCol>
+
+        <BCol md="3">
+            <BFormGroup label="Alert Title:" class="fw-bold">
+                <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
+            </BFormGroup>
+        </BCol>
+
+        <BCol md="6">
+            <BFormGroup label="Alert Description:" class="fw-bold">
+                <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
+            </BFormGroup>
+        </BCol>
+
+        <BCol md="3">
+            <BFormGroup label="Alert Button Text:" class="fw-bold">
+                <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
             </BFormGroup>
         </BCol>
 
@@ -139,7 +201,7 @@
         <BCol md="6">
             <BFormGroup label="Tiles Required to Form:" class="fw-bold">
                 <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
-                    placeholder="e.g. UnitedStates.001, Switzerland.003" emptyMessage="No matching tiles found">
+                    placeholder="e.g. UnitedStates.001, Swisterland.003" emptyMessage="No matching tiles found">
                     <template #chip="{ item, remove }">
                         <span class="badge bg-primary d-flex align-items-center py-1 ps-2 pe-2"
                             style="font-size: 0.85rem;">
@@ -177,27 +239,9 @@
             </BFormGroup>
         </BCol>
 
-        <BCol md="4">
-            <BFormGroup label="Alert Title:" class="fw-bold">
-                <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="4">
-            <BFormGroup label="Alert Button Text:" class="fw-bold">
-                <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="12">
-            <BFormGroup label="Alert Description:" class="fw-bold">
-                <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
-            </BFormGroup>
-        </BCol>
-
         <BCol md="12">
             <BFormGroup label="Modifiers:" class="fw-bold">
-                <BFormInput v-model="state.Modifiers" placeholder="Modifiers (comma-separated)" />
+                <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
             </BFormGroup>
         </BCol>
     </BRow>

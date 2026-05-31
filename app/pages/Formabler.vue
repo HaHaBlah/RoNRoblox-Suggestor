@@ -5,7 +5,7 @@
     meta: [
       { property: 'og:title', content: 'Formabler' },
       { property: 'og:url', content: 'https://ronroblox-suggestor.pages.dev/Formabler' },
-      { property: 'og:description', content: 'A tool to post write formables and missions.&#10;Original by 3meraldk.' }
+      { property: 'og:description', content: 'A tool to write formables and missions.&#10;Original by 3meraldk.' }
     ]
   })
 </script>
@@ -22,7 +22,7 @@
       </BRow>
 
       <BRow class="ron-card mt-4 text-center">
-        <p>Original by 3meraldk.</p>
+        <p><NuxtLink to="https://3meraldk.github.io/ron-formabler/">Original</NuxtLink> by 3meraldk.</p>
         <p>Updates based on the following wiki modules:</p>
         <ul class="list-unstyled">
           <li><NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Lawnames">Module:Lawnames</NuxtLink></li>
