@@ -114,7 +114,7 @@
 </script>
 
 <template>
-    <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT WORK YET</h1>
+    <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT HAVE EVERY FEATURE YET</h1>
     <div class="text-center mb-4 mt-3">
         <BButton variant="primary" class="mb-3" @click="toggleFormableType">
             {{ state.type }}
@@ -132,138 +132,178 @@
     </div>
 
     <BRow>
-        <BCol md="12">
-            <BFormGroup :label="`${state.type} Name:`" class="fw-bold">
-                <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
-                    :state="state.name ? null : false" />
-            </BFormGroup>
+        <!-- SECTION 1: General Information -->
+        <BCol md="12" class="mb-4">
+            <BCard title="General Information" class="shadow-sm border-0">
+                <BRow>
+                    <BCol md="12">
+                        <BFormGroup :label="`${state.type} Name:`" class="fw-bold mb-3">
+                            <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
+                                :state="state.name ? null : false" />
+                        </BFormGroup>
+                    </BCol>
+
+                    <BCol md="6" v-if="state.type === 'Formable'">
+                        <BFormGroup label="Demonym:" class="fw-bold mb-0">
+                            <BFormInput v-model="state.Demonym" placeholder="Demonym" />
+                        </BFormGroup>
+                    </BCol>
+
+                    <BCol md="6" v-if="state.type === 'Formable'">
+                        <BFormGroup label="Link To Flag:" class="fw-bold mb-0">
+                            <BFormInput v-model="state.FlagId"
+                                placeholder="e.g. https://create.roblox.com/store/asset/111582974903309" />
+                        </BFormGroup>
+                    </BCol>
+                </BRow>
+            </BCard>
         </BCol>
 
-        <BCol md="12" v-if="state.type === 'Formable'">
-            <BFormGroup label="Demonym:" class="fw-bold">
-                <BFormInput v-model="state.Demonym" placeholder="Demonym" />
-            </BFormGroup>
+        <!-- SECTION 2: Display & Alerts -->
+        <BCol md="12" class="mb-4">
+            <BCard title="In-Game Display & Alerts" class="shadow-sm border-0">
+                <BRow>
+                    <!-- Button Configuration -->
+                    <BCol md="6">
+                        <BFormGroup label="Button Title:" class="fw-bold mb-3">
+                            <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
+                                :state="state.buttonTitle ? null : false" />
+                        </BFormGroup>
+                        <BFormGroup label="Button Description:" class="fw-bold mb-3">
+                            <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="4"
+                                max-rows="8" :state="state.buttonDescription ? null : false" />
+                        </BFormGroup>
+                    </BCol>
+
+                    <!-- Alert Configuration -->
+                    <BCol md="6">
+                        <BRow>
+                            <BCol md="12">
+                                <BFormGroup label="Alert Title:" class="fw-bold mb-3">
+                                    <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="12">
+                                <BFormGroup label="Alert Button Text:" class="fw-bold mb-3">
+                                    <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="12">
+                                <BFormGroup label="Alert Description:" class="fw-bold mb-0">
+                                    <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description"
+                                        rows="2" max-rows="8" />
+                                </BFormGroup>
+                            </BCol>
+                        </BRow>
+                    </BCol>
+                </BRow>
+            </BCard>
         </BCol>
 
-        <BCol md="12" v-if="state.type === 'Formable'">
-            <BFormGroup label="Link To Flag:" class="fw-bold">
-                <BFormInput v-model="state.FlagId"
-                    placeholder="e.g. https://create.roblox.com/store/asset/111582974903309" />
-            </BFormGroup>
+        <!-- SECTION 3: Requirements -->
+        <BCol md="12" class="mb-4">
+            <BCard title="Requirements" class="shadow-sm border-0">
+                <BRow>
+                    <BCol md="12">
+                        <BFormGroup label="Countries that can form:" class="fw-bold mb-3">
+                            <CompTagInput v-model="state.CountriesCanForm" :options="allCountriesList"
+                                placeholder="e.g. United States, Scotland, Byzantine Empire"
+                                :state="state.CountriesCanForm.length > 0 ? null : false" />
+                        </BFormGroup>
+                    </BCol>
+
+                    <BCol md="6">
+                        <BFormGroup label="Countries Required to Form:" class="fw-bold mb-3">
+                            <CompTagInput v-model="state.RequiredCountries" :options="baseCountriesList"
+                                placeholder="e.g. United States, Scotland, Algeria"
+                                :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false" />
+                        </BFormGroup>
+                    </BCol>
+
+                    <BCol md="6">
+                        <BFormGroup label="Tiles Required to Form:" class="fw-bold mb-3">
+                            <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
+                                placeholder="e.g. UnitedStates.001, Swisterland.003"
+                                emptyMessage="No matching tiles found"
+                                :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
+                                :clearOnSelect="false">
+                                <template #chip="{ item, remove }">
+                                    <span
+                                        class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                        style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                        <span class="d-flex me-2">
+                                            <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
+                                                :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
+                                                :title="nation" class="border bg-ron-button-dark shadow-sm"
+                                                style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                :style="{ zIndex: nIdx }" loading="lazy">
+                                        </span>
+                                        {{ item }}
+
+                                        <button type="button" class="btn-close btn-close-white ms-2"
+                                            style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                            tabindex="-1"></button>
+                                    </span>
+                                </template>
+
+                                <template #dropdown-item="{ item }">
+                                    <span class="d-flex me-3 ps-2">
+                                        <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
+                                            :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
+                                            :title="nation" class="border bg-ron-button-dark shadow-sm"
+                                            style="width: 36px; height: 24px; object-fit: cover; margin-left: -12px; position: relative;"
+                                            :style="{ zIndex: nIdx }" loading="lazy">
+                                    </span>
+                                    {{ item }}
+                                </template>
+                            </CompTagInput>
+                        </BFormGroup>
+                    </BCol>
+
+                    <BCol md="6">
+                        <BFormGroup label="Exclusive Formables:" class="fw-bold mb-0">
+                            <CompTagInput v-model="state.ExclusiveFormables" :options="formablesList"
+                                placeholder="e.g. European Union" emptyMessage="No matching formables found" />
+                        </BFormGroup>
+                    </BCol>
+
+
+                </BRow>
+            </BCard>
         </BCol>
 
-        <BCol md="6">
-            <BFormGroup label="Button Title:" class="fw-bold">
-                <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
-                    :state="state.buttonTitle ? null : false" />
-            </BFormGroup>
-        </BCol>
+        <!-- SECTION 4: Modifiers & Attributes -->
 
-        <BCol md="6">
-            <BFormGroup label="Button Description:" class="fw-bold">
-                <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="2" max-rows="8"
-                    :state="state.buttonDescription ? null : false" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="3">
-            <BFormGroup label="Alert Title:" class="fw-bold">
-                <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="6">
-            <BFormGroup label="Alert Description:" class="fw-bold">
-                <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description" rows="2" max-rows="8" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="3">
-            <BFormGroup label="Alert Button Text:" class="fw-bold">
-                <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="12">
-            <BFormGroup label="Countries that can form:" class="fw-bold">
-                <CompTagInput v-model="state.CountriesCanForm" :options="allCountriesList"
-                    placeholder="e.g. United States, Scotland, Byzantine Empire"
-                    :state="state.CountriesCanForm.length > 0 ? null : false" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="6">
-            <BFormGroup label="Countries Required to Form:" class="fw-bold">
-                <CompTagInput v-model="state.RequiredCountries" :options="baseCountriesList"
-                    placeholder="e.g. United States, Scotland, Algeria"
-                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="6">
-            <BFormGroup label="Tiles Required to Form:" class="fw-bold">
-                <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
-                    placeholder="e.g. UnitedStates.001, Swisterland.003" emptyMessage="No matching tiles found"
-                    :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
-                    :clearOnSelect="false">
-                    <template #chip="{ item, remove }">
-                        <span class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
-                            style="font-size: 0.85rem;" @click.stop="remove()">
-
-                            <span class="d-flex me-2">
-                                <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
-                                    :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation" :title="nation"
-                                    class="border bg-ron-button-dark shadow-sm"
-                                    style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                    :style="{ zIndex: nIdx }" loading="lazy">
-                            </span>
-                            {{ item }}
-
-                            <button type="button" class="btn-close btn-close-white ms-2"
-                                style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
-                                tabindex="-1"></button>
-                        </span>
-                    </template>
-
-                    <template #dropdown-item="{ item }">
-                        <span class="d-flex me-3 ps-2">
-                            <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
-                                :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation" :title="nation"
-                                class="border bg-ron-button-dark shadow-sm"
-                                style="width: 36px; height: 24px; object-fit: cover; margin-left: -12px; position: relative;"
-                                :style="{ zIndex: nIdx }" loading="lazy">
-                        </span>
-                        {{ item }}
-                    </template>
-                </CompTagInput>
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="12">
-            <BFormGroup label="Exclusive Formables:" class="fw-bold">
-                <CompTagInput v-model="state.ExclusiveFormables" :options="formablesList"
-                    placeholder="e.g. European Union" emptyMessage="No matching formables found" />
-            </BFormGroup>
-        </BCol>
-
-        <BCol md="12">
-            <BFormGroup label="Modifiers:" class="fw-bold">
-                <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
-            </BFormGroup>
+        <BCol md="12" class="mb-4">
+            <BCard title="Modifiers & Attributes" class="shadow-sm border-0">
+                <BRow>
+                    <BCol md="12">
+                        <BFormGroup label="Modifiers:" class="fw-bold mb-0">
+                            <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
+                        </BFormGroup>
+                    </BCol>
+                </BRow>
+            </BCard>
         </BCol>
     </BRow>
 
-    <CompOutput :content="outputText">
-        <div v-if="validation.hasErrors" class="text-red pt-2">
-            <h6 class="fw-bold mb-3">Missing required inputs:</h6>
-            <ul class="mb-0 text-start d-inline-block">
-                <li v-for="(error, idx) in validation.errors" :key="idx">{{ error }}</li>
-            </ul>
-        </div>
-        <div v-else>
-            Please input the {{ state.type }} Name and fill out all required fields.
-        </div>
-    </CompOutput>
+    <!-- Output & Validation Section -->
+    <BRow>
+        <BCol md="12">
+            <CompOutput :content="outputText">
+                <div v-if="validation.hasErrors" class="text-red pt-2">
+                    <h6 class="fw-bold mb-3">Missing required inputs:</h6>
+                    <ul class="mb-0 text-start d-inline-block">
+                        <li v-for="(error, idx) in validation.errors" :key="idx">{{ error }}</li>
+                    </ul>
+                </div>
+                <div v-else>
+                    Please input the {{ state.type }} Name and fill out all required fields.
+                </div>
+            </CompOutput>
+        </BCol>
+    </BRow>
 </template>
 
 <style scoped>
