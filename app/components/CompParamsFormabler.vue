@@ -184,14 +184,14 @@
                                 </BFormGroup>
                             </BCol>
                             <BCol md="12">
-                                <BFormGroup label="Alert Button Text:" class="fw-bold mb-3">
-                                    <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
-                                </BFormGroup>
-                            </BCol>
-                            <BCol md="12">
                                 <BFormGroup label="Alert Description:" class="fw-bold mb-0">
                                     <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description"
                                         rows="2" max-rows="8" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="12">
+                                <BFormGroup label="Alert Button Text:" class="fw-bold mb-3">
+                                    <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
                                 </BFormGroup>
                             </BCol>
                         </BRow>
