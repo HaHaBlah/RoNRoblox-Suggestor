@@ -4,17 +4,18 @@ import { computed, type Ref } from "vue";
 export interface FormablerState {
   type: string;
   name: string;
-  demonym: string;
-  flagId: string;
+  Demonym: string;
+  FlagId: string;
   buttonTitle: string;
   buttonDescription: string;
   alertTitle: string;
   alertDescription: string;
   alertButton: string;
-  countriesThatCanForm: string[]; // Updated type
-  requiredNations: string[]; // Updated type
-  exclusiveFormables: string;
-  modifiers: string;
+  CountriesCanForm: string[]; 
+  RequiredCountries: string[]; 
+  RequiredTiles: string[];
+  exclusiveFormables: string[]; 
+  Modifiers: string[];
 }
 
 export function FormablerOutput(state: Ref<FormablerState>) {
@@ -42,8 +43,8 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     if (!state.value.buttonDescription?.trim())
       errors.push("Button Description");
     if (
-      !state.value.countriesThatCanForm ||
-      state.value.countriesThatCanForm.length === 0
+      !state.value.CountriesCanForm ||
+      state.value.CountriesCanForm.length === 0
     )
       errors.push("Countries That Can Form");
 
@@ -58,16 +59,16 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     const s = state.value;
     const isMission = s.type === "Mission";
-    const nameKey = isMission ? "MissionName" : "FormableName";
+    const nameKey = isMission ? "MissionName" : "name";
 
     const lines: string[] = [];
     lines.push(`{`);
     lines.push(`${TAB}${nameKey} = "${s.name}",`);
 
-    const canForm = toLuaArray(s.countriesThatCanForm);
+    const canForm = toLuaArray(s.CountriesCanForm);
     if (canForm) lines.push(`${TAB}CountriesCanForm = ${canForm},`);
 
-    const reqNations = toLuaArray(s.requiredNations);
+    const reqNations = toLuaArray(s.RequiredCountries);
     if (reqNations) lines.push(`${TAB}RequiredCountries = ${reqNations},`);
 
     const exclusive = toLuaArray(s.exclusiveFormables);
@@ -93,7 +94,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     }
 
     // Parse modifiers assuming a default length of -1 (indefinite)
-    const mods = s.modifiers
+    const mods = s.Modifiers
       .split(",")
       .map((m) => m.trim())
       .filter(Boolean);
@@ -117,19 +118,21 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     const metaData: string[] = [];
     if (state.value.type === "Formable") {
-      if (state.value.demonym)
-        metaData.push(`**Demonym:** ${state.value.demonym}`);
-      if (state.value.flagId)
-        metaData.push(`**Flag ID:** rbxassetid://${state.value.flagId}`);
+      if (state.value.Demonym)
+        metaData.push(`**Demonym:** [${state.value.Demonym}]`);
+      if (state.value.FlagId)
+        metaData.push(`**Flag:** [https://create.roblox.com/store/asset/${state.value.FlagId}]`);
     }
 
     return [
       "```lua",
       luaCode.value,
+      "--[[",
+      metaData.length ? metaData.join("\n") : "",
+      "]]",
       "```",
       "--[[",
-      "# __Metadata__",
-      metaData.length ? metaData.join("\n") : "None",
+      // "# __Other__",
       "> -# *Made using [Formabler](https://ronroblox-suggestor.pages.dev/Formabler/ )*",
       "]]",
     ].join("\n");

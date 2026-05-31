@@ -22,6 +22,7 @@ $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "yellow": $ron-yellow,
       "grey-active": $ron-button-dark-active,
       "mixed": $ron-green,
+      "ron-button-dark": $ron-button-dark
     ));
 
 // 4. Override Global Button Variables (Replaces your .ron-button class)
