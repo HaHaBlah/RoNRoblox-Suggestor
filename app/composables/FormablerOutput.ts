@@ -14,7 +14,7 @@ export interface FormablerState {
   CountriesCanForm: string[]; 
   RequiredCountries: string[]; 
   RequiredTiles: string[];
-  exclusiveFormables: string[]; 
+  ExclusiveFormables: string[]; 
   Modifiers: string[];
 }
 
@@ -74,7 +74,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     const reqTiles = toLuaArray(s.RequiredTiles);
     if (reqTiles) lines.push(`${TAB}RequiredTiles = ${reqTiles},`);
 
-    const exclusive = toLuaArray(s.exclusiveFormables);
+    const exclusive = toLuaArray(s.ExclusiveFormables);
     if (exclusive) lines.push(`${TAB}ExclusiveFormables = ${exclusive},`);
 
     lines.push(`${TAB}FormableButton = {`);
