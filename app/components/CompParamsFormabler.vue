@@ -33,7 +33,13 @@
         RequiredCountries: [],
         RequiredTiles: [],
         ExclusiveFormables: [],
-        Modifiers: ''
+        Modifiers: '',
+
+        // CustomAttributes
+        DoNotClearModifiers: '',
+        Stability_Gain: '',
+        PoliticalPower_Gain: '',
+        Stability_Requirement: '',
     });
 
     const stateRef = computed(() => state);
@@ -111,6 +117,12 @@
             nationFlagSrc.value = selectedFlag.src;
         }
     };
+
+    // Accordion/Collapse state
+    const isGeneralInfoOpen = ref(true);
+    const isDisplayAlertsOpen = ref(true);
+    const isRequirementsOpen = ref(true);
+    const isModifiersOpen = ref(true);
 </script>
 
 <template>
@@ -132,158 +144,211 @@
     </div>
 
     <BRow>
-        <!-- SECTION 1: General Information -->
+        <!-- General Information -->
         <BCol md="12" class="mb-4">
-            <BCard title="General Information" class="shadow-sm border-0">
-                <BRow>
-                    <BCol md="12">
-                        <BFormGroup :label="`${state.type} Name:`" class="fw-bold mb-3">
-                            <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
-                                :state="state.name ? null : false" />
-                        </BFormGroup>
-                    </BCol>
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isGeneralInfoOpen = !isGeneralInfoOpen">
+                        <h5 class="mb-0 fw-bold text-reset">General Information</h5>
+                        <span class="text-reset">{{ isGeneralInfoOpen ? '▼' : '▶' }}</span>
+                    </BButton>
+                </BCardHeader>
 
-                    <BCol md="6" v-if="state.type === 'Formable'">
-                        <BFormGroup label="Demonym:" class="fw-bold mb-0">
-                            <BFormInput v-model="state.Demonym" placeholder="Demonym" />
-                        </BFormGroup>
-                    </BCol>
-
-                    <BCol md="6" v-if="state.type === 'Formable'">
-                        <BFormGroup label="Link To Flag:" class="fw-bold mb-0">
-                            <BFormInput v-model="state.FlagId"
-                                placeholder="e.g. https://create.roblox.com/store/asset/111582974903309" />
-                        </BFormGroup>
-                    </BCol>
-                </BRow>
-            </BCard>
-        </BCol>
-
-        <!-- SECTION 2: Display & Alerts -->
-        <BCol md="12" class="mb-4">
-            <BCard title="In-Game Display & Alerts" class="shadow-sm border-0">
-                <BRow>
-                    <!-- Button Configuration -->
-                    <BCol md="6">
-                        <BFormGroup label="Button Title:" class="fw-bold mb-3">
-                            <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
-                                :state="state.buttonTitle ? null : false" />
-                        </BFormGroup>
-                        <BFormGroup label="Button Description:" class="fw-bold mb-3">
-                            <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description" rows="4"
-                                max-rows="8" :state="state.buttonDescription ? null : false" />
-                        </BFormGroup>
-                    </BCol>
-
-                    <!-- Alert Configuration -->
-                    <BCol md="6">
+                <BCollapse v-model="isGeneralInfoOpen">
+                    <BCardBody class="position-relative p-3 ">
                         <BRow>
                             <BCol md="12">
-                                <BFormGroup label="Alert Title:" class="fw-bold mb-3">
-                                    <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
+                                <BFormGroup :label="`${state.type} Name:`" class="fw-bold mb-3">
+                                    <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
+                                        :state="state.name ? null : false" />
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="12">
-                                <BFormGroup label="Alert Description:" class="fw-bold mb-0">
-                                    <BFormTextarea v-model="state.alertDescription" placeholder="Alert Description"
-                                        rows="2" max-rows="8" />
+
+                            <BCol md="6" v-if="state.type === 'Formable'">
+                                <BFormGroup label="Demonym:" class="fw-bold mb-0">
+                                    <BFormInput v-model="state.Demonym" placeholder="Demonym" />
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="12">
-                                <BFormGroup label="Alert Button Text:" class="fw-bold mb-3">
-                                    <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
+
+                            <BCol md="6" v-if="state.type === 'Formable'">
+                                <BFormGroup label="Link To Flag:" class="fw-bold mb-0">
+                                    <BFormInput v-model="state.FlagId"
+                                        placeholder="e.g. https://create.roblox.com/store/asset/111582974903309" />
                                 </BFormGroup>
                             </BCol>
                         </BRow>
-                    </BCol>
-                </BRow>
+                    </BCardBody>
+                </BCollapse>
             </BCard>
         </BCol>
 
-        <!-- SECTION 3: Requirements -->
         <BCol md="12" class="mb-4">
-            <BCard title="Requirements" class="shadow-sm border-0">
-                <BRow>
-                    <BCol md="12">
-                        <BFormGroup label="Countries that can form:" class="fw-bold mb-3">
-                            <CompTagInput v-model="state.CountriesCanForm" :options="allCountriesList"
-                                placeholder="e.g. United States, Scotland, Byzantine Empire"
-                                :state="state.CountriesCanForm.length > 0 ? null : false" />
-                        </BFormGroup>
-                    </BCol>
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isDisplayAlertsOpen = !isDisplayAlertsOpen">
+                        <h5 class="mb-0 fw-bold text-reset">In-Game Display & Alerts</h5>
+                        <span class="text-reset">{{ isDisplayAlertsOpen ? '▼' : '▶' }}</span>
+                    </BButton>
+                </BCardHeader>
 
-                    <BCol md="6">
-                        <BFormGroup label="Countries Required to Form:" class="fw-bold mb-3">
-                            <CompTagInput v-model="state.RequiredCountries" :options="baseCountriesList"
-                                placeholder="e.g. United States, Scotland, Algeria"
-                                :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false" />
-                        </BFormGroup>
-                    </BCol>
+                <BCollapse v-model="isDisplayAlertsOpen">
+                    <BCardBody class="position-relative p-3 ">
+                        <BRow>
+                            <BCol md="6">
+                                <BFormGroup label="Button Title:" class="fw-bold mb-3">
+                                    <BFormInput v-model="state.buttonTitle" placeholder="Button Title"
+                                        :state="state.buttonTitle ? null : false" />
+                                </BFormGroup>
+                                <BFormGroup label="Button Description:" class="fw-bold mb-3">
+                                    <BFormTextarea v-model="state.buttonDescription" placeholder="Button Description"
+                                        rows="4" max-rows="8" :state="state.buttonDescription ? null : false" />
+                                </BFormGroup>
+                            </BCol>
 
-                    <BCol md="6">
-                        <BFormGroup label="Tiles Required to Form:" class="fw-bold mb-3">
-                            <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
-                                placeholder="e.g. UnitedStates.001, Swisterland.003"
-                                emptyMessage="No matching tiles found"
-                                :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
-                                :clearOnSelect="false">
-                                <template #chip="{ item, remove }">
-                                    <span
-                                        class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
-                                        style="font-size: 0.85rem;" @click.stop="remove()">
-
-                                        <span class="d-flex me-2">
-                                            <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
-                                                :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
-                                                :title="nation" class="border bg-ron-button-dark shadow-sm"
-                                                style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                                :style="{ zIndex: nIdx }" loading="lazy">
-                                        </span>
-                                        {{ item }}
-
-                                        <button type="button" class="btn-close btn-close-white ms-2"
-                                            style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
-                                            tabindex="-1"></button>
-                                    </span>
-                                </template>
-
-                                <template #dropdown-item="{ item }">
-                                    <span class="d-flex me-3 ps-2">
-                                        <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
-                                            :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
-                                            :title="nation" class="border bg-ron-button-dark shadow-sm"
-                                            style="width: 36px; height: 24px; object-fit: cover; margin-left: -12px; position: relative;"
-                                            :style="{ zIndex: nIdx }" loading="lazy">
-                                    </span>
-                                    {{ item }}
-                                </template>
-                            </CompTagInput>
-                        </BFormGroup>
-                    </BCol>
-
-                    <BCol md="6">
-                        <BFormGroup label="Exclusive Formables:" class="fw-bold mb-0">
-                            <CompTagInput v-model="state.ExclusiveFormables" :options="formablesList"
-                                placeholder="e.g. European Union" emptyMessage="No matching formables found" />
-                        </BFormGroup>
-                    </BCol>
-
-
-                </BRow>
+                            <BCol md="6">
+                                <BRow>
+                                    <BCol md="12">
+                                        <BFormGroup label="Alert Title:" class="fw-bold mb-3">
+                                            <BFormInput v-model="state.alertTitle" placeholder="Alert Title" />
+                                        </BFormGroup>
+                                    </BCol>
+                                    <BCol md="12">
+                                        <BFormGroup label="Alert Description:" class="fw-bold mb-0">
+                                            <BFormTextarea v-model="state.alertDescription"
+                                                placeholder="Alert Description" rows="2" max-rows="8" />
+                                        </BFormGroup>
+                                    </BCol>
+                                    <BCol md="12">
+                                        <BFormGroup label="Alert Button Text:" class="fw-bold mb-3">
+                                            <BFormInput v-model="state.alertButton" placeholder="Ending Statement" />
+                                        </BFormGroup>
+                                    </BCol>
+                                </BRow>
+                            </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCollapse>
             </BCard>
         </BCol>
 
-        <!-- SECTION 4: Modifiers & Attributes -->
+        <!-- Section 3: Requirements -->
+        <BCol md="12" class="mb-4">
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isRequirementsOpen = !isRequirementsOpen">
+                        <h5 class="mb-0 fw-bold text-reset">Requirements</h5>
+                        <span class="text-reset">{{ isRequirementsOpen ? '▼' : '▶' }}</span>
+                    </BButton>
+                </BCardHeader>
+
+                <BCollapse v-model="isRequirementsOpen">
+                    <BCardBody class="position-relative p-3 ">
+                        <BRow>
+                            <BCol md="12">
+                                <BFormGroup label="Countries that can form:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.CountriesCanForm" :options="allCountriesList"
+                                        placeholder="e.g. United States, Scotland, Byzantine Empire"
+                                        :state="state.CountriesCanForm.length > 0 ? null : false" />
+                                </BFormGroup>
+                            </BCol>
+
+                            <BCol md="6">
+                                <BFormGroup label="Countries Required to Form:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.RequiredCountries" :options="baseCountriesList"
+                                        placeholder="e.g. United States, Scotland, Algeria"
+                                        :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false" />
+                                </BFormGroup>
+                            </BCol>
+
+                            <BCol md="6">
+                                <BFormGroup label="Tiles Required to Form:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.RequiredTiles" :options="allTilesList"
+                                        placeholder="e.g. UnitedStates.001, Swisterland.003"
+                                        emptyMessage="No matching tiles found"
+                                        :state="(state.RequiredCountries.length > 0 || state.RequiredTiles.length > 0) ? null : false"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy">
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <span class="d-flex me-3 ps-2">
+                                                <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
+                                                    :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
+                                                    :title="nation" class="border bg-ron-button-dark shadow-sm"
+                                                    style="width: 36px; height: 24px; object-fit: cover; margin-left: -12px; position: relative;"
+                                                    :style="{ zIndex: nIdx }" loading="lazy">
+                                            </span>
+                                            {{ item }}
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+
+                            <BCol md="6">
+                                <BFormGroup label="Exclusive Formables:" class="fw-bold mb-0">
+                                    <CompTagInput v-model="state.ExclusiveFormables" :options="formablesList"
+                                        placeholder="e.g. European Union" emptyMessage="No matching formables found" />
+                                </BFormGroup>
+                            </BCol>
+
+                            <BCol md="6">
+                                <BFormGroup label="Minimum Stability Requirement:" class="fw-bold mb-3">
+                                    <BFormInput type="number" min="0" max="100" v-model="state.Stability_Requirement"
+                                        placeholder="Minimum Stability Requirement" />
+                                </BFormGroup>
+                            </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCollapse>
+            </BCard>
+        </BCol>
 
         <BCol md="12" class="mb-4">
-            <BCard title="Modifiers & Attributes" class="shadow-sm border-0">
-                <BRow>
-                    <BCol md="12">
-                        <BFormGroup label="Modifiers:" class="fw-bold mb-0">
-                            <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
-                        </BFormGroup>
-                    </BCol>
-                </BRow>
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isModifiersOpen = !isModifiersOpen">
+                        <h5 class="mb-0 fw-bold text-reset">Modifiers & Attributes</h5>
+                        <span class="text-reset">{{ isModifiersOpen ? '▼' : '▶' }}</span>
+                    </BButton>
+                </BCardHeader>
+
+                <BCollapse v-model="isModifiersOpen">
+                    <BCardBody class="position-relative p-3 ">
+                        <BRow>
+                            <BCol md="12">
+                                <BFormGroup label="Modifiers:" class="fw-bold mb-0">
+                                    <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
+                                </BFormGroup>
+                            </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCollapse>
             </BCard>
         </BCol>
     </BRow>

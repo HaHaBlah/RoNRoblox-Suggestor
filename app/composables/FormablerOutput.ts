@@ -15,12 +15,13 @@ export interface FormablerState {
   RequiredCountries: string[];
   RequiredTiles: string[];
   ExclusiveFormables: string[];
-  Modifiers: string[];
-  // CustomAttributes
-  DoNotClearModifiers: boolean;
-  Stability_Gain: number;
-  PoliticalPower_Gain: number;
-  Stability_Requirement: number;
+  Modifiers: string; // Updated to match reactive state type
+
+  // CustomAttributes (Allowing string here since Vue initializes them as '')
+  DoNotClearModifiers: boolean | string;
+  Stability_Gain: number | string;
+  PoliticalPower_Gain: number | string;
+  Stability_Requirement: number | string;
 }
 
 export function FormablerOutput(state: Ref<FormablerState>) {
@@ -112,17 +113,49 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     }
 
     // Parse modifiers assuming a default length of -1 (indefinite)
-    const mods = s.Modifiers.split(",")
-      .map((m) => m.trim())
-      .filter(Boolean);
-    if (mods.length > 0) {
-      lines.push(``);
-      lines.push(`${TAB}AddModifiers = {`);
-      for (const mod of mods) {
-        lines.push(`${TAB}${TAB}["${mod}"] = {`);
-        lines.push(`${TAB}${TAB}${TAB}Length = -1`);
-        lines.push(`${TAB}${TAB}},`);
+    if (s.Modifiers) {
+      const mods = s.Modifiers.split(",")
+        .map((m) => m.trim())
+        .filter(Boolean);
+
+      if (mods.length > 0) {
+        lines.push(``);
+        lines.push(`${TAB}AddModifiers = {`);
+        for (const mod of mods) {
+          lines.push(`${TAB}${TAB}["${mod}"] = {`);
+
+          if (s.DoNotClearModifiers) {
+            lines.push(`${TAB}${TAB}${TAB}Length = -1,`);
+            lines.push(`${TAB}${TAB}${TAB}DoNotClear = true,`);
+          } else {
+            lines.push(`${TAB}${TAB}${TAB}Length = -1`);
+          }
+
+          lines.push(`${TAB}${TAB}},`);
+        }
+        lines.push(`${TAB}},`);
       }
+    }
+
+    // CustomAttributes processing
+    const customAttributes: string[] = [];
+    if (s.Stability_Gain)
+      customAttributes.push(
+        `${TAB}${TAB}["Stability_Gain"] = ${s.Stability_Gain},`,
+      );
+    if (s.PoliticalPower_Gain)
+      customAttributes.push(
+        `${TAB}${TAB}["PoliticalPower_Gain"] = ${s.PoliticalPower_Gain},`,
+      );
+    if (s.Stability_Requirement)
+      customAttributes.push(
+        `${TAB}${TAB}["Stability_Requirement"] = ${s.Stability_Requirement},`,
+      );
+
+    if (customAttributes.length > 0) {
+      lines.push(``);
+      lines.push(`${TAB}CustomAttributes = {`);
+      lines.push(...customAttributes);
       lines.push(`${TAB}},`);
     }
 
@@ -143,18 +176,29 @@ export function FormablerOutput(state: Ref<FormablerState>) {
         );
     }
 
-    return [
-      "```lua",
-      luaCode.value,
-      "--[[",
-      metaData.length ? metaData.join("\n") : "",
-      "]]",
-      "```",
-      "--[[",
-      // "# __Other__",
+    const outputLines: string[] = [];
+
+    // Core Lua Output
+    outputLines.push("```lua");
+    outputLines.push(luaCode.value);
+
+    // Only render metadata braces if metadata strings exist
+    if (metaData.length > 0) {
+      outputLines.push("--[[");
+      outputLines.push(metaData.join("\n"));
+      outputLines.push("]]");
+    }
+
+    outputLines.push("```");
+
+    // Footer Watermark
+    outputLines.push("--[[");
+    outputLines.push(
       "> -# *Made using [Formabler](https://ronroblox-suggestor.pages.dev/Formabler/ )*",
-      "]]",
-    ].join("\n");
+    );
+    outputLines.push("]]");
+
+    return outputLines.join("\n");
   });
 
   return { outputText, validation };
