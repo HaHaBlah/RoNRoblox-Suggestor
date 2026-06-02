@@ -40,6 +40,9 @@
         Stability_Gain: '',
         PoliticalPower_Gain: '',
         Stability_Requirement: '',
+
+        // Metadata
+        SourcesDescription: ''
     });
 
     const stateRef = computed(() => state);
@@ -58,6 +61,30 @@
     const availableFlags = ref([
         { id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }
     ]);
+
+    let decalAbortController = null;
+
+    async function onFlagIdInput(value) {
+        state.FlagId = value;
+
+        const match = value.match(/\d+/);
+        if (!match) return;
+        const parsed = match[0];
+
+        decalAbortController?.abort();
+        decalAbortController = new AbortController();
+        const { signal } = decalAbortController;
+
+        try {
+            const data = await $fetch(`/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`, { signal });
+
+            if (data && data.imageId) {
+                state.FlagId = data.imageId;
+            }
+        } catch (err) {
+            if (err.name === 'AbortError') return;
+        }
+    }
 
     let flagAbortController = null;
 
@@ -144,7 +171,7 @@
     </div>
 
     <BRow>
-        <!-- General Information -->
+        <!--Section 1: General Information -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -152,7 +179,7 @@
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isGeneralInfoOpen = !isGeneralInfoOpen">
                         <h5 class="mb-0 fw-bold text-reset">General Information</h5>
-                        <span class="text-reset">{{ isGeneralInfoOpen ? '▼' : '▶' }}</span>
+                        <span class="text-reset">{{ isGeneralInfoOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
 
@@ -160,22 +187,28 @@
                     <BCardBody class="position-relative p-3 ">
                         <BRow>
                             <BCol md="12">
-                                <BFormGroup :label="`${state.type} Name:`" class="fw-bold mb-3">
+                                <BFormGroup :label="`${state.type} Name:`" class="fw-bold mb-1">
                                     <BFormInput v-model="state.name" :placeholder="`${state.type} Name`"
                                         :state="state.name ? null : false" />
                                 </BFormGroup>
                             </BCol>
 
                             <BCol md="6" v-if="state.type === 'Formable'">
-                                <BFormGroup label="Demonym:" class="fw-bold mb-0">
+                                <BFormGroup label="Demonym:" class="fw-bold mb-1">
                                     <BFormInput v-model="state.Demonym" placeholder="Demonym" />
                                 </BFormGroup>
                             </BCol>
 
                             <BCol md="6" v-if="state.type === 'Formable'">
-                                <BFormGroup label="Link To Flag:" class="fw-bold mb-0">
-                                    <BFormInput v-model="state.FlagId"
+                                <BFormGroup label="Link To Flag:" class="fw-bold mb-1">
+                                    <BFormInput :model-value="state.FlagId" @update:model-value="onFlagIdInput"
                                         placeholder="e.g. https://create.roblox.com/store/asset/111582974903309" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="12">
+                                <BFormGroup label="Sources/Description:" class="fw-bold mb-0">
+                                    <BFormTextarea v-model="state.SourcesDescription" placeholder="Sources/Description"
+                                        rows="1" max-rows="5" />
                                 </BFormGroup>
                             </BCol>
                         </BRow>
@@ -184,6 +217,7 @@
             </BCard>
         </BCol>
 
+        <!-- Section 2: In-Game Display & Alerts -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -191,7 +225,7 @@
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isDisplayAlertsOpen = !isDisplayAlertsOpen">
                         <h5 class="mb-0 fw-bold text-reset">In-Game Display & Alerts</h5>
-                        <span class="text-reset">{{ isDisplayAlertsOpen ? '▼' : '▶' }}</span>
+                        <span class="text-reset">{{ isDisplayAlertsOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
 
@@ -243,7 +277,7 @@
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isRequirementsOpen = !isRequirementsOpen">
                         <h5 class="mb-0 fw-bold text-reset">Requirements</h5>
-                        <span class="text-reset">{{ isRequirementsOpen ? '▼' : '▶' }}</span>
+                        <span class="text-reset">{{ isRequirementsOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
 
@@ -316,9 +350,9 @@
                             </BCol>
 
                             <BCol md="6">
-                                <BFormGroup label="Minimum Stability Requirement:" class="fw-bold mb-3">
+                                <BFormGroup label="Minimum Stability Required:" class="fw-bold mb-3">
                                     <BFormInput type="number" min="0" max="100" v-model="state.Stability_Requirement"
-                                        placeholder="Minimum Stability Requirement" />
+                                        placeholder="Minimum Stability Required" />
                                 </BFormGroup>
                             </BCol>
                         </BRow>
@@ -334,7 +368,7 @@
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isModifiersOpen = !isModifiersOpen">
                         <h5 class="mb-0 fw-bold text-reset">Modifiers & Attributes</h5>
-                        <span class="text-reset">{{ isModifiersOpen ? '▼' : '▶' }}</span>
+                        <span class="text-reset">{{ isModifiersOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
 

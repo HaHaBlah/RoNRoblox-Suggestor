@@ -17,10 +17,14 @@ export interface FormablerState {
   ExclusiveFormables: string[];
   Modifiers: string;
 
+  // Custom Attributes
   DoNotClearModifiers: boolean | string;
   Stability_Gain: number | string;
   PoliticalPower_Gain: number | string;
   Stability_Requirement: number | string;
+
+  // Metadata
+  SourcesDescription: string;
 }
 
 export function FormablerOutput(state: Ref<FormablerState>) {
@@ -166,10 +170,15 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     if (state.value.type === "Formable") {
       if (state.value.Demonym)
         metaData.push(`Demonym: [${state.value.Demonym}]`);
-      if (state.value.FlagId)
+      if (state.value.FlagId) {
+        // Extract just the numeric ID from the input string/URL
+        const match = state.value.FlagId.match(/\d+/);
+        const parsedId = match ? match[0] : state.value.FlagId;
+
         metaData.push(
-          `Flag: [https://create.roblox.com/store/asset/${state.value.FlagId}]`,
+          `Flag: [https://create.roblox.com/store/asset/${parsedId}]`,
         );
+      }
     }
 
     const outputLines: string[] = [];
@@ -186,6 +195,10 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     outputLines.push("```");
 
     outputLines.push("--[[");
+    if (state.value.SourcesDescription) {
+      outputLines.push("# __Description/Sources__");
+      outputLines.push(state.value.SourcesDescription);
+    }
     outputLines.push(
       "> -# *Made using [Formabler](https://ronroblox-suggestor.pages.dev/Formabler/ )*",
     );
