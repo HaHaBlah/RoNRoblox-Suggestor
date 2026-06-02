@@ -15,9 +15,8 @@ export interface FormablerState {
   RequiredCountries: string[];
   RequiredTiles: string[];
   ExclusiveFormables: string[];
-  Modifiers: string; // Updated to match reactive state type
+  Modifiers: string;
 
-  // CustomAttributes (Allowing string here since Vue initializes them as '')
   DoNotClearModifiers: boolean | string;
   Stability_Gain: number | string;
   PoliticalPower_Gain: number | string;
@@ -27,7 +26,6 @@ export interface FormablerState {
 export function FormablerOutput(state: Ref<FormablerState>) {
   const TAB = "\t";
 
-  // Helper to turn BOTH comma-separated strings AND arrays into Lua arrays: {"A", "B"}
   const toLuaArray = (input: string | string[]) => {
     if (!input || input.length === 0) return null;
 
@@ -54,7 +52,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     )
       errors.push("Countries That Can Form");
 
-    // NEW LOGIC: Ensure at least one of the two requirements is populated
     const hasReqCountries =
       state.value.RequiredCountries && state.value.RequiredCountries.length > 0;
     const hasReqTiles =
@@ -99,9 +96,10 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       `${TAB}${TAB}ButtonDescription = "${s.buttonDescription.replace(/"/g, '\\"')}",`,
     );
     lines.push(`${TAB}},`);
-    lines.push(``);
 
+    // FIX: Moved the blank line inside the conditional block
     if (s.alertTitle || s.alertDescription || s.alertButton) {
+      lines.push(``);
       lines.push(`${TAB}CustomAlert = {`);
       if (s.alertTitle) lines.push(`${TAB}${TAB}Title = "${s.alertTitle}",`);
       if (s.alertDescription)
@@ -112,7 +110,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       lines.push(`${TAB}},`);
     }
 
-    // Parse modifiers assuming a default length of -1 (indefinite)
     if (s.Modifiers) {
       const mods = s.Modifiers.split(",")
         .map((m) => m.trim())
@@ -137,7 +134,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       }
     }
 
-    // CustomAttributes processing
     const customAttributes: string[] = [];
     if (s.Stability_Gain)
       customAttributes.push(
@@ -178,11 +174,9 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     const outputLines: string[] = [];
 
-    // Core Lua Output
     outputLines.push("```lua");
     outputLines.push(luaCode.value);
 
-    // Only render metadata braces if metadata strings exist
     if (metaData.length > 0) {
       outputLines.push("--[[");
       outputLines.push(metaData.join("\n"));
@@ -191,7 +185,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     outputLines.push("```");
 
-    // Footer Watermark
     outputLines.push("--[[");
     outputLines.push(
       "> -# *Made using [Formabler](https://ronroblox-suggestor.pages.dev/Formabler/ )*",
