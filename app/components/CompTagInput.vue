@@ -85,29 +85,31 @@
 </script>
 
 <template>
-    <div class="form-control d-flex flex-wrap align-items-center gap-2" :class="{ 'is-invalid': state === false }">
-        <slot name="chip" v-for="(item, idx) in modelValue" :key="idx" :item="item" :remove="() => removeItem(idx)">
-            <span class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-1 pe-2 deletable-chip"
-                style="font-size: 0.85rem;" @click.stop="removeItem(idx)">
+    <div class="position-relative w-100">
 
-                <img :src="`/api/flag/${encodeURIComponent(item)}`" :alt="item" class="me-2 border bg-ron-button-dark"
-                    style="width: 24px; height: 16px; object-fit: cover;" loading="lazy">
-                {{ item }}
+        <div class="form-control d-flex flex-wrap align-items-center gap-2" :class="{ 'is-invalid': state === false }">
+            <slot name="chip" v-for="(item, idx) in modelValue" :key="idx" :item="item" :remove="() => removeItem(idx)">
+                <span class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-1 pe-2 deletable-chip"
+                    style="font-size: 0.85rem;" @click.stop="removeItem(idx)">
 
-                <button type="button" class="btn-close btn-close-white ms-2"
-                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove" tabindex="-1"></button>
-            </span>
-        </slot>
+                    <img :src="`/api/flag/${encodeURIComponent(item)}`" :alt="item"
+                        class="me-2 border bg-ron-button-dark" style="width: 24px; height: 16px; object-fit: cover;"
+                        loading="lazy">
+                    {{ item }}
 
-        <input type="text" class="border-0 flex-grow-1"
-            style="outline: none; min-width: 150px; background: transparent; color: inherit;" v-model="inputValue"
-            :placeholder="placeholder" @focus="showDropdown = true" @blur="handleBlur" @keydown="handleKeyDown"
-            autocomplete="off" />
-    </div>
+                    <button type="button" class="btn-close btn-close-white ms-2"
+                        style="font-size: 0.5em; pointer-events: none;" aria-label="Remove" tabindex="-1"></button>
+                </span>
+            </slot>
 
-    <div class="position-relative">
+            <input type="text" class="border-0 flex-grow-1"
+                style="outline: none; min-width: 150px; background: transparent; color: inherit;" v-model="inputValue"
+                :placeholder="placeholder" @focus="showDropdown = true" @blur="handleBlur" @keydown="handleKeyDown"
+                autocomplete="off" />
+        </div>
+
         <BListGroup v-if="showDropdown && filteredOptions.length > 0" class="position-absolute w-100 shadow-sm mt-1"
-            style="max-height: 200px; overflow-y: auto; z-index: 1050;">
+            style="max-height: 200px; overflow-y: auto; z-index: 1050; top: 100%; left: 0;">
             <BListGroupItem v-for="item in filteredOptions" :key="item" button class="d-flex align-items-center"
                 @mousedown.prevent="addItem(item)">
                 <slot name="dropdown-item" :item="item">
@@ -120,22 +122,21 @@
         </BListGroup>
 
         <BListGroup v-else-if="showDropdown && filteredOptions.length === 0"
-            class="position-absolute w-100 shadow-sm mt-1" style="z-index: 1050;">
+            class="position-absolute w-100 shadow-sm mt-1" style="z-index: 1050; top: 100%; left: 0;">
             <BListGroupItem disabled>
                 {{ emptyMessage }}
             </BListGroupItem>
         </BListGroup>
+
     </div>
 </template>
 
 <style scoped>
     .deletable-chip {
         cursor: pointer;
-        transition: background-color 0.15s ease-in-out;
     }
 
     .deletable-chip:hover {
-        background-color: #dc3545 !important;
-        /* Bootstrap danger red */
+        background-color: var(--ron-red) !important;
     }
 </style>

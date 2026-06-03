@@ -1,6 +1,17 @@
 // composables/FormablerOutput.ts
 import { computed, type Ref } from "vue";
 
+export interface ModifierEntry {
+  type: "existing" | "new";
+  Title: string;
+  Description: string;
+  IconID: string;
+  Effects: Record<string, any>;
+  length: number | string; // Ensure this can be a string for empty state
+  infinite: boolean;
+  doNotClear: boolean;
+}
+
 export interface FormablerState {
   type: string;
   name: string;
@@ -15,7 +26,7 @@ export interface FormablerState {
   RequiredCountries: string[];
   RequiredTiles: string[];
   ExclusiveFormables: string[];
-  Modifiers: string;
+  Modifiers: ModifierEntry[];
 
   // Custom Attributes
   DoNotClearModifiers: boolean | string;
@@ -65,6 +76,19 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       errors.push("Required Countries OR Required Tiles");
     }
 
+    // --- FIX 1: Length Validation for Modifiers ---
+    if (state.value.Modifiers && state.value.Modifiers.length > 0) {
+      state.value.Modifiers.forEach((mod) => {
+        if (
+          mod.length === "" ||
+          mod.length === null ||
+          mod.length === undefined
+        ) {
+          errors.push(`Length missing for Modifier: "${mod.Title}"`);
+        }
+      });
+    }
+
     return {
       hasErrors: errors.length > 0,
       errors,
@@ -101,7 +125,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     );
     lines.push(`${TAB}},`);
 
-    // FIX: Moved the blank line inside the conditional block
     if (s.alertTitle || s.alertDescription || s.alertButton) {
       lines.push(``);
       lines.push(`${TAB}CustomAlert = {`);
@@ -114,28 +137,23 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       lines.push(`${TAB}},`);
     }
 
-    if (s.Modifiers) {
-      const mods = s.Modifiers.split(",")
-        .map((m) => m.trim())
-        .filter(Boolean);
+    if (s.Modifiers && s.Modifiers.length > 0) {
+      lines.push(``);
+      lines.push(`${TAB}AddModifiers = {`);
+      for (const mod of s.Modifiers) {
+        lines.push(`${TAB}${TAB}["${mod.Title}"] = {`);
 
-      if (mods.length > 0) {
-        lines.push(``);
-        lines.push(`${TAB}AddModifiers = {`);
-        for (const mod of mods) {
-          lines.push(`${TAB}${TAB}["${mod}"] = {`);
-
-          if (s.DoNotClearModifiers) {
-            lines.push(`${TAB}${TAB}${TAB}Length = -1,`);
-            lines.push(`${TAB}${TAB}${TAB}DoNotClear = true,`);
-          } else {
-            lines.push(`${TAB}${TAB}${TAB}Length = -1`);
-          }
-
-          lines.push(`${TAB}${TAB}},`);
+        const len = mod.infinite ? -1 : mod.length;
+        if (mod.doNotClear) {
+          lines.push(`${TAB}${TAB}${TAB}Length = ${len},`);
+          lines.push(`${TAB}${TAB}${TAB}DoNotClear = true,`);
+        } else {
+          lines.push(`${TAB}${TAB}${TAB}Length = ${len}`);
         }
-        lines.push(`${TAB}},`);
+
+        lines.push(`${TAB}${TAB}},`);
       }
+      lines.push(`${TAB}},`);
     }
 
     const customAttributes: string[] = [];
@@ -171,7 +189,6 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       if (state.value.Demonym)
         metaData.push(`Demonym: [${state.value.Demonym}]`);
       if (state.value.FlagId) {
-        // Extract just the numeric ID from the input string/URL
         const match = state.value.FlagId.match(/\d+/);
         const parsedId = match ? match[0] : state.value.FlagId;
 
@@ -193,6 +210,48 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     }
 
     outputLines.push("```");
+
+    const newMods =
+      state.value.Modifiers?.filter((m) => m.type === "new") || [];
+    if (newMods.length > 0) {
+      outputLines.push("\n# --__New Modifiers__");
+      outputLines.push("```lua");
+      newMods.forEach((mod) => {
+        outputLines.push(`{`);
+        outputLines.push(`${TAB}Title = "${mod.Title}",`);
+        outputLines.push(
+          `${TAB}Description = "${mod.Description.replace(/"/g, '\\"')}",`,
+        );
+        if (mod.IconID) {
+          outputLines.push(`${TAB}Icon = {`);
+          outputLines.push(
+            `${TAB}${TAB}ID = "http://www.roblox.com/asset/?id=${mod.IconID}",`,
+          );
+          outputLines.push(`${TAB}${TAB}Color = Color3.fromRGB(255, 255, 255)`);
+          outputLines.push(`${TAB}},`);
+        }
+        outputLines.push(`${TAB}Effects = {`);
+
+        for (const [key, val] of Object.entries(mod.Effects)) {
+          let valueArr: any;
+          if (Array.isArray(val)) {
+            if (!val[1] || val[1] === "Base") {
+              valueArr = `{${val[0]}}`;
+            } else {
+              valueArr = `{${val[0]}, "${val[1]}"}`;
+            }
+          } else {
+            valueArr = val;
+          }
+
+          outputLines.push(`${TAB}${TAB}["${key}"] = ${valueArr},`);
+        }
+
+        outputLines.push(`${TAB}},`);
+        outputLines.push(`},`);
+      });
+      outputLines.push("```");
+    }
 
     outputLines.push("--[[");
     if (state.value.SourcesDescription) {

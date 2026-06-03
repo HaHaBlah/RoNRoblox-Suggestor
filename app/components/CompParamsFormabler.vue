@@ -1,4 +1,3 @@
-<!-- components/CompParamsFormabler.vue -->
 <script setup>
     import { computed, ref, reactive, watch } from 'vue'; // Added 'watch'
 
@@ -33,7 +32,7 @@
         RequiredCountries: [],
         RequiredTiles: [],
         ExclusiveFormables: [],
-        Modifiers: '',
+        Modifiers: [],
 
         // CustomAttributes
         DoNotClearModifiers: '',
@@ -54,7 +53,8 @@
         baseCountriesList,
         formablesList,
         allTilesList,
-        tileOwnersMap
+        tileOwnersMap,
+        modifiersList
     } = await FandomLists();
 
     // Dynamically populated flags
@@ -150,6 +150,121 @@
     const isDisplayAlertsOpen = ref(true);
     const isRequirementsOpen = ref(true);
     const isModifiersOpen = ref(true);
+
+    // --- MODIFIER UI LOGIC ---
+    const showNewModModal = ref(false);
+
+    const selectedExistingMods = ref([]);
+
+    const modifierTitlesList = computed(() => {
+        return modifiersList.value.map(m => m.Title);
+    });
+
+    const getModifierIcon = (title) => {
+        const mod = modifiersList.value.find(m => m.Title === title);
+        return mod ? mod.IconID : null;
+    };
+
+    // Reactive Icon Cache ---
+    const iconCache = reactive({});
+
+    const getIconUrl = (iconId) => {
+        if (!iconId) return '';
+
+        // Return cached URL or loading state if already requested
+        if (iconCache[iconId] !== undefined) {
+            return iconCache[iconId];
+        }
+
+        // Initialize as empty string to prevent duplicate fetches while loading
+        iconCache[iconId] = '';
+
+        // Fetch the actual CDN URL in the background
+        $fetch(`/api/roblox-thumbnail?assetid=${encodeURIComponent(iconId)}&size=150x150`)
+            .then(data => {
+                if (data && data.imageUrl) {
+                    iconCache[iconId] = data.imageUrl; // Triggers Vue to re-render the image
+                }
+            })
+            .catch(err => {
+                console.error(`Failed to fetch modifier icon for ${iconId}:`, err);
+            });
+
+        return '';
+    };
+
+    watch(selectedExistingMods, (newVal) => {
+        if (newVal && newVal.length > 0) {
+            newVal.forEach(title => {
+                const mod = modifiersList.value.find(m => m.Title === title);
+                if (mod) {
+                    state.Modifiers.push({
+                        type: 'existing',
+                        Title: mod.Title,
+                        Description: mod.Description,
+                        IconID: mod.IconID,
+                        Effects: mod.Effects,
+                        length: '',
+                        infinite: false,
+                        doNotClear: false
+                    });
+                }
+            });
+            // Immediately clear the input so it acts like a continuous search bar
+            selectedExistingMods.value = [];
+        }
+    }, { deep: true });
+
+    const newModForm = reactive({
+        Title: '',
+        Description: '',
+        IconID: '',
+        Effects: [] // Dynamic array of { key, val, unit }
+    });
+
+    const addNewModifier = () => {
+        if (!newModForm.Title.trim()) return;
+
+        // Convert the UI Array of effects into the Lua-style Object format
+        const formattedEffects = {};
+        newModForm.Effects.forEach(e => {
+            if (e.key && e.val) {
+                formattedEffects[e.key] = [Number(e.val), e.unit];
+            }
+        });
+
+        // Extract ID if they pasted a full Roblox URL
+        const parsedIconMatch = newModForm.IconID.match(/\d+/);
+        const parsedIcon = parsedIconMatch ? parsedIconMatch[0] : '';
+
+        state.Modifiers.push({
+            type: 'new',
+            Title: newModForm.Title,
+            Description: newModForm.Description,
+            IconID: parsedIcon,
+            Effects: formattedEffects,
+            length: '',
+            infinite: false,
+            doNotClear: false
+        });
+
+        // Reset the form
+        newModForm.Title = '';
+        newModForm.Description = '';
+        newModForm.IconID = '';
+        newModForm.Effects = [];
+    };
+
+    const removeModifier = (index) => {
+        state.Modifiers.splice(index, 1);
+    };
+
+    const addNewModEffect = () => {
+        newModForm.Effects.push({ key: 'Tax Income', val: 0, unit: '%' });
+    };
+    const removeNewModEffect = (index) => {
+        newModForm.Effects.splice(index, 1);
+    };
 </script>
 
 <template>
@@ -171,7 +286,6 @@
     </div>
 
     <BRow>
-        <!--Section 1: General Information -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -217,7 +331,6 @@
             </BCard>
         </BCol>
 
-        <!-- Section 2: In-Game Display & Alerts -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -269,7 +382,6 @@
             </BCard>
         </BCol>
 
-        <!-- Section 3: Requirements -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -329,14 +441,16 @@
                                         </template>
 
                                         <template #dropdown-item="{ item }">
-                                            <span class="d-flex me-3 ps-2">
-                                                <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])" :key="nation"
-                                                    :src="`/api/flag/${encodeURIComponent(nation)}`" :alt="nation"
-                                                    :title="nation" class="border bg-ron-button-dark shadow-sm"
-                                                    style="width: 36px; height: 24px; object-fit: cover; margin-left: -12px; position: relative;"
-                                                    :style="{ zIndex: nIdx }" loading="lazy">
-                                            </span>
-                                            {{ item }}
+                                            <div class="d-flex align-items-center">
+                                                <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                    :src="getIconUrl(getModifierIcon(item))" alt="Icon"
+                                                    class="me-2  bg-secondary bg-opacity-50"
+                                                    style="width: 28px; height: 28px; object-fit: contain;" />
+
+                                                <div v-else class="me-2  bg-secondary bg-opacity-25"
+                                                    style="width: 28px; height: 28px;"></div>
+                                                {{ item }}
+                                            </div>
                                         </template>
                                     </CompTagInput>
                                 </BFormGroup>
@@ -361,6 +475,7 @@
             </BCard>
         </BCol>
 
+        <!-- Section 4: Modifiers & Attributes -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -373,21 +488,186 @@
                 </BCardHeader>
 
                 <BCollapse v-model="isModifiersOpen">
-                    <BCardBody class="position-relative p-3 ">
+                    <BCardBody class="position-relative p-3">
                         <BRow>
                             <BCol md="12">
-                                <BFormGroup label="Modifiers:" class="fw-bold mb-0">
-                                    <BFormInput v-model="state.Modifiers" placeholder="Modifiers" />
+                                <BFormGroup label="Add Modifiers:" class="fw-bold mb-3">
+                                    <div class="d-flex gap-2 align-items-start">
+                                        <CompTagInput v-model="selectedExistingMods" :options="modifierTitlesList"
+                                            placeholder="Search & Add Existing Modifier..."
+                                            emptyMessage="No matching modifiers found" :clearOnSelect="true"
+                                            class="flex-grow-1">
+                                            <template #chip="{ item, remove }">
+                                                <span
+                                                    class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                    style="font-size: 0.85rem;" @click.stop="remove()">
+                                                    {{ item }}
+                                                    <button type="button" class="btn-close btn-close-white ms-2"
+                                                        style="font-size: 0.5em; pointer-events: none;"
+                                                        aria-label="Remove" tabindex="-1"></button>
+                                                </span>
+                                            </template>
+
+                                            <template #dropdown-item="{ item }">
+                                                <div class="d-flex align-items-center">
+                                                    <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                        :src="getIconUrl(getModifierIcon(item))" alt="Icon"
+                                                        class="me-2  "
+                                                        style="width: 28px; height: 28px; object-fit: contain;" />
+                                                    {{ item }}
+                                                </div>
+                                            </template>
+                                        </CompTagInput>
+
+                                        <BButton variant="green" @click="showNewModModal = true" class="text-nowrap">
+                                            Add Custom Modifier
+                                        </BButton>
+                                    </div>
                                 </BFormGroup>
+
+                                <BListGroup v-if="state.Modifiers.length > 0">
+                                    <BListGroupItem v-for="(mod, index) in state.Modifiers" :key="index"
+                                        class="mb-3 bg-dark text-white  shadow-sm border-secondary">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+
+                                            <div class="d-flex gap-3 align-items-center">
+                                                <div class="bg-secondary bg-opacity-25"
+                                                    style="width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;">
+
+                                                    <img v-if="mod.IconID && getIconUrl(mod.IconID)"
+                                                        :src="getIconUrl(mod.IconID)" alt="Mod Icon"
+                                                        style="max-width: 50px; max-height: 50px; object-fit: contain;" />
+
+                                                    <span v-else-if="mod.IconID"
+                                                        class="spinner-border spinner-border-sm text-secondary"
+                                                        role="status"></span>
+
+                                                    <span v-else class="text-muted small">No Icon</span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">
+                                                        {{ mod.Title }}
+                                                        <BBadge v-if="mod.type === 'new'" variant="primary"
+                                                            class="ms-2">
+                                                            Custom
+                                                        </BBadge>
+                                                    </h6>
+                                                    <span class="fst-italic mt-1 d-block text-muted small mt-1">{{
+                                                        mod.Description || 'No description provided.' }}</span>
+
+                                                </div>
+                                            </div>
+
+                                            <BButton variant="red" size="sm" @click="removeModifier(index)">X
+                                            </BButton>
+                                        </div>
+
+                                        <BRow class="align-items-center g-2 mt-2 bg-secondary bg-opacity-10 p-2  mx-0">
+                                            <BCol md="6">
+                                                <BCol md="12" class="mb-2">
+                                                    <BFormGroup label="Length (Days)" class="fw-bold mb-3">
+                                                        <BFormInput type="number" v-model.number="mod.length"
+                                                            :disabled="mod.infinite" min="-1"
+                                                            placeholder="Enter Modifier Duration"
+                                                            :state="(mod.length !== '' && mod.length !== null && mod.length !== undefined) ? null : false" />
+                                                    </BFormGroup>
+                                                </BCol>
+                                                <BCol md="12">
+                                                    <BFormCheckbox v-model="mod.infinite"
+                                                        @change="mod.infinite ? mod.length = -1 : mod.length = ''">
+                                                        Infinite Duration (-1)
+                                                    </BFormCheckbox>
+                                                </BCol>
+                                                <BCol md="12">
+                                                    <BFormCheckbox v-model="mod.doNotClear">
+                                                        DoNotClear
+                                                    </BFormCheckbox>
+                                                </BCol>
+                                            </BCol>
+                                            <BCol md="6">
+                                                <!-- Effects Display -->
+                                                <div class="mt-3"
+                                                    v-if="mod.Effects && Object.keys(mod.Effects).length > 0">
+                                                    <span class="small fw-bold text-light opacity-75">Effects:</span>
+                                                    <div class="d-flex flex-wrap gap-2 mt-1">
+                                                        <ul v-if="mod.Effects && Object.keys(mod.Effects).length > 0"
+                                                            class="mb-0 list-unstyled d-grid"
+                                                            style="grid-template-columns: max-content 1fr; column-gap: 1rem; row-gap: 0.25rem;">
+
+                                                            <template v-for="(val, key) in mod.Effects" :key="key">
+                                                                <li class="fw-bold">{{ key }}:</li>
+                                                                <li>
+                                                                    <span v-if="Array.isArray(val)" class="text-green">
+                                                                        {{ val[0] }}{{ (val[1] && val[1] !== 'Base') ?
+                                                                        val[1] : '' }}
+                                                                    </span>
+                                                                    <span v-else class="text-green">{{ val }}</span>
+                                                                </li>
+                                                            </template>
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </BCol>
+                                        </BRow>
+                                    </BListGroupItem>
+                                </BListGroup>
+
+                                <div v-else
+                                    class="text-center text-muted small p-3 border  border-secondary border-opacity-50">
+                                    No modifiers added yet.
+                                </div>
                             </BCol>
                         </BRow>
                     </BCardBody>
                 </BCollapse>
+
+                <!-- Create Custom Modifier Popup -->
+                <BModal v-model="showNewModModal" title="Create Custom Modifier" @ok="addNewModifier"
+                    cancel-variant="outline-secondary" ok-title="Add Modifier" size="lg">
+                    <BFormGroup label="Modifier Title:" class="fw-bold mb-3">
+                        <BFormInput v-model="newModForm.Title" placeholder="e.g. A Place Where Anything Abounds" />
+                    </BFormGroup>
+
+                    <BFormGroup label="Description:" class="fw-bold mb-3">
+                        <BFormTextarea v-model="newModForm.Description" placeholder="Description" rows="2" />
+                    </BFormGroup>
+
+                    <BFormGroup label="Roblox Icon ID or URL:" class="fw-bold mb-3">
+                        <BFormInput v-model="newModForm.IconID" placeholder="e.g. 78706150424195" />
+                    </BFormGroup>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Effects Details (Stats)</span>
+                        <BButton size="sm" variant="outline-green" @click="addNewModEffect">+ Add Stat</BButton>
+                    </div>
+
+                    <BRow v-for="(effect, index) in newModForm.Effects" :key="index"
+                        class="mb-2 g-2 align-items-center">
+                        <BCol md="5">
+                            <BFormInput v-model="effect.key" placeholder="Stat (e.g. Tax Income)" size="sm" />
+                        </BCol>
+                        <BCol md="3">
+                            <BFormInput type="number" v-model="effect.val" placeholder="Value" size="sm" />
+                        </BCol>
+                        <BCol md="3">
+                            <BFormSelect v-model="effect.unit" :options="['%', 'Base']" size="sm" />
+                        </BCol>
+                        <BCol md="1" class="text-end">
+                            <BButton variant="outline-red" size="sm" @click="removeNewModEffect(index)">X</BButton>
+                        </BCol>
+                    </BRow>
+
+                    <div v-if="newModForm.Effects.length === 0" class="text-muted small">
+                        No stats added. Click "+ Add Stat" to configure buffs/debuffs.
+                    </div>
+                </BModal>
             </BCard>
         </BCol>
     </BRow>
 
-    <!-- Output & Validation Section -->
     <BRow>
         <BCol md="12">
             <CompOutput :content="outputText">

@@ -110,11 +110,55 @@ export async function FandomLists() {
     return map;
   });
 
+  // --- MODIFIERS HELPER ---
+  const extractRobloxId = (url: string | any) => {
+    if (!url) return null;
+    const match = String(url).match(/\d+/);
+    return match ? match[0] : null;
+  };
+
+  // List 5: ALL MODIFIERS
+  const modifiersList = computed(() => {
+    if (!fandomData.value || !fandomData.value.Modifierdata?.modifierdata)
+      return [];
+
+    const mods = Object.values(fandomData.value.Modifierdata.modifierdata);
+
+    return mods
+      .map((m: any) => {
+        // --- FIX 2: Normalize array-like Lua objects into actual arrays ---
+        const normalizedEffects: Record<string, any> = {};
+        if (m.Effects) {
+          for (const [k, v] of Object.entries(m.Effects)) {
+            if (
+              typeof v === "object" &&
+              v !== null &&
+              !Array.isArray(v) &&
+              "1" in v
+            ) {
+              normalizedEffects[k] = [v["1"], v["2"]];
+            } else {
+              normalizedEffects[k] = v;
+            }
+          }
+        }
+
+        return {
+          Title: m.Title || "Unknown",
+          Description: m.Description || "",
+          IconID: extractRobloxId(m.Icon?.ID),
+          Effects: normalizedEffects,
+        };
+      })
+      .sort((a, b) => a.Title.localeCompare(b.Title));
+  });
+
   return {
     allCountriesList,
     baseCountriesList,
     formablesList,
     allTilesList,
     tileOwnersMap,
+    modifiersList,
   };
 }

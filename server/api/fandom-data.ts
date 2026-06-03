@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
   const origin = getRequestURL(event).origin;
   const data = await getFandomData(origin);
 
-  // We no longer build flagMap here! Just return the data.
   cachedFandomData = data;
   cacheTime = Date.now();
 
