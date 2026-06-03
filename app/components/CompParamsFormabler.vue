@@ -444,13 +444,15 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
-                                                    :src="getIconUrl(getModifierIcon(item))" alt="Icon"
-                                                    class="me-2  bg-secondary bg-opacity-50"
-                                                    style="width: 28px; height: 28px; object-fit: contain;" />
-
-                                                <div v-else class="me-2  bg-secondary bg-opacity-25"
-                                                    style="width: 28px; height: 28px;"></div>
+                                                <!-- Loop through the tile's owners and display their flags -->
+                                                <span class="d-flex me-3">
+                                                    <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy">
+                                                </span>
                                                 {{ item }}
                                             </div>
                                         </template>
