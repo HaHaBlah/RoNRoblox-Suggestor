@@ -1,3 +1,4 @@
+<!-- components/CompParamsFormabler.vue -->
 <script setup>
     import { computed, ref, reactive, watch } from 'vue'; // Added 'watch'
 
@@ -492,7 +493,8 @@
                         <BRow>
                             <BCol md="12">
                                 <BFormGroup label="Add Modifiers:" class="fw-bold mb-3">
-                                    <div class="d-flex gap-2 align-items-start">
+                                    <div
+                                        class="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-start">
                                         <CompTagInput v-model="selectedExistingMods" :options="modifierTitlesList"
                                             placeholder="Search & Add Existing Modifier..."
                                             emptyMessage="No matching modifiers found" :clearOnSelect="true"
@@ -519,7 +521,8 @@
                                             </template>
                                         </CompTagInput>
 
-                                        <BButton variant="green" @click="showNewModModal = true" class="text-nowrap">
+                                        <BButton variant="green" @click="showNewModModal = true"
+                                            class="text-nowrap w-100 w-md-auto">
                                             Add Custom Modifier
                                         </BButton>
                                     </div>
@@ -646,7 +649,8 @@
                     <BRow v-for="(effect, index) in newModForm.Effects" :key="index"
                         class="mb-2 g-2 align-items-center">
                         <BCol md="5">
-                            <BFormInput v-model="effect.key" placeholder="e.g. Tax Income, Politcal Power Gain" size="sm" />
+                            <BFormInput v-model="effect.key" placeholder="e.g. Tax Income, Politcal Power Gain"
+                                size="sm" />
                         </BCol>
                         <BCol md="3">
                             <BFormInput type="number" v-model="effect.val" placeholder="Value" size="sm" />
