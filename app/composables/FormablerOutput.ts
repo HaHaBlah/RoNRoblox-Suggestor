@@ -9,7 +9,7 @@ export interface ModifierEntry {
   Effects: Record<string, any>;
   length: number | string; // Ensure this can be a string for empty state
   infinite: boolean;
-  doNotClear: boolean;
+  DoNotClear: boolean;
 }
 
 export interface FormablerState {
@@ -144,7 +144,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
         lines.push(`${TAB}${TAB}["${mod.Title}"] = {`);
 
         const len = mod.infinite ? -1 : mod.length;
-        if (mod.doNotClear) {
+        if (mod.DoNotClear) {
           lines.push(`${TAB}${TAB}${TAB}Length = ${len},`);
           lines.push(`${TAB}${TAB}${TAB}DoNotClear = true,`);
         } else {
@@ -168,6 +168,10 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     if (s.Stability_Requirement)
       customAttributes.push(
         `${TAB}${TAB}["Stability_Requirement"] = ${s.Stability_Requirement},`,
+      );
+    if (s.DoNotClearModifiers)
+      customAttributes.push(
+        `${TAB}${TAB}["DoNotClearModifiers"] = ${s.DoNotClearModifiers},`,
       );
 
     if (customAttributes.length > 0) {

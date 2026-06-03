@@ -150,6 +150,7 @@
     const isDisplayAlertsOpen = ref(true);
     const isRequirementsOpen = ref(true);
     const isModifiersOpen = ref(true);
+    const isAttributesOpen = ref(true);
 
     // --- MODIFIER UI LOGIC ---
     const showNewModModal = ref(false);
@@ -206,7 +207,7 @@
                         Effects: mod.Effects,
                         length: '',
                         infinite: false,
-                        doNotClear: false
+                        DoNotClear: false
                     });
                 }
             });
@@ -245,7 +246,7 @@
             Effects: formattedEffects,
             length: '',
             infinite: false,
-            doNotClear: false
+            DoNotClear: false
         });
 
         // Reset the form
@@ -260,7 +261,7 @@
     };
 
     const addNewModEffect = () => {
-        newModForm.Effects.push({ key: 'Tax Income', val: 0, unit: '%' });
+        newModForm.Effects.push({ key: '', val: 0, unit: '%' });
     };
     const removeNewModEffect = (index) => {
         newModForm.Effects.splice(index, 1);
@@ -462,7 +463,6 @@
                                         placeholder="e.g. European Union" emptyMessage="No matching formables found" />
                                 </BFormGroup>
                             </BCol>
-
                             <BCol md="6">
                                 <BFormGroup label="Minimum Stability Required:" class="fw-bold mb-3">
                                     <BFormInput type="number" min="0" max="100" v-model="state.Stability_Requirement"
@@ -475,14 +475,14 @@
             </BCard>
         </BCol>
 
-        <!-- Section 4: Modifiers & Attributes -->
+        <!-- Section 4: Modifiers -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
                     <BButton variant="link"
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isModifiersOpen = !isModifiersOpen">
-                        <h5 class="mb-0 fw-bold text-reset">Modifiers & Attributes</h5>
+                        <h5 class="mb-0 fw-bold text-reset">Modifiers</h5>
                         <span class="text-reset">{{ isModifiersOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
@@ -527,7 +527,7 @@
 
                                 <BListGroup v-if="state.Modifiers.length > 0">
                                     <BListGroupItem v-for="(mod, index) in state.Modifiers" :key="index"
-                                        class="mb-3 bg-dark text-white  shadow-sm border-secondary">
+                                        class="mb-3 border-1 rounded-0">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
 
                                             <div class="d-flex gap-3 align-items-center">
@@ -562,7 +562,7 @@
                                             </BButton>
                                         </div>
 
-                                        <BRow class="align-items-center g-2 mt-2 bg-secondary bg-opacity-10 p-2  mx-0">
+                                        <BRow class="border-top pt-1">
                                             <BCol md="6">
                                                 <BCol md="12" class="mb-2">
                                                     <BFormGroup label="Length (Days)" class="fw-bold mb-3">
@@ -579,7 +579,7 @@
                                                     </BFormCheckbox>
                                                 </BCol>
                                                 <BCol md="12">
-                                                    <BFormCheckbox v-model="mod.doNotClear">
+                                                    <BFormCheckbox v-model="mod.DoNotClear">
                                                         DoNotClear
                                                     </BFormCheckbox>
                                                 </BCol>
@@ -599,7 +599,7 @@
                                                                 <li>
                                                                     <span v-if="Array.isArray(val)" class="text-green">
                                                                         {{ val[0] }}{{ (val[1] && val[1] !== 'Base') ?
-                                                                        val[1] : '' }}
+                                                                            val[1] : '' }}
                                                                     </span>
                                                                     <span v-else class="text-green">{{ val }}</span>
                                                                 </li>
@@ -613,8 +613,7 @@
                                     </BListGroupItem>
                                 </BListGroup>
 
-                                <div v-else
-                                    class="text-center text-muted small p-3 border  border-secondary border-opacity-50">
+                                <div v-else class="text-center text-muted p-3">
                                     No modifiers added yet.
                                 </div>
                             </BCol>
@@ -647,7 +646,7 @@
                     <BRow v-for="(effect, index) in newModForm.Effects" :key="index"
                         class="mb-2 g-2 align-items-center">
                         <BCol md="5">
-                            <BFormInput v-model="effect.key" placeholder="Stat (e.g. Tax Income)" size="sm" />
+                            <BFormInput v-model="effect.key" placeholder="e.g. Tax Income, Politcal Power Gain" size="sm" />
                         </BCol>
                         <BCol md="3">
                             <BFormInput type="number" v-model="effect.val" placeholder="Value" size="sm" />
@@ -666,6 +665,46 @@
                 </BModal>
             </BCard>
         </BCol>
+
+        <!-- Section 5: Attributes -->
+        <BCol md="12" class="mb-4">
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isAttributesOpen = !isAttributesOpen">
+                        <h5 class="mb-0 fw-bold text-reset">Attributes</h5>
+                        <span class="text-reset">{{ isAttributesOpen ? '▼' : '◀' }}</span>
+                    </BButton>
+                </BCardHeader>
+
+                <BCollapse v-model="isAttributesOpen">
+                    <BCardBody class="position-relative p-3">
+                        <BRow>
+                            <BCol md="12">
+                                <BFormCheckbox v-model="state.DoNotClearModifiers" class="fw-bold mb-3"
+                                    placeholder="Do Not Clear Modifiers">
+                                    Do Not Clear Modifiers
+                                </BFormCheckbox>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Stability Gain:" class="fw-bold mb-3">
+                                    <BFormInput type="number" v-model="state.Stability_Gain"
+                                        placeholder="Stability Gain" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Political Power Gain:" class="fw-bold mb-3">
+                                    <BFormInput type="number" v-model="state.PoliticalPower_Gain"
+                                        placeholder="Political Power Gain" />
+                                </BFormGroup>
+                            </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCollapse>
+            </BCard>
+        </BCol>
+
     </BRow>
 
     <BRow>
@@ -708,4 +747,5 @@
     .deletable-chip:hover {
         background-color: #dc3545 !important;
     }
+
 </style>
