@@ -272,7 +272,7 @@
 <template>
     <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT HAVE EVERY FEATURE YET</h1>
     <div class="text-center mb-4 mt-3">
-        <BButton variant="primary" class="mb-3" @click="toggleFormableType">
+        <BButton size="lg" variant="primary" class="mb-3 w-25" @click="toggleFormableType">
             {{ state.type }}
         </BButton>
 
