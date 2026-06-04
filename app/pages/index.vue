@@ -3,7 +3,7 @@
   import { useHead } from '#app';
 
   useHead({
-    title: "RoNRoblox Suggestor - Home",
+    title: "Suggestor - Home",
   });
 
   const scrollToUtilities = () => {
@@ -18,7 +18,7 @@
       icon: "https://static.wikia.nocookie.net/ronroblox/images/0/05/Missions_Icon.png", 
       tagline: "Formables & Missions",
       description: "Generate complete Lua code snippets for formables and missions. Autofill capabilities make it easy to create complex configurations based on the latest wiki data, ensuring your suggestions are always up-to-date and formatted correctly.",
-      badge: "Formables",
+      badge: "Formables & Missions",
       accent: "#c0932a",
     },
     {
