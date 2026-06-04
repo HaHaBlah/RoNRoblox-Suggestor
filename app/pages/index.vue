@@ -3,7 +3,7 @@
   import { useHead } from '#app';
 
   useHead({
-    title: "RoNRoblox Suggestor — Home",
+    title: "RoNRoblox Suggestor - Home",
   });
 
   const scrollToUtilities = () => {
@@ -15,7 +15,7 @@
       id: "formabler",
       name: "Formabler",
       route: "/Formabler",
-      icon: "📜",
+      icon: "https://static.wikia.nocookie.net/ronroblox/images/0/05/Missions_Icon.png", 
       tagline: "Formables & Missions",
       description: "Generate complete Lua code snippets for formables and missions. Autofill capabilities make it easy to create complex configurations based on the latest wiki data, ensuring your suggestions are always up-to-date and formatted correctly.",
       badge: "Formables",
@@ -25,21 +25,31 @@
       id: "dynflagger",
       name: "Dyn-Flagger",
       route: "/Dyn-Flagger",
-      icon: "🚩",
+      icon: "https://static.wikia.nocookie.net/ronroblox/images/4/49/Formables_Icon.png", 
       tagline: "Format Errors Begone",
-      description: "Generate dynamic/national flags. Eliminate format errors when posting  flags to Discord.",
-      badge: "Flags",
+      description: "Generate dynamic/national flags. Eliminate format errors when posting flags to Discord.",
+      badge: "Dynamic Flags",
       accent: "#2a6fc0",
     },
     {
       id: "cityer",
       name: "Cityer",
       route: "/Cityer",
-      icon: "🗺️",
+      icon: "https://static.wikia.nocookie.net/ronroblox/images/9/93/Nations.png", 
       tagline: "Has a Map",
-      description: "Click on an interactive map to capture precise city coordinates for your suggestion.",
-      badge: "Interactive Map",
+      description: "Click on an interactive map to capture precise city coordinates for your suggestion. Has a searchbox for easy navigation.",
+      badge: "Cities",
       accent: "#2ac07a",
+    },
+    {
+      id: "releasabler",
+      name: "Releasabler",
+      route: "/Releasabler",
+      icon: "https://static.wikia.nocookie.net/ronroblox/images/1/1c/Releasable_Icon_2.png",
+      tagline: "Obscure Separatists",
+      description: "Quickly suggest that dead separatist movement releasable with 5 members total within 5 minutes.",
+      badge: "Releasables",
+      accent: "#c02a2a",
     },
   ];
 
@@ -104,8 +114,9 @@
                     {{ tool.badge }}
                   </span>
 
-                  <div class="fs-1 position-relative">
-                    {{ tool.icon }}
+                  <!-- Updated Icon Container -->
+                  <div class="position-relative">
+                    <img :src="tool.icon" :alt="`${tool.name} icon`" class="tool-image-icon" />
                   </div>
 
                   <div class="flex-grow-1">
@@ -159,8 +170,7 @@
             </p>
             <p class="text-secondary fw-light mb-4">
               Each tool is kept in sync with the relevant modules on the RoN wiki so your generated code remains
-              accurate
-              as the wiki is updated.
+              accurate as the wiki is updated.
             </p>
             <NuxtLink class="text-gold text-decoration-none font-monospace small" to="/Credits">
               Meet the contributors &rarr;
@@ -225,7 +235,15 @@
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   }
 
-  /*INTERACTIVE CARDS */
+  /* NEW: Image Icon Styling */
+  .tool-image-icon {
+    width: 48px;
+    /* Matches roughly to the previous fs-1 emoji size */
+    height: 48px;
+    object-fit: contain;
+  }
+
+  /* INTERACTIVE CARDS */
   .custom-tool-card {
     transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
     overflow: hidden;
