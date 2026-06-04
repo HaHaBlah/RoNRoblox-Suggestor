@@ -55,40 +55,40 @@
 
 <template>
   <div class="page-wrapper text-light">
-    <section class="hero position-relative py-5">
-      <div class="hero-grid-overlay position-absolute top-0 bottom-0 start-0 end-0" aria-hidden="true" />
+    <BContainer class="py-4">
 
-      <BContainer class="position-relative z-1 text-center py-5">
-        <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
-          <span class="eyebrow-line" />
-          <span class="font-monospace text-gold small tracking-wide">RISE OF NATIONS · ROBLOX</span>
-          <span class="eyebrow-line" />
+      <!-- HERO SECTION -->
+      <BCard class="bg-dark-2 border-0 rounded-0 position-relative overflow-hidden" body-class="p-1 p-sm-5 text-center">
+        <div class="position-absolute top-0 bottom-0 start-0 end-0" aria-hidden="true" />
+
+        <div class="position-relative z-1 py-4">
+          <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+            <span class="eyebrow-line" />
+            <span class="font-monospace text-gold small tracking-wide">RISE OF NATIONS · ROBLOX</span>
+            <span class="eyebrow-line" />
+          </div>
+
+          <h1 class="display-1 font-display fw-bold mb-4 d-flex flex-column lh-1">
+            <span>SUGGESTOR</span>
+          </h1>
+
+          <p class="lead text-secondary mx-auto mb-5 fw-light" style="max-width: 600px;">
+            Specialised tools for Suggestia. <br>Generate Formables, Dynamic Flags, Cities. <br>Synced with the RoN
+            wiki.
+          </p>
+
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <BButton variant="gold" class="font-monospace fw-bold text-uppercase px-4 py-2 custom-btn-clip"
+              @click="scrollToUtilities">
+              Open a Tool
+            </BButton>
+          </div>
         </div>
+      </BCard>
 
-        <h1 class="display-1 font-display fw-bold mb-4 d-flex flex-column lh-1">
-          <span>SUGGESTOR</span>
-        </h1>
-
-        <p class="lead text-secondary mx-auto mb-5 fw-light" style="max-width: 600px;">
-          Specialised tools for Suggestia. <br>Generate Formables, Dynamic Flags, Cities. <br>Synced with the RoN wiki.
-        </p>
-
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-
-          <BButton variant="gold" class="font-monospace fw-bold text-uppercase px-4 py-2 custom-btn-clip"
-            @click="scrollToUtilities">
-            Open a Tool
-          </BButton>
-          <!-- <NuxtLink class="btn btn-outline-gold font-monospace text-uppercase px-4 py-2 custom-btn-clip" to="/Credits">
-            View Credits
-          </NuxtLink> -->
-        </div>
-      </BContainer>
-    </section>
-
-    <section id="utilities-section" class="py-5">
-      <BContainer class="py-4">
-        <div class="mb-5">
+      <!-- UTILITIES SECTION -->
+      <BCard id="utilities-section" class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-5">
+        <div class="mb-5 text-center">
           <span class="font-monospace text-gold small tracking-wide d-block mb-2">TOOLKIT</span>
           <h2 class="display-5 font-display text-white mb-0">Available Utilities</h2>
         </div>
@@ -123,11 +123,10 @@
             </NuxtLink>
           </BCol>
         </BRow>
-      </BContainer>
-    </section>
+      </BCard>
 
-    <section class="bg-dark border-top border-bottom border-secondary py-4">
-      <BContainer>
+      <!-- STATS SECTION -->
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
         <BRow class="text-center g-3 align-items-center">
           <BCol cols="6" md="3" class="d-flex flex-column gap-1">
             <span class="display-5 font-display text-gold lh-1">5</span>
@@ -146,11 +145,10 @@
             <span class="font-monospace text-secondary small tracking-wide">Community Built</span>
           </BCol>
         </BRow>
-      </BContainer>
-    </section>
+      </BCard>
 
-    <section class="py-5">
-      <BContainer class="py-5">
+      <!-- ABOUT SECTION -->
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-5">
         <BRow class="align-items-center g-5">
           <BCol lg="6">
             <span class="font-monospace text-gold small tracking-wide d-block mb-2">ABOUT</span>
@@ -160,7 +158,8 @@
               format their suggestions. Specifically those found on the RoN Discord.
             </p>
             <p class="text-secondary fw-light mb-4">
-              Each tool is kept in sync with the relevant modules on the RoN wiki so your generated code remains accurate
+              Each tool is kept in sync with the relevant modules on the RoN wiki so your generated code remains
+              accurate
               as the wiki is updated.
             </p>
             <NuxtLink class="text-gold text-decoration-none font-monospace small" to="/Credits">
@@ -182,8 +181,9 @@
             </div>
           </BCol>
         </BRow>
-      </BContainer>
-    </section>
+      </BCard>
+
+    </BContainer>
   </div>
 </template>
 
@@ -191,7 +191,12 @@
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap');
 
   .page-wrapper {
-    background-color: #0b0e14;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-image: url("@/assets/images/AllFlags.jpg");
+    background-repeat: repeat;
+    background-size: auto;
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
   }
@@ -209,29 +214,11 @@
     letter-spacing: 0.15em;
   }
 
-  /* HERO BACKGROUNDS */
-  .hero {
-    background:
-      radial-gradient(ellipse 70% 60% at 50% 0%, rgba(192, 147, 42, .12) 0%, transparent 70%),
-      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, .025) 39px, rgba(255, 255, 255, .025) 40px),
-      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, .025) 39px, rgba(255, 255, 255, .025) 40px),
-      #111520;
-  }
-
-  .hero-grid-overlay {
-    background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, #111520 100%);
-  }
-
   .eyebrow-line {
     width: 40px;
     height: 1px;
     background: var(--bs-gold);
     opacity: 0.6;
-  }
-
-  .title-bottom {
-    -webkit-text-stroke: 1px var(--bs-gold);
-    color: transparent;
   }
 
   .custom-btn-clip {
@@ -275,7 +262,7 @@
     text-decoration: underline !important;
   }
 
-  /* RESPONSIVE FIXES */
+  /* RESPONSIVE */
   @media (min-width: 768px) {
     .border-md-start {
       border-left: 1px solid var(--bs-secondary) !important;

@@ -16,7 +16,7 @@
 
     const mapContainerRef = ref(null)
 
-    onMounted( async () => {
+    onMounted(async () => {
         await nextTick(); // Ensure the DOM is updated
 
         // Abort if the container STILL isn't ready
@@ -89,7 +89,7 @@
                 const savedMarker = markRaw(new maptilersdk.Marker({ color: "#28a745" })
                     .setLngLat([lng, lat])
                     .addTo(map.value));
-                
+
                 permanentMarkers.value.push(savedMarker);
 
                 // Remove the temporary red marker
@@ -126,8 +126,12 @@
 <style scoped>
     .map-wrapper {
         position: relative;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        /* Changed from 100vw to fit inside the BCard */
+        height: 60vh;
+        /* Changed from 100vh to fit better on the page */
+        min-height: 400px;
+        /* Ensures it doesn't get too small on mobile */
         background-color: black;
     }
 

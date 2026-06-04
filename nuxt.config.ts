@@ -19,6 +19,10 @@ export default defineNuxtConfig({
   ],
 
   app: {
+    pageTransition: { 
+      name: 'page', 
+      mode: 'out-in' 
+    },
     head: {
       title: "Suggestor", // default fallback title
       htmlAttrs: {

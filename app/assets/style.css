@@ -1,12 +1,11 @@
 /* assets/style.css */
-/* @import "@nuxt/ui"; */
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
 
 /* base color variables */
 :root {
   --ron-button-dark: #15191e;
   --ron-button-dark-hover: #0e1115;
-  --ron-connector-dark: #13171D;
+  --ron-connector-dark: #13171d;
   --ron-button-dark-active: #5b5e61;
   --ron-dark-1: #2c353d;
   --ron-dark-2: #272f38;
@@ -25,29 +24,13 @@ body {
 }
 
 * {
-    font-family: "Source Sans 3", sans-serif;
-    box-sizing: border-box;
-}
-
-/* Primary page background colours */
-.ron-card {
-  background-color: var(--ron-dark-2);
-  padding: 1.5rem;
-  color: var(--ron-text);
-}
-
-@media screen and (max-width: 576px) {
-  .ron-card {
-    padding: 0.25rem;
-  }
+  font-family: "Source Sans 3", sans-serif;
+  box-sizing: border-box;
 }
 
 /* Override Bootstrap's Dark Theme Background */
 [data-bs-theme="dark"] {
   --bs-body-bg: var(--ron-dark-2);
-  /* --bg-body-tertiary: var(--ron-dark-1);
-  --bg-body-secondary: var(--ron-dark-1);
-  --bg-body-primary: var(--ron-dark-1); */
   --bs-btn-color: var(--ron-text);
   --bs-btn-bg: var(--ron-button-dark);
   --bs-heading-color: var(--ron-text);
@@ -71,4 +54,15 @@ body {
 }
 /* Scrollbar END */
 
+/* Page Transitions START */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease;
+}
 
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+/* Page Transitions END */

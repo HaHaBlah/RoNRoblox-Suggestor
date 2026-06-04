@@ -13,12 +13,12 @@ $ron-gold: #FFD059;
 $ron-blue: #A1C4FD;
 $ron-text: #fff;
 
-// 2. Import Bootstrap's required files first
+//Import Bootstrap's required files first
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
 
-// 3. Override Bootstrap Theme Colors
+// Override Bootstrap Theme Colors
 $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "red": $ron-red,
       "yellow": $ron-yellow,
@@ -26,23 +26,23 @@ $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "grey-active": $ron-button-dark-active,
       "mixed": $ron-green,
       "ron-button-dark": $ron-button-dark,
-      "primary": $ron-blue
+      "primary": $ron-blue,
+      "dark-1": $ron-dark-1, 
+      "dark-2": $ron-dark-2 
     ));
 
-// 4. Override Global Button Variables (Replaces your .ron-button class)
+// Override Global Button Variables
 $btn-border-width: 3px;
 $btn-border-radius: 0;
 $btn-font-weight: 700;
 
 $heading-color: $ron-text;
 
-// 5. Import the rest of Bootstrap
+//Import the rest of Bootstrap
 @import "bootstrap/scss/bootstrap";
 
-// 6. Global custom styles (Optional: add your scrollbar/body styles here)
 body,
 html {
-  //   background-color: $ron-dark-2;
   color: $ron-text;
   height: 100%;
 }

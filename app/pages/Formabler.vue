@@ -13,20 +13,20 @@
 <template>
   <div class="page-wrapper">
     <BContainer class="py-4">
-      <div class="ron-card">
-        <h1 class="text-center">Formabler</h1>
-      </div>
+      <BCard class="bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
+        <h1 class="text-center mb-0">Formabler</h1>
+      </BCard>
 
-      <div class="ron-card mt-4">
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
         <CompParamsFormabler />
-      </div>
+      </BCard>
 
-      <div class="ron-card mt-4 text-center">
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0 text-center" body-class="p-1 p-sm-4">
         <p>
           <NuxtLink to="https://3meraldk.github.io/ron-formabler/">Original</NuxtLink> by 3meraldk.
         </p>
         <p>Updates based on the following wiki modules:</p>
-        <ul class="list-unstyled">
+        <ul class="list-unstyled mb-0">
           <li>
             <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Tagdata">Module:Tagdata</NuxtLink>
           </li>
@@ -37,10 +37,11 @@
             <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Modifierdata">Module:Modifierdata</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:ModifierEffectsAlignment">Module:ModifierEffectsAlignment</NuxtLink>
+            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:ModifierEffectsAlignment">
+              Module:ModifierEffectsAlignment</NuxtLink>
           </li>
         </ul>
-      </div>
+      </BCard>
     </BContainer>
   </div>
 </template>
