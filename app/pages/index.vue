@@ -79,9 +79,9 @@
             @click="scrollToUtilities">
             Open a Tool
           </BButton>
-          <NuxtLink class="btn btn-outline-gold font-monospace text-uppercase px-4 py-2 custom-btn-clip" to="/Credits">
+          <!-- <NuxtLink class="btn btn-outline-gold font-monospace text-uppercase px-4 py-2 custom-btn-clip" to="/Credits">
             View Credits
-          </NuxtLink>
+          </NuxtLink> -->
         </div>
       </BContainer>
     </section>
