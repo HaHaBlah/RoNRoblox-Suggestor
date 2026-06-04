@@ -56,7 +56,7 @@
         allTilesList,
         tileOwnersMap,
         modifiersList,
-        modifierEffectsAlignment 
+        modifierEffectsAlignment
     } = await FandomLists();
 
     // Dynamically populated flags
@@ -155,7 +155,9 @@
     const selectedExistingMods = ref([]);
 
     const modifierTitlesList = computed(() => {
-        return modifiersList.value.map(m => m.Title);
+        return modifiersList.value
+            .map(m => m.Title)
+            .filter(title => !state.Modifiers.some(mod => mod.Title === title));
     });
 
     const getModifierIcon = (title) => {
@@ -261,7 +263,7 @@
     const getEffectColorClass = (key, val) => {
         let numVal = 0;
         let unit = '';
-        
+
         if (Array.isArray(val)) {
             numVal = Number(val[0]);
             unit = val[1] || '';
@@ -299,8 +301,8 @@
         }
 
         if (negativeIsGreen.includes(key)) {
-            if (isLower) return 'text-green'; 
-            if (isHigher) return 'text-red'; 
+            if (isLower) return 'text-green';
+            if (isHigher) return 'text-red';
             if (isEqual) return 'text-gold';
         }
 
@@ -310,7 +312,6 @@
 </script>
 
 <template>
-    <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT HAVE EVERY FEATURE YET</h1>
     <div class="text-center mb-4 mt-3">
         <BButton size="lg" variant="primary" class="mb-3" @click="toggleFormableType">
             {{ state.type }}
@@ -683,8 +684,8 @@
                     <hr />
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-bold">Effects Details (Stats)</span>
-                        <BButton size="sm" variant="outline-green" @click="addNewModEffect">+ Add Stat</BButton>
+                        <span class="fw-bold">Effects Details</span>
+                        <BButton size="sm" variant="outline-green" @click="addNewModEffect">+ Add Effect</BButton>
                     </div>
 
                     <BRow v-for="(effect, index) in newModForm.Effects" :key="index"
@@ -705,7 +706,7 @@
                     </BRow>
 
                     <div v-if="newModForm.Effects.length === 0" class="text-muted small">
-                        No stats added. Click "+ Add Stat" to configure buffs/debuffs.
+                        No stats added. Click "+ Add Effect" to configure buffs/debuffs.
                     </div>
                 </BModal>
             </BCard>
@@ -785,10 +786,9 @@
 
     .deletable-chip {
         cursor: pointer;
-        transition: background-color 0.15s ease-in-out;
     }
 
     .deletable-chip:hover {
-        background-color: #dc3545 !important;
+        background-color: var(--ron-red) !important;
     }
 </style>
