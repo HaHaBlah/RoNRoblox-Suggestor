@@ -1,6 +1,6 @@
 <!-- components/CompParamsFormabler.vue -->
 <script setup>
-    import { computed, ref, reactive, watch } from 'vue'; // Added 'watch'
+    import { computed, ref, reactive, watch } from 'vue';
 
     // Swiper Imports
     import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -48,14 +48,15 @@
     const stateRef = computed(() => state);
     const { outputText, validation } = FormablerOutput(stateRef);
 
-    // Fetch lists and maps dynamically
+    // Fetch lists and maps dynamically, including the alignment module
     const {
         allCountriesList,
         baseCountriesList,
         formablesList,
         allTilesList,
         tileOwnersMap,
-        modifiersList
+        modifiersList,
+        modifierEffectsAlignment 
     } = await FandomLists();
 
     // Dynamically populated flags
@@ -94,7 +95,6 @@
         [() => state.type, () => state.FlagId, () => state.CountriesCanForm],
         async ([newType, newFlagId, newCountries]) => {
             if (newType === 'Mission') {
-                // If Mission, populate Swiper with all CountriesCanForm flags
                 if (newCountries && newCountries.length > 0) {
                     availableFlags.value = newCountries.map(country => ({
                         id: country,
@@ -105,13 +105,11 @@
                     availableFlags.value = [{ id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }];
                 }
             } else {
-                // If Formable, fetch the Roblox thumbnail based on FlagId
                 if (!newFlagId) {
                     availableFlags.value = [{ id: 'unknown', src: unknownFlag, name: 'Unknown Flag' }];
                     return;
                 }
 
-                // Extract the numeric ID from the URL or raw input
                 const match = newFlagId.match(/\d+/);
                 const parsedId = match ? match[0] : newFlagId;
 
@@ -125,7 +123,6 @@
                     availableFlags.value = [{ id: parsedId, src: data.imageUrl, name: 'Formable Flag' }];
                 } catch (err) {
                     if (err.name === 'AbortError') return;
-                    // Fallback to unknown flag if the fetch fails
                     availableFlags.value = [{ id: 'error', src: unknownFlag, name: 'Unknown Flag' }];
                 }
             }
@@ -146,7 +143,6 @@
         }
     };
 
-    // Accordion/Collapse state
     const isGeneralInfoOpen = ref(true);
     const isDisplayAlertsOpen = ref(true);
     const isRequirementsOpen = ref(true);
@@ -173,19 +169,16 @@
     const getIconUrl = (iconId) => {
         if (!iconId) return '';
 
-        // Return cached URL or loading state if already requested
         if (iconCache[iconId] !== undefined) {
             return iconCache[iconId];
         }
 
-        // Initialize as empty string to prevent duplicate fetches while loading
         iconCache[iconId] = '';
 
-        // Fetch the actual CDN URL in the background
         $fetch(`/api/roblox-thumbnail?assetid=${encodeURIComponent(iconId)}&size=150x150`)
             .then(data => {
                 if (data && data.imageUrl) {
-                    iconCache[iconId] = data.imageUrl; // Triggers Vue to re-render the image
+                    iconCache[iconId] = data.imageUrl;
                 }
             })
             .catch(err => {
@@ -212,7 +205,6 @@
                     });
                 }
             });
-            // Immediately clear the input so it acts like a continuous search bar
             selectedExistingMods.value = [];
         }
     }, { deep: true });
@@ -221,13 +213,12 @@
         Title: '',
         Description: '',
         IconID: '',
-        Effects: [] // Dynamic array of { key, val, unit }
+        Effects: []
     });
 
     const addNewModifier = () => {
         if (!newModForm.Title.trim()) return;
 
-        // Convert the UI Array of effects into the Lua-style Object format
         const formattedEffects = {};
         newModForm.Effects.forEach(e => {
             if (e.key && e.val) {
@@ -235,7 +226,6 @@
             }
         });
 
-        // Extract ID if they pasted a full Roblox URL
         const parsedIconMatch = newModForm.IconID.match(/\d+/);
         const parsedIcon = parsedIconMatch ? parsedIconMatch[0] : '';
 
@@ -250,7 +240,6 @@
             DoNotClear: false
         });
 
-        // Reset the form
         newModForm.Title = '';
         newModForm.Description = '';
         newModForm.IconID = '';
@@ -267,12 +256,63 @@
     const removeNewModEffect = (index) => {
         newModForm.Effects.splice(index, 1);
     };
+
+    // --- EFFECT COLOR LOGIC ---
+    const getEffectColorClass = (key, val) => {
+        let numVal = 0;
+        let unit = '';
+        
+        if (Array.isArray(val)) {
+            numVal = Number(val[0]);
+            unit = val[1] || '';
+        } else {
+            numVal = Number(val);
+        }
+
+        // Add .value here since modifierEffectsAlignment is a Vue ref!
+        const alignment = modifierEffectsAlignment.value?.modifiereffectsalignment || {};
+
+        const positiveIsGreen = Object.values(alignment.PositiveIsGreen || {});
+        const negativeIsGreen = Object.values(alignment.NegativeIsGreen || {});
+        const alwaysYellow = Object.values(alignment.AlwaysYellow || {});
+
+        if (alwaysYellow.includes(key)) return 'text-warning';
+
+        let isHigher = false;
+        let isLower = false;
+        let isEqual = false;
+
+        if (unit === 'x') {
+            isHigher = numVal > 1;
+            isLower = numVal < 1;
+            isEqual = numVal === 1;
+        } else {
+            isHigher = numVal > 0;
+            isLower = numVal < 0;
+            isEqual = numVal === 0;
+        }
+
+        if (positiveIsGreen.includes(key)) {
+            if (isHigher) return 'text-green';
+            if (isLower) return 'text-red';
+            if (isEqual) return 'text-gold';
+        }
+
+        if (negativeIsGreen.includes(key)) {
+            if (isLower) return 'text-green'; 
+            if (isHigher) return 'text-red'; 
+            if (isEqual) return 'text-gold';
+        }
+
+        // Fallback for modifiers not found in the alignment module
+        return 'text-white';
+    };
 </script>
 
 <template>
     <h1 class="text-center text-red">WORK IN PROGRESS, DOES NOT HAVE EVERY FEATURE YET</h1>
     <div class="text-center mb-4 mt-3">
-        <BButton size="lg" variant="primary" class="mb-3 w-25" @click="toggleFormableType">
+        <BButton size="lg" variant="primary" class="mb-3" @click="toggleFormableType">
             {{ state.type }}
         </BButton>
 
@@ -444,7 +484,6 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <!-- Loop through the tile's owners and display their flags -->
                                                 <span class="d-flex me-3">
                                                     <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
                                                         :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
@@ -478,7 +517,6 @@
             </BCard>
         </BCol>
 
-        <!-- Section 4: Modifiers -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -590,7 +628,6 @@
                                                 </BCol>
                                             </BCol>
                                             <BCol md="6">
-                                                <!-- Effects Display -->
                                                 <div class="mt-3"
                                                     v-if="mod.Effects && Object.keys(mod.Effects).length > 0">
                                                     <span class="small fw-bold text-light opacity-75">Effects:</span>
@@ -602,11 +639,14 @@
                                                             <template v-for="(val, key) in mod.Effects" :key="key">
                                                                 <li class="fw-bold">{{ key }}:</li>
                                                                 <li>
-                                                                    <span v-if="Array.isArray(val)" class="text-green">
+                                                                    <span v-if="Array.isArray(val)"
+                                                                        :class="getEffectColorClass(key, val)">
                                                                         {{ val[0] }}{{ (val[1] && val[1] !== 'Base') ?
                                                                             val[1] : '' }}
                                                                     </span>
-                                                                    <span v-else class="text-green">{{ val }}</span>
+                                                                    <span v-else
+                                                                        :class="getEffectColorClass(key, val)">{{ val
+                                                                        }}</span>
                                                                 </li>
                                                             </template>
 
@@ -626,9 +666,8 @@
                     </BCardBody>
                 </BCollapse>
 
-                <!-- Create Custom Modifier Popup -->
                 <BModal v-model="showNewModModal" title="Create Custom Modifier" @ok="addNewModifier"
-                    cancel-variant="outline-secondary" ok-title="Add Modifier" size="lg">
+                    cancel-variant="red" ok-title="Add Modifier" ok-variant="green" size="lg">
                     <BFormGroup label="Modifier Title:" class="fw-bold mb-3">
                         <BFormInput v-model="newModForm.Title" placeholder="e.g. A Place Where Anything Abounds" />
                     </BFormGroup>
@@ -658,7 +697,7 @@
                             <BFormInput type="number" v-model="effect.val" placeholder="Value" size="sm" />
                         </BCol>
                         <BCol md="3">
-                            <BFormSelect v-model="effect.unit" :options="['%', 'Base']" size="sm" />
+                            <BFormSelect v-model="effect.unit" :options="['%', 'Base', 'x']" size="sm" />
                         </BCol>
                         <BCol md="1" class="text-end">
                             <BButton variant="outline-red" size="sm" @click="removeNewModEffect(index)">X</BButton>
@@ -672,7 +711,6 @@
             </BCard>
         </BCol>
 
-        <!-- Section 5: Attributes -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -753,5 +791,4 @@
     .deletable-chip:hover {
         background-color: #dc3545 !important;
     }
-
 </style>

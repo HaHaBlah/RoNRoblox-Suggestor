@@ -7,6 +7,7 @@ const fandomModules: Record<string, string> = {
   Nationdata: "Nationdata",
   Tagdata: "Tagdata",
   Modifierdata: "Modifierdata",
+  ModifierEffectsAlignment: "ModifierEffectsAlignment",
 };
 
 export async function getFandomImageUrl(filename: string, baseUrl = "") {
@@ -136,8 +137,32 @@ async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
       statement.type === "AssignmentStatement" ||
       statement.type === "LocalStatement"
     ) {
-      const varName = statement.variables[0].name;
-      result[varName] = await extractValue(statement.init[0]);
+      const variable = statement.variables[0];
+      const initValue = await extractValue(statement.init[0]);
+
+      if (variable.type === "Identifier") {
+        // Handles: local modifiereffectsalignment = {}
+        result[variable.name] = initValue;
+        
+      } else if (variable.type === "MemberExpression") {
+        // Handles dot notation: modifiereffectsalignment.PositiveIsGreen = { ... }
+        const baseName = variable.base.name;
+        const key = variable.identifier.name;
+
+        // Ensure the base table exists in our result object before appending
+        if (result[baseName] && typeof result[baseName] === "object") {
+          (result[baseName] as LuaTable)[key] = initValue;
+        }
+        
+      } else if (variable.type === "IndexExpression") {
+        // Handles bracket notation: modifiereffectsalignment["PositiveIsGreen"] = { ... } 
+        const baseName = variable.base.name;
+        const key = await extractValue(variable.index);
+
+        if (result[baseName] && typeof result[baseName] === "object" && key !== null) {
+          (result[baseName] as LuaTable)[key as string | number] = initValue;
+        }
+      }
     }
   }
 

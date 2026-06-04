@@ -9,6 +9,8 @@ $ron-button-dark-active: #5b5e61;
 $ron-green: #a0ff57;
 $ron-red: #fc734a;
 $ron-yellow: #7c6938;
+$ron-gold: #FFD059;
+$ron-blue: #A1C4FD;
 $ron-text: #fff;
 
 // 2. Import Bootstrap's required files first
@@ -20,9 +22,11 @@ $ron-text: #fff;
 $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "red": $ron-red,
       "yellow": $ron-yellow,
+      "gold": $ron-gold,
       "grey-active": $ron-button-dark-active,
       "mixed": $ron-green,
-      "ron-button-dark": $ron-button-dark
+      "ron-button-dark": $ron-button-dark,
+      "primary": $ron-blue
     ));
 
 // 4. Override Global Button Variables (Replaces your .ron-button class)
@@ -62,4 +66,8 @@ html {
   border-left-color: $ron-green;
   border-bottom-color: $ron-red;
   border-right-color: $ron-red;
+}
+
+a {
+  color: $ron-blue;
 }

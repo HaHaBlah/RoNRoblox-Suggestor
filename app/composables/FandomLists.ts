@@ -72,8 +72,6 @@ export async function FandomLists() {
       },
     );
 
-    // Custom Sort: Number first, then Country Letters
-    // This prevents a single country from flooding the 50-item limit in the dropdown.
     return [...tiles].sort((a, b) => {
       const partsA = a.split(".");
       const partsB = b.split(".");
@@ -84,12 +82,9 @@ export async function FandomLists() {
       const nameB = partsB[0] || "";
       const numB = parseInt(partsB[1]) || 0;
 
-      // If the numbers are different, sort by number (e.g. .001 comes before .002)
       if (numA !== numB) {
         return numA - numB;
       }
-
-      // If the numbers are the same, sort alphabetically by country name
       return nameA.localeCompare(nameB);
     });
   });
@@ -126,7 +121,6 @@ export async function FandomLists() {
 
     return mods
       .map((m: any) => {
-        // --- FIX 2: Normalize array-like Lua objects into actual arrays ---
         const normalizedEffects: Record<string, any> = {};
         if (m.Effects) {
           for (const [k, v] of Object.entries(m.Effects)) {
@@ -153,6 +147,12 @@ export async function FandomLists() {
       .sort((a, b) => a.Title.localeCompare(b.Title));
   });
 
+  // NEW: Expose ModifierEffectsAlignment
+  const modifierEffectsAlignment = computed(() => {
+    if (!fandomData.value) return {};
+    return fandomData.value.ModifierEffectsAlignment || {};
+  });
+
   return {
     allCountriesList,
     baseCountriesList,
@@ -160,5 +160,6 @@ export async function FandomLists() {
     allTilesList,
     tileOwnersMap,
     modifiersList,
+    modifierEffectsAlignment, // Ensure it's exported here
   };
 }
