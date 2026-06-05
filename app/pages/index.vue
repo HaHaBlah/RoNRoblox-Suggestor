@@ -174,13 +174,21 @@
           <BCol lg="6">
             <div class="d-flex flex-column gap-2 border-md-start border-secondary ps-md-4 py-2">
               <div v-for="mod in wikiModules" :key="mod.name"
-                class="bg-dark border border-secondary p-2 px-3 d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 gap-sm-3">
-                <span class="rounded-circle d-none d-sm-inline-block" :style="{ width: '8px', height: '8px', backgroundColor: mod.color }" />
-                <NuxtLink :to="mod.url" target="_blank" rel="noopener"
-                  class="font-monospace small text-light text-decoration-none module-link flex-grow-1 text-break">
-                  {{ mod.name }}
-                </NuxtLink>
-                <span class="font-monospace text-secondary w-100 w-sm-auto text-end" style="font-size: 0.7rem;">used by {{ mod.usedBy }}</span>
+                class="bg-dark border border-secondary p-2 px-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-1 gap-sm-3">
+                
+                <div class="d-flex align-items-center gap-2 flex-grow-1">
+                  <span class="rounded-circle flex-shrink-0" :style="{ width: '8px', height: '8px', backgroundColor: mod.color }" />
+                  <NuxtLink :to="mod.url" target="_blank" rel="noopener"
+                    class="font-monospace small text-light text-decoration-none module-link" 
+                    style="overflow-wrap: break-word; word-break: normal;">
+                    {{ mod.name }}
+                  </NuxtLink>
+                </div>
+
+                <span class="font-monospace text-secondary text-start text-sm-end flex-shrink-0 mt-1 mt-sm-0" style="font-size: 0.7rem;">
+                  used by {{ mod.usedBy }}
+                </span>
+                
               </div>
             </div>
           </BCol>
