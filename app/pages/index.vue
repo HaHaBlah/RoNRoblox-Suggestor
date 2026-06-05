@@ -67,28 +67,26 @@
   <div class="page-wrapper text-light">
     <BContainer class="py-4">
 
-      <!-- HERO SECTION -->
-      <BCard class="bg-dark-2 border-0 rounded-0 position-relative overflow-hidden" body-class="p-1 p-sm-5 text-center">
+      <BCard class="bg-dark-2 border-0 rounded-0 position-relative overflow-hidden" body-class="p-4 p-md-5 text-center">
         <div class="position-absolute top-0 bottom-0 start-0 end-0" aria-hidden="true" />
 
         <div class="position-relative z-1 py-4">
-          <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+          <div class="d-flex align-items-center justify-content-center gap-2 gap-md-3 mb-4 flex-wrap">
             <span class="eyebrow-line" />
             <span class="font-monospace text-gold small tracking-wide">RISE OF NATIONS · ROBLOX</span>
             <span class="eyebrow-line" />
           </div>
 
-          <h1 class="display-1 font-display fw-bold mb-4 d-flex flex-column lh-1">
+          <h1 class="display-1 font-display fw-bold mb-4 d-flex flex-column lh-1 responsive-h1">
             <span>SUGGESTOR</span>
           </h1>
 
           <p class="lead text-secondary mx-auto mb-5 fw-light" style="max-width: 600px;">
-            Specialised tools for Suggestia. <br>Generate Formables, Dynamic Flags, Cities. <br>Synced with the RoN
-            wiki.
+            Specialised tools for Suggestia. <br class="d-none d-md-inline">Generate Formables, Dynamic Flags, Cities. <br class="d-none d-md-inline">Synced with the RoN wiki.
           </p>
 
           <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <BButton variant="gold" class="font-monospace fw-bold text-uppercase px-4 py-2 custom-btn-clip"
+            <BButton variant="gold" class="font-monospace fw-bold text-uppercase px-4 py-2 custom-btn-clip w-sm-100"
               @click="scrollToUtilities">
               Open a Tool
             </BButton>
@@ -96,11 +94,10 @@
         </div>
       </BCard>
 
-      <!-- UTILITIES SECTION -->
-      <BCard id="utilities-section" class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-5">
+      <BCard id="utilities-section" class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-4 p-md-5">
         <div class="mb-5 text-center">
           <span class="font-monospace text-gold small tracking-wide d-block mb-2">TOOLKIT</span>
-          <h2 class="display-5 font-display text-white mb-0">Available Utilities</h2>
+          <h2 class="display-5 font-display text-white mb-0 responsive-h2">Available Utilities</h2>
         </div>
 
         <BRow class="g-4">
@@ -114,7 +111,6 @@
                     {{ tool.badge }}
                   </span>
 
-                  <!-- Updated Icon Container -->
                   <div class="position-relative">
                     <img :src="tool.icon" :alt="`${tool.name} icon`" class="tool-image-icon" />
                   </div>
@@ -136,34 +132,32 @@
         </BRow>
       </BCard>
 
-      <!-- STATS SECTION -->
-      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
-        <BRow class="text-center g-3 align-items-center">
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-4 p-md-4">
+        <BRow class="text-center g-4 align-items-center">
           <BCol cols="6" md="3" class="d-flex flex-column gap-1">
-            <span class="display-5 font-display text-gold lh-1">5</span>
+            <span class="display-5 font-display text-gold lh-1 responsive-h2">5</span>
             <span class="font-monospace text-secondary small tracking-wide">Integrated Tools</span>
           </BCol>
           <BCol cols="6" md="3" class="d-flex flex-column gap-1 border-md-start border-secondary">
-            <span class="display-5 font-display text-gold lh-1">6+</span>
+            <span class="display-5 font-display text-gold lh-1 responsive-h2">6+</span>
             <span class="font-monospace text-secondary small tracking-wide">Wiki Modules Used</span>
           </BCol>
           <BCol cols="6" md="3" class="d-flex flex-column gap-1 border-md-start border-secondary">
-            <span class="display-5 font-display text-gold lh-1">LUA</span>
+            <span class="display-5 font-display text-gold lh-1 responsive-h2">LUA</span>
             <span class="font-monospace text-secondary small tracking-wide">Code Generation</span>
           </BCol>
           <BCol cols="6" md="3" class="d-flex flex-column gap-1 border-md-start border-secondary">
-            <span class="display-5 font-display text-gold lh-1">RoN</span>
+            <span class="display-5 font-display text-gold lh-1 responsive-h2">RoN</span>
             <span class="font-monospace text-secondary small tracking-wide">Community Built</span>
           </BCol>
         </BRow>
       </BCard>
 
-      <!-- ABOUT SECTION -->
-      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-5">
+      <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-4 p-md-5">
         <BRow class="align-items-center g-5">
           <BCol lg="6">
             <span class="font-monospace text-gold small tracking-wide d-block mb-2">ABOUT</span>
-            <h2 class="display-5 font-display text-white mb-4">Built for Suggestia</h2>
+            <h2 class="display-5 font-display text-white mb-4 responsive-h2">Built for Suggestia</h2>
             <p class="text-secondary fw-light mb-3">
               The RoNRoblox Suggestor targets suggestors who need to suggest things without having to learn Lua just to
               format their suggestions. Specifically those found on the RoN Discord.
@@ -178,15 +172,15 @@
           </BCol>
 
           <BCol lg="6">
-            <div class="d-flex flex-column gap-2 border-start border-secondary ps-4 py-2">
+            <div class="d-flex flex-column gap-2 border-md-start border-secondary ps-md-4 py-2">
               <div v-for="mod in wikiModules" :key="mod.name"
-                class="bg-dark border border-secondary p-2 px-3 d-flex align-items-center gap-3">
-                <span class="rounded-circle" :style="{ width: '8px', height: '8px', backgroundColor: mod.color }" />
+                class="bg-dark border border-secondary p-2 px-3 d-flex align-items-center flex-wrap flex-sm-nowrap gap-2 gap-sm-3">
+                <span class="rounded-circle d-none d-sm-inline-block" :style="{ width: '8px', height: '8px', backgroundColor: mod.color }" />
                 <NuxtLink :to="mod.url" target="_blank" rel="noopener"
-                  class="font-monospace small text-light text-decoration-none module-link flex-grow-1">
+                  class="font-monospace small text-light text-decoration-none module-link flex-grow-1 text-break">
                   {{ mod.name }}
                 </NuxtLink>
-                <span class="font-monospace text-secondary" style="font-size: 0.7rem;">used by {{ mod.usedBy }}</span>
+                <span class="font-monospace text-secondary w-100 w-sm-auto text-end" style="font-size: 0.7rem;">used by {{ mod.usedBy }}</span>
               </div>
             </div>
           </BCol>
@@ -204,9 +198,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-image: url("@/assets/images/AllFlags.jpg");
-    background-repeat: repeat;
-    background-size: auto;
+    background-image: url("@/assets/images/RoNMap SEAsia.png");
+    background-repeat: no-repeat;
+    background-size: cover;
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
   }
@@ -227,7 +221,7 @@
   .eyebrow-line {
     width: 40px;
     height: 1px;
-    background: var(--bs-gold);
+    background: var(--bs-gold); /* Ensure this is defined in your Bootstrap theme variables */
     opacity: 0.6;
   }
 
@@ -235,10 +229,8 @@
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   }
 
-  /* NEW: Image Icon Styling */
   .tool-image-icon {
     width: 48px;
-    /* Matches roughly to the previous fs-1 emoji size */
     height: 48px;
     object-fit: contain;
   }
@@ -280,7 +272,29 @@
     text-decoration: underline !important;
   }
 
-  /* RESPONSIVE */
+  /* RESPONSIVE UTILITIES */
+  @media (max-width: 767.98px) {
+    .responsive-h1 {
+      font-size: 3.5rem; /* Scales down the primary hero title */
+    }
+    
+    .responsive-h2 {
+      font-size: 2.25rem; /* Scales down secondary headers and stats */
+    }
+
+    .eyebrow-line {
+      width: 25px; /* Shorter lines on mobile so text doesn't wrap poorly */
+    }
+
+    .w-sm-100 {
+      width: 100%; /* Make primary button span full width on small devices */
+    }
+    
+    .w-sm-auto {
+      width: auto !important;
+    }
+  }
+
   @media (min-width: 768px) {
     .border-md-start {
       border-left: 1px solid var(--bs-secondary) !important;

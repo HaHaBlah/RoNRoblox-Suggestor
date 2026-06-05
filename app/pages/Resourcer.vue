@@ -1,32 +1,30 @@
-<!-- pages/Cityer.vue -->
+<!-- pages/Resourcer.vue -->
 <script setup>
   useHead({
-    title: "Cityer",
+    title: "Resourcer",
     meta: [
-      { property: "og:title", content: "Cityer" },
-      { property: "og:type", content: "website" },
+      { property: "og:title", content: "Resourcer" },
       {
         property: "og:url",
-        content: "https://ronroblox-suggestor.pages.dev/Cityer",
+        content: "https://ronroblox-suggestor.pages.dev/Resourcer",
       },
       {
         property: "og:description",
         content:
-          "A tool to post RoN cities.&#10;Has a map.",
+          "A tool to post RoN resources.&#10;Has a map.",
       },
     ],
   });
 </script>
-
 <template>
   <div class="page-wrapper">
     <BContainer class="py-4">
       <BCard class="bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
-        <h1 class="text-center mb-0">Cityer</h1>
+        <h1 class="text-center mb-0">Resourcer</h1>
       </BCard>
 
       <BCard class="mt-4 bg-dark-2 border-0 rounded-0" body-class="p-1 p-sm-4">
-        <CompParamsCityer />
+        <CompParamsResourcer />
       </BCard>
 
       <BCard class="mt-4 bg-dark-2 border-0 rounded-0 text-center" body-class="p-1 p-sm-4">
@@ -37,7 +35,6 @@
     </BContainer>
   </div>
 </template>
-
 <style scoped>
   .page-wrapper {
     flex: 1;
