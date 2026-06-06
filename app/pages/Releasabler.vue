@@ -22,23 +22,10 @@
       </BCard>
 
       <BCard class="mt-4 bg-dark-2 border-0 rounded-0 text-center" body-class="p-1 p-sm-4">
-        <p>
-          <NuxtLink to="https://3meraldk.github.io/ron-formabler/">Original</NuxtLink> by 3meraldk.
-        </p>
         <p>Updates based on the following wiki modules:</p>
         <ul class="list-unstyled mb-0">
           <li>
-            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Tagdata">Module:Tagdata</NuxtLink>
-          </li>
-          <li>
             <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Nationdata">Module:Nationdata</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Modifierdata">Module:Modifierdata</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:ModifierEffectsAlignment">
-              Module:ModifierEffectsAlignment</NuxtLink>
           </li>
         </ul>
       </BCard>

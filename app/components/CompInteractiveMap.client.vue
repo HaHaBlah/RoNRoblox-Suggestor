@@ -127,11 +127,8 @@
     .map-wrapper {
         position: relative;
         width: 100%;
-        /* Changed from 100vw to fit inside the BCard */
         height: 60vh;
-        /* Changed from 100vh to fit better on the page */
         min-height: 400px;
-        /* Ensures it doesn't get too small on mobile */
         background-color: black;
     }
 

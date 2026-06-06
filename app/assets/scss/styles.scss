@@ -19,7 +19,8 @@ $ron-text: #fff;
 @import "bootstrap/scss/variables-dark";
 
 // Override Bootstrap Theme Colors
-$theme-colors: map-merge($theme-colors, ("green": $ron-green,
+$theme-colors: map-merge($theme-colors, (
+      "green": $ron-green,
       "red": $ron-red,
       "yellow": $ron-yellow,
       "gold": $ron-gold,
@@ -27,9 +28,8 @@ $theme-colors: map-merge($theme-colors, ("green": $ron-green,
       "mixed": $ron-green,
       "ron-button-dark": $ron-button-dark,
       "primary": $ron-blue,
-      "dark-1": $ron-dark-1, 
-      "dark-2": $ron-dark-2 
-    ));
+      "dark-1": $ron-dark-1,
+      "dark-2": $ron-dark-2 ));
 
 // Override Global Button Variables
 $btn-border-width: 3px;

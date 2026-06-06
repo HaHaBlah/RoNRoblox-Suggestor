@@ -51,11 +51,21 @@
       badge: "Releasables",
       accent: "#c02a2a",
     },
+    {
+      id: "resourcer",
+      name: "Resourcer",
+      route: "/Resourcer",
+      icon: "https://static.wikia.nocookie.net/ronroblox/images/2/21/ResourcesIcon.png",
+      tagline: "More Tungsten",
+      description: "Assign resources to tiles. Supports Autofill.",
+      badge: "Resources",
+      accent: "#2aa0c0",
+    },
   ];
 
   const wikiModules = [
     { name: "Module:Tagdata", url: "https://ronroblox.fandom.com/wiki/Module:Tagdata", color: "#c0932a", usedBy: "Formabler, Dyn-Flagger" },
-    { name: "Module:Nationdata", url: "https://ronroblox.fandom.com/wiki/Module:Nationdata", color: "#c0932a", usedBy: "Formabler, Dyn-Flagger" },
+    { name: "Module:Nationdata", url: "https://ronroblox.fandom.com/wiki/Module:Nationdata", color: "#c0932a", usedBy: "Formabler, Dyn-Flagger, Resourcer" },
     { name: "Module:Modifierdata", url: "https://ronroblox.fandom.com/wiki/Module:Modifierdata", color: "#c0932a", usedBy: "Formabler" },
     { name: "Module:ModifierEffectsAlignment", url: "https://ronroblox.fandom.com/wiki/Module:ModifierEffectsAlignment", color: "#2a6fc0", usedBy: "Formabler" },
     { name: "Module:Flagdata", url: "https://ronroblox.fandom.com/wiki/Module:Flagdata", color: "#c0932a", usedBy: "Dyn-Flagger" },

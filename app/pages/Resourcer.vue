@@ -11,7 +11,7 @@
       {
         property: "og:description",
         content:
-          "A tool to post RoN resources.&#10;Has a map.",
+          "A tool to post RoN resources.",
       },
     ],
   });
@@ -28,9 +28,12 @@
       </BCard>
 
       <BCard class="mt-4 bg-dark-2 border-0 rounded-0 text-center" body-class="p-1 p-sm-4">
-        <p class="mb-0">Powered by <NuxtLink to="https://docs.mapbox.com/mapbox-gl-js/api/" class="text-body"
-            target="_blank">Mapbox GL JS</NuxtLink>
-        </p>
+        <p>Updates based on the following wiki modules:</p>
+        <ul class="list-unstyled mb-0">
+          <li>
+            <NuxtLink to="https://ronroblox.fandom.com/wiki/Module:Nationdata">Module:Nationdata</NuxtLink>
+          </li>
+        </ul>
       </BCard>
     </BContainer>
   </div>

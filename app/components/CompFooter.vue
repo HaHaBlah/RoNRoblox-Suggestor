@@ -31,7 +31,7 @@
               <NuxtLink to="/Credits" class="text-body">Credits</NuxtLink>
             </li>
             <li>
-              <NuxtLink to="#!" class="text-body">Link 3</NuxtLink>
+              <NuxtLink to="/Changelog" class="text-body">Changelog</NuxtLink>
             </li>
             <li>
               <NuxtLink to="#!" class="text-body">Link 4</NuxtLink>
@@ -46,9 +46,7 @@
 
           <ul class="list-unstyled mb-0">
             <li>
-              <NuxtLink to="/Dyn-Flagger" class="text-body"
-                >Dyn-Flagger</NuxtLink
-              >
+              <NuxtLink to="/Dyn-Flagger" class="text-body">Dyn-Flagger</NuxtLink>
             </li>
             <li>
               <NuxtLink to="/Formabler" class="text-body">Formabler</NuxtLink>
@@ -58,6 +56,9 @@
             </li>
             <li>
               <NuxtLink to="/Releasabler" class="text-body">Releasabler</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/Resourcer" class="text-body">Resourcer</NuxtLink>
             </li>
           </ul>
         </div>
