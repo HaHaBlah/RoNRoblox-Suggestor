@@ -51,7 +51,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-image: url("@/assets/images/AllFlags.jpg");
+    background-image: url("@/assets/images/Background Formables.png");
     background-repeat: repeat;
     background-size: auto;
   }
