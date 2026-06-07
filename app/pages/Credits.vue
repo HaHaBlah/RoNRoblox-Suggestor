@@ -1,6 +1,7 @@
 <!-- pages/Credits.vue -->
 <script setup lang="ts">
   import { useHead } from '#app';
+  import ronLogo from '@/assets/images/RoN Logo.png';
 
   useHead({
     title: "Credits - Suggestor",
@@ -16,22 +17,41 @@
     link?: string;
   }
 
+  const creators: CreditItem[] = [
+    {
+      title: "HaHaBlah",
+      subtitle: "Project Creator",
+      description: "The person who created this webapp and contributed the majority of the code, design, and ideas. Also a significant contributor to the RoN wiki.",
+      category: "Person",
+      image: "https://avatars.githubusercontent.com/u/41109758?v=4",
+      link: "https://ronroblox.fandom.com/wiki/User:HaHaBlah"
+    },
+  ];
+
   const predecessors: CreditItem[] = [
     {
       title: "Rise of Nations Roblox",
       subtitle: "Community Game",
       description: "The foundation of this project - a complex nation-building game on Roblox that inspired the need for community tools.",
       category: "Game",
-      image: "https://static.wikia.nocookie.net/ronroblox/images/e/e0/RoN_Logo_Official.png",
-      link: "https://www.roblox.com/games/2292063452"
+      image: "https://static.wikia.nocookie.net/ronroblox/images/7/7f/Ron_Logo_%28vector%29.svg",
+      link: "https://www.roblox.com/games/2569453732/Rise-of-Nations"
     },
     {
       title: "RoN Fandom Wiki",
       subtitle: "Community Documentation",
       description: "Comprehensive wiki documenting all game mechanics, data structures, and configurations. Essential reference for all RoN tools.",
       category: "Resource",
-      image: "https://static.wikia.nocookie.net/ronroblox/images/f/fa/Favicon.ico",
-      link: "https://ronroblox.fandom.com"
+      image: "https://static.wikia.nocookie.net/ronroblox/images/e/e6/Site-logo.png",
+      link: "https://ronroblox.fandom.com/wiki/Roblox_Rise_of_Nations_Wiki"
+    },
+    {
+      title: "3meraldk's ron-formabler",
+      subtitle: "Precursor Project",
+      description: "Rise of Nations Formable Generator.",
+      category: "Webapp",
+      image: "https://avatars.githubusercontent.com/u/48335651?v=4",
+      link: "https://3meraldk.github.io/ron-formabler/"
     },
   ];
 
@@ -50,14 +70,15 @@
       description: "Asset and thumbnail delivery for nation flags, icons, and decorative elements from the Roblox platform.",
       category: "Services",
       iconClass: "bi-images",
-      link: "https://www.roblox.com"
+      image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Roblox_Logo_2025.png?_=20250221235424",
+      link: "https://create.roblox.com/docs/en-us/cloud"
     },
     {
       title: "MapTiler",
       subtitle: "Map Services",
       description: "Interactive map tiles and geocoding services powering the Cityer tool for precise coordinate selection.",
       category: "Services",
-      image: "https://raw.githubusercontent.com/maptiler/maptiler-sdk-js/master/logo.svg",
+      image: "https://media.maptiler.com/old/mediakit/logo/maptiler-icon.png",
       link: "https://www.maptiler.com"
     },
   ];
@@ -76,7 +97,7 @@
       subtitle: "Meta Framework",
       description: "Full-stack framework built on Vue 3 providing file-based routing, server capabilities, and auto-imports.",
       category: "Framework",
-      image: "https://raw.githubusercontent.com/nuxt/nuxt/main/packages/nuxt/res/logo.svg",
+      image: "https://nuxt.com/assets/design-kit/icon-green.svg",
       link: "https://nuxt.com"
     },
     {
@@ -84,23 +105,23 @@
       subtitle: "Type Safety",
       description: "Typed superset of JavaScript providing compile-time type checking and improved developer experience.",
       category: "Language",
-      image: "https://raw.githubusercontent.com/microsoft/TypeScript/main/doc/media/TypeScript-logo.svg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1280px-Typescript_logo_2020.svg.png?_=20221110153201",
       link: "https://www.typescriptlang.org"
     },
     {
-      title: "Bootstrap Vue",
+      title: "Bootstrap Vue Next",
       subtitle: "Vue Components",
       description: "Bootstrap components built with Vue 3, seamlessly integrated with Bootstrap 5 styling.",
       category: "Library",
       iconClass: "bi-puzzle-fill",
-      link: "https://bootstrap-vue.org"
+      link: "https://bootstrap-vue-next.github.io/bootstrap-vue-next/"
     },
     {
       title: "PrimeVue",
       subtitle: "Component Library",
       description: "Rich component library for Vue 3 providing advanced UI elements and interactions.",
       category: "Library",
-      image: "https://www.primefaces.org/cdn/primevue/images/primevue-logo.svg",
+      image: "https://dl.svgcdn.com/svg/simple-icons/primevue.svg",
       link: "https://primevue.org"
     },
     {
@@ -119,7 +140,7 @@
       subtitle: "Serverless Computing",
       description: "Edge computing platform providing serverless backend execution for API requests and data processing.",
       category: "Services",
-      image: "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/logo-dark.svg",
+      image: "https://images.seeklogo.com/logo-png/29/1/cloudflare-logo-png_seeklogo-294312.png",
       link: "https://workers.cloudflare.com"
     },
     {
@@ -142,18 +163,19 @@
 
   const utilities: CreditItem[] = [
     {
-      title: "Lua Parsing",
+      title: "Luaparse",
       subtitle: "Data Processing",
       description: "Lua code parsing and manipulation for generating and validating game suggestion code.",
       category: "Utility",
       iconClass: "bi-code-slash",
+      link: "https://github.com/fstirlitz/luaparse"
     },
     {
       title: "Swiper.js",
       subtitle: "Carousel Component",
       description: "Touch-enabled carousel library for modifier browsing and content navigation.",
       category: "Library",
-      image: "https://raw.githubusercontent.com/nolimits4web/Swiper/master/logo.svg",
+      image: "https://swiperjs.com/images/swiper-logo.svg",
       link: "https://swiperjs.com"
     },
   ];
@@ -171,6 +193,42 @@
           <div class="section-header mb-4">
             <h2 class="display-6 fw-bold">
               <i class="bi bi-rocket-fill text-gold"></i>
+              Creator
+            </h2>
+            <p class="text-muted">The person behind this project</p>
+          </div>
+          <BRow class="g-4">
+            <BCol v-for="item in creators" :key="item.title" cols="12" md="6" xl="4">
+              <BCard bg-variant="dark" text-variant="light" class="h-100 border-secondary custom-shadow"
+                footer-class="bg-transparent border-top-0 d-flex justify-content-between align-items-center">
+                <template #header>
+                  <div class="d-flex align-items-center gap-3">
+                    <NuxtImg v-if="item.image" :src="item.image" :alt="item.title" width="40" height="40" rounded />
+                    <i v-else-if="item.iconClass" :class="[item.iconClass, 'fs-2 text-gold']"></i>
+                    <div>
+                      <h5 class="mb-0">{{ item.title }}</h5>
+                      <small class="text-muted">{{ item.subtitle }}</small>
+                    </div>
+                  </div>
+                </template>
+
+                <BCardText class="text-secondary">{{ item.description }}</BCardText>
+
+                <template #footer>
+                  <BBadge style="background-color: #FFD059; color: #000;">{{ item.category }}</BBadge>
+                  <BButton v-if="item.link" :href="item.link" target="_blank" variant="outline-warning" size="sm">
+                    Visit <i class="bi bi-box-arrow-up-right ms-1"></i>
+                  </BButton>
+                </template>
+              </BCard>
+            </BCol>
+          </BRow>
+        </section>
+
+        <section class="credits-section mb-5">
+          <div class="section-header mb-4">
+            <h2 class="display-6 fw-bold">
+              <i class="bi bi-rocket-fill text-gold"></i>
               Predecessors & Foundation
             </h2>
             <p class="text-muted">The community and platforms that inspired this project</p>
@@ -181,7 +239,7 @@
                 footer-class="bg-transparent border-top-0 d-flex justify-content-between align-items-center">
                 <template #header>
                   <div class="d-flex align-items-center gap-3">
-                    <BImg v-if="item.image" :src="item.image" :alt="item.title" width="40" height="40" rounded />
+                    <NuxtImg v-if="item.image" :src="item.image" :alt="item.title" width="40" height="40" rounded />
                     <i v-else-if="item.iconClass" :class="[item.iconClass, 'fs-2 text-gold']"></i>
                     <div>
                       <h5 class="mb-0">{{ item.title }}</h5>

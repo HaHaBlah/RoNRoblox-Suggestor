@@ -18,6 +18,7 @@
       <BNavbarNav>
         <BNavItem to="/">Home</BNavItem>
         <BNavItem to="/Credits">Credits</BNavItem>
+        <BNavItem to="/Changelog">Changelog</BNavItem>
         <div @mouseenter="isDropdownOpen = true" @mouseleave="isDropdownOpen = false" class="d-inline-block">
           <BNavItemDropdown v-model="isDropdownOpen" text="Tools" right>
             <BDropdownItem to="/Formabler">Formabler</BDropdownItem>
