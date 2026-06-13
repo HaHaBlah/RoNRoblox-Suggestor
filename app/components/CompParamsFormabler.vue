@@ -233,14 +233,11 @@
             numVal = Number(val);
         }
 
-        // Add .value here since modifierEffectsAlignment is a Vue ref!
-        const alignment = modifierEffectsAlignment.value?.modifiereffectsalignment || {};
+        const effects = modifierEffectsAlignment.value?.modifiereffectsalignment?.Effects || {};
+        const info = effects[key];
+        const alignment = info?.alignment;
 
-        const positiveIsGreen = Object.values(alignment.PositiveIsGreen || {});
-        const negativeIsGreen = Object.values(alignment.NegativeIsGreen || {});
-        const alwaysYellow = Object.values(alignment.AlwaysYellow || {});
-
-        if (alwaysYellow.includes(key)) return 'text-warning';
+        if (alignment === 'AlwaysYellow') return 'text-warning';
 
         let isHigher = false;
         let isLower = false;
@@ -256,19 +253,18 @@
             isEqual = numVal === 0;
         }
 
-        if (positiveIsGreen.includes(key)) {
+        if (alignment === 'PositiveIsGreen') {
             if (isHigher) return 'text-green';
             if (isLower) return 'text-red';
             if (isEqual) return 'text-gold';
         }
 
-        if (negativeIsGreen.includes(key)) {
+        if (alignment === 'NegativeIsGreen') {
             if (isLower) return 'text-green';
             if (isHigher) return 'text-red';
             if (isEqual) return 'text-gold';
         }
 
-        // Fallback for modifiers not found in the alignment module
         return 'text-white';
     };
 </script>
