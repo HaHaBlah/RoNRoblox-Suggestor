@@ -7,7 +7,7 @@ const fandomModules: Record<string, string> = {
   Nationdata: "Nationdata",
   Tagdata: "Tagdata",
   Modifierdata: "Modifierdata",
-  ModifierEffectsAlignment: "ModifierEffectsAlignment",
+  ModifierEffectsdata: "ModifierEffectsdata",
 };
 
 export async function getFandomImageUrl(filename: string, baseUrl = "") {
@@ -141,11 +141,11 @@ async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
       const initValue = await extractValue(statement.init[0]);
 
       if (variable.type === "Identifier") {
-        // Handles: local modifiereffectsalignment = {}
+        // Handles: local ModifierEffectsdata = {}
         result[variable.name] = initValue;
         
       } else if (variable.type === "MemberExpression") {
-        // Handles dot notation: modifiereffectsalignment.PositiveIsGreen = { ... }
+        // Handles dot notation: ModifierEffectsdata.PositiveIsGreen = { ... }
         const baseName = variable.base.name;
         const key = variable.identifier.name;
 
@@ -155,7 +155,7 @@ async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
         }
         
       } else if (variable.type === "IndexExpression") {
-        // Handles bracket notation: modifiereffectsalignment["PositiveIsGreen"] = { ... } 
+        // Handles bracket notation: ModifierEffectsdata["PositiveIsGreen"] = { ... } 
         const baseName = variable.base.name;
         const key = await extractValue(variable.index);
 
