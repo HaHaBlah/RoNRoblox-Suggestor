@@ -147,10 +147,10 @@ export async function FandomLists() {
       .sort((a, b) => a.Title.localeCompare(b.Title));
   });
 
-  // NEW: Expose ModifierEffectsAlignment
+  // Expose ModifierEffectsAlignment
   const modifierEffectsAlignment = computed(() => {
     if (!fandomData.value) return {};
-    return fandomData.value.ModifierEffectsAlignment || {};
+    return fandomData.value.ModifierEffectsdata || {};
   });
 
   return {
@@ -160,6 +160,6 @@ export async function FandomLists() {
     allTilesList,
     tileOwnersMap,
     modifiersList,
-    modifierEffectsAlignment, // Ensure it's exported here
+    modifierEffectsAlignment, 
   };
 }

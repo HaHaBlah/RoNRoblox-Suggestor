@@ -49,7 +49,7 @@
     const stateRef = computed(() => state);
     const { outputText, validation } = FormablerOutput(stateRef);
 
-    // Fetch lists and maps dynamically, including the alignment module
+    // Fetch lists and maps dynamically
     const {
         allCountriesList,
         baseCountriesList,
@@ -57,7 +57,7 @@
         allTilesList,
         tileOwnersMap,
         modifiersList,
-        ModifierEffectsdata
+        modifierEffectsAlignment
     } = await FandomLists();
 
     // Dynamically populated flags
