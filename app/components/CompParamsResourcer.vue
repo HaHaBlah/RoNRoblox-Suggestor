@@ -5,27 +5,47 @@
     import CompTagInput from '~/components/CompTagInput.vue';
     import CompOutput from '~/components/CompOutput.vue';
 
-    // Fetch tile lists and maps dynamically
-    const { allTilesList, tileOwnersMap } = await FandomLists();
+    // Fetch tile lists, maps, and resource lists dynamically
+    const { allTilesList, tileOwnersMap, allResourcesList } = await FandomLists();
 
-    // Standard resources commonly found in Rise of Nations for the datalist
+    // Standard resources commonly found in Rise of Nations for the datalist fallback
     const predefinedResources = [
         'Aluminum', 'Chromium', 'Copper', 'Diamond', 'Gold',
         'Iron', 'Oil', 'Phosphate', 'Titanium', 'Tungsten', 'Uranium'
     ];
 
     const entries = ref([
-        { resource: '', tiles: [], amount: null }
+        { resource: '', tiles: [], amount: null, _showDropdown: false }
     ]);
 
     const addEntry = () => {
-        entries.value.push({ resource: '', tiles: [], amount: null });
+        entries.value.push({ resource: '', tiles: [], amount: null, _showDropdown: false });
     };
 
     const removeEntry = (index) => {
         entries.value.splice(index, 1);
     };
 
+    // --- Resource Autocomplete Logic ---
+    const getFilteredResources = (query) => {
+        const q = (query || '').toLowerCase().trim();
+        const listToUse = allResourcesList?.length ? allResourcesList : predefinedResources;
+
+        if (!q) return listToUse.slice(0, 50);
+        return listToUse.filter(r => r.toLowerCase().includes(q)).slice(0, 50);
+    };
+
+    const selectResource = (entry, res) => {
+        entry.resource = res;
+        entry._showDropdown = false;
+    };
+
+    const hideResourceDropdown = (entry) => {
+        // Delay hiding so the click event on the list item has time to fire
+        setTimeout(() => { entry._showDropdown = false; }, 150);
+    };
+
+    // --- Validation & Output ---
     const validation = computed(() => {
         const hasErrors = entries.value.length === 0 || entries.value.some(e =>
             !e.resource?.trim() ||
@@ -35,7 +55,6 @@
         return { hasErrors };
     });
 
-    // Generate Output Text
     const outputText = computed(() => {
         if (validation.value.hasErrors) return "";
 
@@ -71,6 +90,7 @@
                             <BButton variant="outline-green" size="sm" @click="addEntry">+ Add Resource</BButton>
                         </div>
                     </BCardHeader>
+
                     <BCardBody class="p-3">
                         <div v-if="entries.length === 0" class="text-center text-muted py-3">
                             No resources added. Click "+ Add Resource" to begin.
@@ -81,26 +101,57 @@
                                 class="mb-3 border-1 rounded-0 p-3 bg-dark bg-opacity-10">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="fw-bold">Resource #{{ index + 1 }}</span>
-                                    <BButton variant="outline-red" size="sm" @click="removeEntry(index)">Remove
+                                    <BButton variant="outline-red" size="sm" @click="removeEntry(index)">
+                                        Remove
                                     </BButton>
                                 </div>
                                 <BRow class="g-3 align-items-start mt-1">
+
                                     <BCol md="3">
                                         <BFormGroup label="Resource:" class="fw-bold mb-0">
-                                            <BFormInput v-model="entry.resource" list="resource-options"
-                                                placeholder="e.g. Copper" />
-                                            <datalist id="resource-options">
-                                                <option v-for="res in predefinedResources" :key="res" :value="res">
-                                                </option>
-                                            </datalist>
+                                            <div class="position-relative w-100">
+                                                <div class="form-control d-flex align-items-center">
+                                                    <img v-if="entry.resource"
+                                                        :src="`/api/resource/${encodeURIComponent(entry.resource)}`"
+                                                        :alt="entry.resource" class="me-2"
+                                                        style="width: 24px; height: 24px; object-fit: contain;"
+                                                        @error="$event.target.style.display = 'none'"
+                                                        @load="$event.target.style.display = 'block'" loading="lazy">
+
+                                                    <input type="text" v-model="entry.resource"
+                                                        class="border-0 flex-grow-1"
+                                                        style="outline: none; background: transparent; color: inherit;"
+                                                        placeholder="e.g. Copper" @focus="entry._showDropdown = true"
+                                                        @blur="hideResourceDropdown(entry)" />
+                                                </div>
+
+                                                <BListGroup v-if="entry._showDropdown"
+                                                    class="position-absolute w-100 shadow-sm mt-1"
+                                                    style="max-height: 200px; overflow-y: auto; z-index: 1050; top: 100%; left: 0;">
+                                                    <BListGroupItem v-for="res in getFilteredResources(entry.resource)"
+                                                        :key="res" button class="d-flex align-items-center p-2"
+                                                        @mousedown.prevent="selectResource(entry, res)">
+                                                        <img :src="`/api/resource/${encodeURIComponent(res)}`"
+                                                            :alt="res" class="me-3"
+                                                            style="width: 24px; height: 24px; object-fit: contain;"
+                                                            loading="lazy">
+                                                        {{ res }}
+                                                    </BListGroupItem>
+                                                    <BListGroupItem
+                                                        v-if="getFilteredResources(entry.resource).length === 0"
+                                                        disabled>
+                                                        No matching resources found
+                                                    </BListGroupItem>
+                                                </BListGroup>
+                                            </div>
                                         </BFormGroup>
                                     </BCol>
+
                                     <BCol md="6">
                                         <BFormGroup label="Tiles:" class="fw-bold mb-0">
                                             <CompTagInput v-model="entry.tiles" :options="allTilesList"
                                                 placeholder="e.g. Cyprus.001" emptyMessage="No matching tiles found"
                                                 :clearOnSelect="true">
-
                                                 <template #chip="{ item, remove }">
                                                     <span
                                                         class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
@@ -138,6 +189,7 @@
                                             </CompTagInput>
                                         </BFormGroup>
                                     </BCol>
+
                                     <BCol md="3">
                                         <BFormGroup label="Total Amount:" class="fw-bold mb-0">
                                             <BFormInput type="number" v-model.number="entry.amount" placeholder="e.g. 5"

@@ -1,6 +1,20 @@
 // composables/FandomLists.ts
 import { computed } from "vue";
 
+const allResourcesList = [
+  "Aluminum",
+  "Chromium",
+  "Copper",
+  "Diamond",
+  "Gold",
+  "Iron",
+  "Oil",
+  "Phosphate",
+  "Titanium",
+  "Tungsten",
+  "Uranium",
+];
+
 export async function FandomLists() {
   const { data: fandomData } = await useFetch("/api/fandom-data");
 
@@ -160,6 +174,7 @@ export async function FandomLists() {
     allTilesList,
     tileOwnersMap,
     modifiersList,
-    modifierEffectsAlignment, 
+    modifierEffectsAlignment,
+    allResourcesList,
   };
 }
