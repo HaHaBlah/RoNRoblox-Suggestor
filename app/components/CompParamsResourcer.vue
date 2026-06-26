@@ -150,8 +150,8 @@
                                     <BCol md="6">
                                         <BFormGroup label="Tiles:" class="fw-bold mb-0">
                                             <CompTagInput v-model="entry.tiles" :options="allTilesList"
-                                                placeholder="e.g. Cyprus.001" emptyMessage="No matching tiles found"
-                                                :clearOnSelect="true">
+                                                placeholder="e.g. Cyprus.001" emptyMessage="No matching tiles found" 
+                                                :clearOnSelect="false">
                                                 <template #chip="{ item, remove }">
                                                     <span
                                                         class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
