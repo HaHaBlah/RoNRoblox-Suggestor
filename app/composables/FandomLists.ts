@@ -162,7 +162,7 @@ export async function FandomLists() {
   });
 
   // Expose ModifierEffectsAlignment
-  const modifierEffectsAlignment = computed(() => {
+  const modifierEffectsData = computed(() => {
     if (!fandomData.value) return {};
     return fandomData.value.ModifierEffectsdata || {};
   });
@@ -174,7 +174,7 @@ export async function FandomLists() {
     allTilesList,
     tileOwnersMap,
     modifiersList,
-    modifierEffectsAlignment,
+    modifierEffectsData,
     allResourcesList,
   };
 }

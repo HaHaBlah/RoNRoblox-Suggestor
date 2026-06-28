@@ -57,7 +57,7 @@
         allTilesList,
         tileOwnersMap,
         modifiersList,
-        modifierEffectsAlignment
+        modifierEffectsData
     } = await FandomLists();
 
     // Dynamically populated flags
@@ -233,7 +233,7 @@
             numVal = Number(val);
         }
 
-        const effects = modifierEffectsAlignment.value?.modifiereffectsdata || {};
+        const effects = modifierEffectsData.value?.modifiereffectsdata || {};
         const info = effects[key];
         const alignment = info?.alignment;
 

@@ -8,12 +8,6 @@
     // Fetch tile lists, maps, and resource lists dynamically
     const { allTilesList, tileOwnersMap, allResourcesList } = await FandomLists();
 
-    // Standard resources commonly found in Rise of Nations for the datalist fallback
-    const predefinedResources = [
-        'Aluminum', 'Chromium', 'Copper', 'Diamond', 'Gold',
-        'Iron', 'Oil', 'Phosphate', 'Titanium', 'Tungsten', 'Uranium'
-    ];
-
     const entries = ref([
         { resource: '', tiles: [], amount: null, _showDropdown: false }
     ]);
@@ -29,10 +23,9 @@
     // --- Resource Autocomplete Logic ---
     const getFilteredResources = (query) => {
         const q = (query || '').toLowerCase().trim();
-        const listToUse = allResourcesList?.length ? allResourcesList : predefinedResources;
 
-        if (!q) return listToUse.slice(0, 50);
-        return listToUse.filter(r => r.toLowerCase().includes(q)).slice(0, 50);
+        if (!q) return allResourcesList.slice(0, 50);
+        return allResourcesList.filter(r => r.toLowerCase().includes(q)).slice(0, 50);
     };
 
     const selectResource = (entry, res) => {

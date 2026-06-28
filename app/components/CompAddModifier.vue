@@ -2,6 +2,10 @@
 <script setup>
     import { reactive, computed } from 'vue';
 
+    import { FandomLists } from '~/composables/FandomLists';
+
+    const { modifierEffectsData } = await FandomLists();
+
     const props = defineProps({
         modelValue: {
             type: Boolean,
@@ -67,6 +71,53 @@
         newModForm.IconID = '';
         newModForm.Effects = [];
     };
+
+    // --- Effect Autocomplete Logic ---
+    // Extract the keys from the nested object
+    const availableEffects = computed(() => {
+        const data = modifierEffectsData.value?.modifiereffectsdata || {};
+        return Object.keys(data);
+    });
+
+    const getFilteredEffects = (query) => {
+        const q = (query || '').toLowerCase().trim();
+        const effectsList = availableEffects.value;
+
+        if (!q) return effectsList.slice(0, 50);
+        return effectsList.filter(r => r.toLowerCase().includes(q)).slice(0, 50);
+    };
+
+    const selectEffect = (entry, selectedSuggestion) => {
+        entry.key = selectedSuggestion;
+
+        // Auto-fill the unit format based on Lua data
+        const effectInfo = modifierEffectsData.value?.modifiereffectsdata?.[selectedSuggestion];
+        if (effectInfo && effectInfo.format) {
+            entry.unit = effectInfo.format;
+        }
+
+        entry._showDropdown = false;
+    };
+
+    const hideEffectDropdown = (entry) => {
+        // Delay hiding so the click event on the list item has time to fire
+        setTimeout(() => { entry._showDropdown = false; }, 150);
+    };
+
+    // Effect format logic
+    const getUnitOptions = (effectKey) => {
+        // Look up the format for the currently selected effect
+        const format = modifierEffectsData.value?.modifiereffectsdata?.[effectKey]?.format;
+
+        if (format === '%') {
+            return ['%', 'x'];
+        } else if (format === 'Base') {
+            return ['Base'];
+        } else {
+            // Fallback if no format is found
+            return ['%', 'Base', 'x'];
+        }
+    };
 </script>
 
 <template>
@@ -93,13 +144,36 @@
 
         <BRow v-for="(effect, index) in newModForm.Effects" :key="index" class="mb-2 g-2 align-items-center">
             <BCol md="5">
-                <BFormInput v-model="effect.key" placeholder="e.g. Tax Income, Politcal Power Gain" size="sm" />
+
+                <BFormGroup class="fw-bold mb-0">
+                    <div class="position-relative w-100" size="sm">
+                        <BFormInput type="text" v-model="effect.key"
+                            style="outline: none; background: transparent; color: inherit;"
+                            placeholder="e.g. Tax Income, Political Power Gain" @focus="effect._showDropdown = true"
+                            @blur="hideEffectDropdown(effect)" size="sm" />
+
+                        <BListGroup v-if="effect._showDropdown" class="position-absolute w-100 shadow-sm mt-1"
+                            style="max-height: 200px; overflow-y: auto; z-index: 1050; top: 100%; left: 0;">
+
+                            <BListGroupItem v-for="suggestion in getFilteredEffects(effect.key)" :key="suggestion"
+                                button class="d-flex align-items-center p-2"
+                                @mousedown.prevent="selectEffect(effect, suggestion)" size="sm">
+                                {{ suggestion }}
+                            </BListGroupItem>
+
+                            <BListGroupItem v-if="getFilteredEffects(effect.key).length === 0" disabled>
+                                No matching effects found
+                            </BListGroupItem>
+
+                        </BListGroup>
+                    </div>
+                </BFormGroup>
             </BCol>
             <BCol md="3">
                 <BFormInput type="number" v-model="effect.val" placeholder="Value" size="sm" />
             </BCol>
             <BCol md="3">
-                <BFormSelect v-model="effect.unit" :options="['%', 'Base', 'x']" size="sm" />
+                <BFormSelect v-model="effect.unit" :options="getUnitOptions(effect.key)" size="sm" />
             </BCol>
             <BCol md="1" class="text-end">
                 <BButton variant="outline-red" size="sm" @click="removeNewModEffect(index)">X</BButton>
