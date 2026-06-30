@@ -167,9 +167,22 @@ export async function FandomLists() {
     return fandomData.value.ModifierEffectsdata || {};
   });
 
+  // List 3: STARTING COUNTRIES (For "Starting Countries")
+  const startingCountriesList = computed(() => {
+    if (!fandomData.value) return [];
+    const nations = Object.entries(
+      fandomData.value.Nationdata?.nationdata || {},
+    )
+      .filter(([, v]: any) => v.nation === true)
+      .map(([k]) => k);
+
+    return [...new Set([...nations])].sort();
+  });
+
   return {
     allCountriesList,
     baseCountriesList,
+    startingCountriesList,
     formablesList,
     allTilesList,
     tileOwnersMap,

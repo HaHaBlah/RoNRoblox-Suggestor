@@ -12,6 +12,13 @@
 
     const changelog: ChangelogEntry[] = [
         {
+            date: '2026-07-01',
+            version: 'v2.4',
+            changes: [
+                'Addded autofill functionality to Cityer, Resourcer and ModifierEffects',
+            ],
+        },
+        {
             date: '2026-06-04',
             version: 'v2.4',
             changes: [
