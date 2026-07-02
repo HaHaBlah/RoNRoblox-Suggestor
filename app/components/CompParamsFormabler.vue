@@ -150,6 +150,7 @@
     const isRequirementsOpen = ref(true);
     const isModifiersOpen = ref(true);
     const isAttributesOpen = ref(true);
+    const isAdditionalRequirementsOpen = ref(true);
 
     // --- MODIFIER UI LOGIC ---
     const showNewModModal = ref(false);
@@ -664,21 +665,53 @@
                             </BCol>
                             <BCol md="12">
                                 <BFormGroup label="Rename Cities:" class="fw-bold mb-3">
-                                    <template v-for="(cityPair, index) in state.Rename_Cities" :key="index">
-                                        <div class="d-flex gap-2 mb-2">
+                                    <BRow v-for="(cityPair, index) in state.Rename_Cities" :key="index" class="mb-2">
+                                        <BCol md="6">
                                             <BFormInput type="text" v-model="state.Rename_Cities[index].city"
-                                                placeholder="Original City Name" class="flex-grow-1" />
-                                            <BFormInput type="text" v-model="state.Rename_Cities[index].newName"
-                                                placeholder="New City Name" class="flex-grow-1" />
-                                                <BButton variant="red" size="sm" @click="state.Rename_Cities.splice(index, 1)">X</BButton>
-                                        </div>
-                                    </template>
+                                                placeholder="Original City Name" />
+                                        </BCol>
+                                        <BCol md="6">
+                                            <div class="d-flex gap-2">
+                                                <BFormInput type="text" v-model="state.Rename_Cities[index].newName"
+                                                    placeholder="New City Name" class="flex-grow-1" />
+                                                <BButton variant="red" size="sm"
+                                                    @click="state.Rename_Cities.splice(index, 1)">X
+                                                </BButton>
+                                            </div>
+                                        </BCol>
+                                    </BRow>
                                     <BButton size="sm" variant="outline-green"
                                         @click="state.Rename_Cities.push({ city: '', newName: '' })">
                                         + Add City
                                     </BButton>
                                 </BFormGroup>
                             </BCol>
+                        </BRow>
+                    </BCardBody>
+                </BCollapse>
+            </BCard>
+        </BCol>
+         <BCol md="12" class="mb-4">
+            <BCard no-body class="border-yellow rounded-0">
+                <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
+                    <BButton variant="link"
+                        class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
+                        @click="isAdditionalRequirementsOpen = !isAdditionalRequirementsOpen">
+                        <h5 class="mb-0 fw-bold text-reset">Additional Requirements </h5><span class="text-red">(Unconfirmed formats, proceed at own risk)</span>
+                        <span class="text-reset">{{ isAdditionalRequirementsOpen ? '▼' : '◀' }}</span>
+                    </BButton>
+                </BCardHeader>
+
+                <BCollapse v-model="isAdditionalRequirementsOpen">
+                    <BCardBody class="position-relative p-3">
+                        <BRow>
+                            <BCol md="12">
+                                <BFormCheckbox v-model="state.DoNotClearModifiers" class="fw-bold mb-3"
+                                    placeholder="Do Not Clear Modifiers">
+                                    Do Not Clear Modifiers
+                                </BFormCheckbox>
+                            </BCol>
+                           
                         </BRow>
                     </BCardBody>
                 </BCollapse>
