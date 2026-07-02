@@ -69,7 +69,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     });
 
     if (!items.length) return null;
-    return items.join(`\n${TAB}${TAB}${TAB}${TAB}`); 
+    return items.join(`\n${TAB}${TAB}${TAB}${TAB}`);
   };
 
   const validation = computed(() => {
@@ -93,7 +93,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       errors.push("Required Countries OR Required Tiles");
     }
 
-    // --- FIX 1: Length Validation for Modifiers ---
+    //  Length Validation for Modifiers
     if (state.value.Modifiers && state.value.Modifiers.length > 0) {
       state.value.Modifiers.forEach((mod) => {
         if (
@@ -190,15 +190,19 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       customAttributes.push(
         `${TAB}${TAB}["DoNotClearModifiers"] = ${s.DoNotClearModifiers},`,
       );
+      
     if (s.Rename_Cities && s.Rename_Cities.length > 0) {
       const renameCitiesArray = toCityRenameLuaArray(s.Rename_Cities);
-      customAttributes.push(
-        `${TAB}${TAB}["Rename_Cities"] = [[\n` +
-          `${TAB}${TAB}${TAB}[\n` +
-          `${TAB}${TAB}${TAB}${TAB}${renameCitiesArray}\n` +
-          `${TAB}${TAB}${TAB}]\n` +
-          `${TAB}${TAB}]],`,
-      );
+
+      if (renameCitiesArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Rename_Cities"] = [[\n` +
+            `${TAB}${TAB}${TAB}[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${renameCitiesArray}\n` +
+            `${TAB}${TAB}${TAB}]\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
     }
 
     if (customAttributes.length > 0) {

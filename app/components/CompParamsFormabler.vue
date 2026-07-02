@@ -670,6 +670,7 @@
                                                 placeholder="Original City Name" class="flex-grow-1" />
                                             <BFormInput type="text" v-model="state.Rename_Cities[index].newName"
                                                 placeholder="New City Name" class="flex-grow-1" />
+                                                <BButton variant="red" size="sm" @click="state.Rename_Cities.splice(index, 1)">X</BButton>
                                         </div>
                                     </template>
                                     <BButton size="sm" variant="outline-green"
