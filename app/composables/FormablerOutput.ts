@@ -33,6 +33,7 @@ export interface FormablerState {
   Stability_Gain: number | string;
   PoliticalPower_Gain: number | string;
   Stability_Requirement: number | string;
+  Rename_Cities: Record<string, string>[];
 
   // Metadata
   SourcesDescription: string;
@@ -53,6 +54,22 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     if (!items.length) return null;
     return `{${items.map((i) => `"${i}"`).join(", ")}}`;
+  };
+
+  const toCityRenameLuaArray = (input: Record<string, string>[]) => {
+    if (!input || input.length === 0) return null;
+
+    const items: string[] = [];
+    input.forEach((obj) => {
+      const city = obj.city?.trim();
+      const newName = obj.newName?.trim();
+      if (city && newName) {
+        items.push(`["${city}", "${newName}"],`);
+      }
+    });
+
+    if (!items.length) return null;
+    return items.join(`\n${TAB}${TAB}${TAB}${TAB}`); 
   };
 
   const validation = computed(() => {
@@ -173,6 +190,16 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       customAttributes.push(
         `${TAB}${TAB}["DoNotClearModifiers"] = ${s.DoNotClearModifiers},`,
       );
+    if (s.Rename_Cities && s.Rename_Cities.length > 0) {
+      const renameCitiesArray = toCityRenameLuaArray(s.Rename_Cities);
+      customAttributes.push(
+        `${TAB}${TAB}["Rename_Cities"] = [[\n` +
+          `${TAB}${TAB}${TAB}[\n` +
+          `${TAB}${TAB}${TAB}${TAB}${renameCitiesArray}\n` +
+          `${TAB}${TAB}${TAB}]\n` +
+          `${TAB}${TAB}]],`,
+      );
+    }
 
     if (customAttributes.length > 0) {
       lines.push(``);

@@ -41,6 +41,7 @@
         Stability_Gain: '',
         PoliticalPower_Gain: '',
         Stability_Requirement: '',
+        Rename_Cities: [{}],
 
         // Metadata
         SourcesDescription: ''
@@ -658,7 +659,23 @@
                             <BCol md="6">
                                 <BFormGroup label="Political Power Gain:" class="fw-bold mb-3">
                                     <BFormInput type="number" v-model="state.PoliticalPower_Gain"
-                                        placeholder="Political Power Gain" />
+                                        placeholder="Set to negative to make it a requirement" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="12">
+                                <BFormGroup label="Rename Cities:" class="fw-bold mb-3">
+                                    <template v-for="(cityPair, index) in state.Rename_Cities" :key="index">
+                                        <div class="d-flex gap-2 mb-2">
+                                            <BFormInput type="text" v-model="state.Rename_Cities[index].city"
+                                                placeholder="Original City Name" class="flex-grow-1" />
+                                            <BFormInput type="text" v-model="state.Rename_Cities[index].newName"
+                                                placeholder="New City Name" class="flex-grow-1" />
+                                        </div>
+                                    </template>
+                                    <BButton size="sm" variant="outline-green"
+                                        @click="state.Rename_Cities.push({ city: '', newName: '' })">
+                                        + Add City
+                                    </BButton>
                                 </BFormGroup>
                             </BCol>
                         </BRow>
