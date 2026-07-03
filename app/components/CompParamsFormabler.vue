@@ -846,17 +846,7 @@
                                             <span
                                                 class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
                                                 style="font-size: 0.85rem;" @click.stop="remove()">
-
-                                                <span class="d-flex me-2">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
                                                 {{ item }}
-
                                                 <button type="button" class="btn-close btn-close-white ms-2"
                                                     style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
                                                     tabindex="-1"></button>
@@ -865,14 +855,6 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <span class="d-flex me-3">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
                                                 {{ item }}
                                             </div>
                                         </template>
@@ -889,17 +871,7 @@
                                             <span
                                                 class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
                                                 style="font-size: 0.85rem;" @click.stop="remove()">
-
-                                                <span class="d-flex me-2">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
                                                 {{ item }}
-
                                                 <button type="button" class="btn-close btn-close-white ms-2"
                                                     style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
                                                     tabindex="-1"></button>
@@ -908,14 +880,6 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <span class="d-flex me-3">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
                                                 {{ item }}
                                             </div>
                                         </template>
@@ -924,7 +888,8 @@
                             </BCol>
                             <BCol md="6">
                                 <BFormGroup label="Has Policy:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.Has_Policy" :options="policiesList" placeholder="e.g. Expulsion Act, Underground Labs"
+                                    <CompTagInput v-model="state.Has_Policy" :options="policiesList"
+                                        placeholder="e.g. Expulsion Act, Underground Labs"
                                         emptyMessage="Autofill not implemented yet, press enter to add new entry"
                                         :clearOnSelect="false">
                                         <template #chip="{ item, remove }">
@@ -1009,25 +974,22 @@
                             </BCol>
                             <BCol md="6">
                                 <BFormGroup label="Has Modifier:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.Has_Modifier" :options="modifiersList"
-                                        placeholder="e.g. Expulsion Act, Underground Labs"
-                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
-                                        :clearOnSelect="false">
+                                    <CompTagInput v-model="state.Has_Modifier" :options="modifierTitlesList"
+                                        placeholder="Search & Add Existing Modifier..."
+                                        emptyMessage="No matching modifiers found" :clearOnSelect="true"
+                                        class="flex-grow-1">
                                         <template #chip="{ item, remove }">
                                             <span
                                                 class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
                                                 style="font-size: 0.85rem;" @click.stop="remove()">
-
-                                                <span class="d-flex me-2">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                <span class="d-flex me-2" style="min-height: 20px;">
+                                                    <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                        :src="getIconUrl(getModifierIcon(item))" :alt="item"
+                                                        :title="item" class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 20px; height: 20px; object-fit: contain;"
+                                                        loading="lazy">
                                                 </span>
                                                 {{ item }}
-
                                                 <button type="button" class="btn-close btn-close-white ms-2"
                                                     style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
                                                     tabindex="-1"></button>
@@ -1036,14 +998,9 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <span class="d-flex me-3">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
+                                                <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                    :src="getIconUrl(getModifierIcon(item))" alt="Icon" class="me-2  "
+                                                    style="width: 28px; height: 28px; object-fit: contain;" />
                                                 {{ item }}
                                             </div>
                                         </template>
@@ -1051,26 +1008,23 @@
                                 </BFormGroup>
                             </BCol>
                             <BCol md="6">
-                                <BFormGroup label="Does NOT Have Modifier:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.Does_NOT_Have_Modifier" :options="modifiersList"
-                                        placeholder="e.g. Expulsion Act, Underground Labs"
-                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
-                                        :clearOnSelect="false">
+                                <BFormGroup label="Does Not Have Modifier:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Does_NOT_Have_Modifier" :options="modifierTitlesList"
+                                        placeholder="Search & Add Existing Modifier..."
+                                        emptyMessage="No matching modifiers found" :clearOnSelect="true"
+                                        class="flex-grow-1">
                                         <template #chip="{ item, remove }">
                                             <span
                                                 class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
                                                 style="font-size: 0.85rem;" @click.stop="remove()">
-
-                                                <span class="d-flex me-2">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                <span class="d-flex me-2" style="min-height: 20px;">
+                                                    <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                        :src="getIconUrl(getModifierIcon(item))" :alt="item"
+                                                        :title="item" class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 20px; height: 20px; object-fit: contain;"
+                                                        loading="lazy">
                                                 </span>
                                                 {{ item }}
-
                                                 <button type="button" class="btn-close btn-close-white ms-2"
                                                     style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
                                                     tabindex="-1"></button>
@@ -1079,14 +1033,9 @@
 
                                         <template #dropdown-item="{ item }">
                                             <div class="d-flex align-items-center">
-                                                <span class="d-flex me-3">
-                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
-                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
-                                                        :alt="nation" :title="nation"
-                                                        class="border bg-ron-button-dark shadow-sm"
-                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
-                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
-                                                </span>
+                                                <img v-if="getModifierIcon(item) && getIconUrl(getModifierIcon(item))"
+                                                    :src="getIconUrl(getModifierIcon(item))" alt="Icon" class="me-2  "
+                                                    style="width: 28px; height: 28px; object-fit: contain;" />
                                                 {{ item }}
                                             </div>
                                         </template>
