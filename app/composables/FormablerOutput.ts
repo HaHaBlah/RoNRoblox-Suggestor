@@ -35,6 +35,22 @@ export interface FormablerState {
   Stability_Requirement: number | string;
   Rename_Cities: Record<string, string>[];
 
+  // Additional Requirements
+  Is_Country: string[];
+  Has_Leader: string[];
+  Has_Modifier: string[];
+  Has_Policy: string[];
+  Has_Ideology: string[];
+  Maximum_Stability: number | string;
+  Minimum_Political_Power: number | string;
+  Does_NOT_Have_Modifier: string[];
+  Does_NOT_Have_Policy: string[];
+  Is_NOT_Ideology: string[];
+  NOT_has_Political_Law: string[];
+  Has_Political_Law: string[];
+  At_War: boolean | string;
+  Peace_not_required: boolean | string;
+
   // Metadata
   SourcesDescription: string;
 }
@@ -70,6 +86,20 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     if (!items.length) return null;
     return items.join(`\n${TAB}${TAB}${TAB}${TAB}`);
+  };
+
+  const toLongStringLuaArray = (input: string | string[]) => {
+    if (!input || input.length === 0) return null;
+
+    const items = Array.isArray(input)
+      ? input.map((s) => s.trim()).filter(Boolean)
+      : input
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+    if (!items.length) return null;
+    return `[${items.map((i) => `"${i}"`).join(", ")}]`;
   };
 
   const validation = computed(() => {
@@ -173,6 +203,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       lines.push(`${TAB}},`);
     }
 
+    // Custom Attributes
     const customAttributes: string[] = [];
     if (s.Stability_Gain)
       customAttributes.push(
@@ -190,7 +221,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       customAttributes.push(
         `${TAB}${TAB}["DoNotClearModifiers"] = ${s.DoNotClearModifiers},`,
       );
-      
+
     if (s.Rename_Cities && s.Rename_Cities.length > 0) {
       const renameCitiesArray = toCityRenameLuaArray(s.Rename_Cities);
 
@@ -205,6 +236,135 @@ export function FormablerOutput(state: Ref<FormablerState>) {
       }
     }
 
+    // === Additional Requirements ===
+    if (s.At_War)
+      customAttributes.push(`${TAB}${TAB}["At_War"] = ${s.At_War},`);
+
+    if (s.Peace_not_required)
+      customAttributes.push(
+        `${TAB}${TAB}["Peace_not_required"] = ${s.Peace_not_required},`,
+      );
+
+    if (s.Maximum_Stability)
+      customAttributes.push(
+        `${TAB}${TAB}["Maximum_Stability"] = ${s.Maximum_Stability},`,
+      );
+    if (s.Minimum_Political_Power)
+      customAttributes.push(
+        `${TAB}${TAB}["Minimum_Political_Power"] = ${s.Minimum_Political_Power},`,
+      );
+    if (s.Is_Country && s.Is_Country.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Is_Country);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Is_Country"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Has_Leader && s.Has_Leader.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Has_Leader);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Has_Leader"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Has_Ideology && s.Has_Ideology.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Has_Ideology);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Has_Ideology"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Is_NOT_Ideology && s.Is_NOT_Ideology.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Is_NOT_Ideology);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Is_NOT_Ideology"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Has_Political_Law && s.Has_Political_Law.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Has_Political_Law);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Has_Political_Law"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.NOT_has_Political_Law && s.NOT_has_Political_Law.length > 0) {
+      const StringArray = toLongStringLuaArray(s.NOT_has_Political_Law);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["NOT_has_Political_Law"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Has_Policy && s.Has_Policy.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Has_Policy);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Has_Policy"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Does_NOT_Have_Policy && s.Does_NOT_Have_Policy.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Does_NOT_Have_Policy);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Does_NOT_Have_Policy"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Has_Modifier && s.Has_Modifier.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Has_Modifier);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Has_Modifier"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+    if (s.Does_NOT_Have_Modifier && s.Does_NOT_Have_Modifier.length > 0) {
+      const StringArray = toLongStringLuaArray(s.Does_NOT_Have_Modifier);
+
+      if (StringArray) {
+        customAttributes.push(
+          `${TAB}${TAB}["Does_NOT_Have_Modifier"] = [[\n` +
+            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}]],`,
+        );
+      }
+    }
+
+    // Assembly
     if (customAttributes.length > 0) {
       lines.push(``);
       lines.push(`${TAB}CustomAttributes = {`);
@@ -216,6 +376,7 @@ export function FormablerOutput(state: Ref<FormablerState>) {
     return lines.join("\n");
   });
 
+  // Final Output Text with Metadata and New Modifiers
   const outputText = computed(() => {
     if (validation.value.hasErrors || !luaCode.value) return "";
 

@@ -15,6 +15,16 @@ const allResourcesList = [
   "Uranium",
 ];
 
+const ideologiesList = [
+  "Democracy",
+  "Liberalism",
+  "Fascism",
+  "Nationalism",
+  "Communism",
+  "Socialism",
+  "Non-Aligned",
+];
+
 export async function FandomLists() {
   const { data: fandomData } = await useFetch("/api/fandom-data");
 
@@ -179,6 +189,34 @@ export async function FandomLists() {
     return [...new Set([...nations])].sort();
   });
 
+  // List 6: ALL LEADERS
+  const leadersList = computed(() => {
+    if (!fandomData.value) return [];
+    return Object.values(fandomData.value.Leaderdata?.leaderdata || {})
+      .map((l: any) => l.Title || "Unknown")
+      .sort();
+  });
+
+  // List 7: ALL POLITICAL LAWS
+  const politicalLawsList = computed(() => {
+    if (!fandomData.value) return [];
+    return Object.values(
+      fandomData.value.PoliticalLawdata?.politicallawdata || {},
+    )
+      .map((l: any) => l.Title || "Unknown")
+      .sort();
+  });
+
+  // List 8: ALL POLICIES
+  const policiesList = computed(() => {
+    if (!fandomData.value) return [];
+    return Object.values(
+      fandomData.value.Policydata?.policydata || {},
+    )
+      .map((l: any) => l.Title || "Unknown")
+      .sort();
+  });
+
   return {
     allCountriesList,
     baseCountriesList,
@@ -189,5 +227,9 @@ export async function FandomLists() {
     modifiersList,
     modifierEffectsData,
     allResourcesList,
+    leadersList,
+    politicalLawsList,
+    policiesList,
+    ideologiesList,
   };
 }

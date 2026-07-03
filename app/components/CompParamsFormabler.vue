@@ -43,6 +43,22 @@
         Stability_Requirement: '',
         Rename_Cities: [{}],
 
+        // Additional Requirements
+        Is_Country: [],
+        Has_Leader: [],
+        Has_Modifier: [],
+        Has_Policy: [],
+        Has_Ideology: [],
+        Maximum_Stability: '',
+        Minimum_Political_Power: '',
+        Does_NOT_Have_Modifier: [],
+        Does_NOT_Have_Policy: [],
+        Is_NOT_Ideology: [],
+        NOT_has_Political_Law: [],
+        Has_Political_Law: [],
+        At_War: '',
+        Peace_not_required: '',
+
         // Metadata
         SourcesDescription: ''
     });
@@ -58,7 +74,10 @@
         allTilesList,
         tileOwnersMap,
         modifiersList,
-        modifierEffectsData
+        modifierEffectsData,
+        leadersList,
+        politicalLawsList,
+        ideologiesList,
     } = await FandomLists();
 
     // Dynamically populated flags
@@ -272,6 +291,7 @@
 </script>
 
 <template>
+    <!-- Flag Display -->
     <div class="text-center mb-4 mt-3">
         <BButton size="lg" variant="primary" class="mb-3" @click="toggleFormableType">
             {{ state.type }}
@@ -288,7 +308,9 @@
         </swiper>
     </div>
 
+    <!-- Input Fields -->
     <BRow>
+        <!-- General Information -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -334,6 +356,7 @@
             </BCard>
         </BCol>
 
+        <!-- Alerts -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -385,6 +408,7 @@
             </BCard>
         </BCol>
 
+        <!-- Requirements -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -478,6 +502,7 @@
             </BCard>
         </BCol>
 
+        <!-- Modifiers -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -631,6 +656,7 @@
             </BCard>
         </BCol>
 
+        <!-- Attributes -->
         <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
@@ -691,13 +717,17 @@
                 </BCollapse>
             </BCard>
         </BCol>
-         <BCol md="12" class="mb-4">
+
+        <!-- Additional Requirements -->
+        <BCol md="12" class="mb-4">
             <BCard no-body class="border-yellow rounded-0">
                 <BCardHeader class="p-0 bg-grey-active bg-opacity-10 hover-overlay">
                     <BButton variant="link"
                         class="w-100 text-decoration-none text-start d-flex justify-content-between align-items-center p-3"
                         @click="isAdditionalRequirementsOpen = !isAdditionalRequirementsOpen">
-                        <h5 class="mb-0 fw-bold text-reset">Additional Requirements </h5><span class="text-red">(Unconfirmed formats, proceed at own risk)</span>
+                        <h5 class="mb-0 fw-bold text-reset">Additional Requirements </h5><span
+                            class="text-red">(Unconfirmed
+                            formats, proceed at own risk)</span>
                         <span class="text-reset">{{ isAdditionalRequirementsOpen ? '▼' : '◀' }}</span>
                     </BButton>
                 </BCardHeader>
@@ -705,13 +735,364 @@
                 <BCollapse v-model="isAdditionalRequirementsOpen">
                     <BCardBody class="position-relative p-3">
                         <BRow>
-                            <BCol md="12">
-                                <BFormCheckbox v-model="state.DoNotClearModifiers" class="fw-bold mb-3"
-                                    placeholder="Do Not Clear Modifiers">
-                                    Do Not Clear Modifiers
+                            <BCol md="6">
+                                <BFormCheckbox v-model="state.At_War" class="fw-bold mb-3" placeholder="At War">
+                                    At War
                                 </BFormCheckbox>
                             </BCol>
-                           
+                            <BCol md="6">
+                                <BFormCheckbox v-model="state.Peace_not_required" class="fw-bold mb-3"
+                                    placeholder="Peace Not Required">
+                                    Peace Not Required
+                                </BFormCheckbox>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Maximum Stability:" class="fw-bold mb-3">
+                                    <BFormInput type="number" min="0" max="100" v-model="state.Maximum_Stability"
+                                        placeholder="Maximum Stability" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Minimum Political Power Required:" class="fw-bold mb-3">
+                                    <BFormInput type="number" min="0" v-model="state.Minimum_Political_Power"
+                                        placeholder="Minimum Political Power" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Is Country:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Is_Country" :options="allCountriesList"
+                                        placeholder="e.g. United States, Scotland, Byzantine Empire" />
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Has Leader:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Has_Leader" :options="leadersList"
+                                        placeholder="e.g. Healthcare Minister, Education Minister"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+                                                {{ item }}
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Has Ideology:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Has_Ideology" :options="ideologiesList"
+                                        placeholder="e.g. Democracy, Communism, Fascism"
+                                        emptyMessage="No matching ideologies found" :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+                                                {{ item }}
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+
+                            <BCol md="6">
+                                <BFormGroup label="Is NOT Ideology:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Is_NOT_Ideology" :options="ideologiesList"
+                                        placeholder="e.g. Democracy, Communism, Fascism"
+                                        emptyMessage="No matching ideologies found" :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+                                                {{ item }}
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Has Political Law:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Has_Political_Law" :options="politicalLawsList"
+                                        placeholder="e.g. Unique_Monarchy:2,3"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">   
+                                <BFormGroup label="NOT has Political Law:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.NOT_has_Political_Law" :options="politicalLawsList"
+                                        placeholder="e.g. Unique_Monarchy:2,3"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Has Policy:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Has_Policy" :options="politicalLawsList"
+                                        placeholder="e.g. Expulsion Act, Underground Labs"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">   
+                                <BFormGroup label="Does NOT Have Policy:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Does_NOT_Have_Policy" :options="policiesList"
+                                        placeholder="e.g. Expulsion Act, Underground Labs"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">
+                                <BFormGroup label="Has Modifier:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Has_Modifier" :options="modifiersList"
+                                        placeholder="e.g. Expulsion Act, Underground Labs"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol md="6">   
+                                <BFormGroup label="Does NOT Have Modifier:" class="fw-bold mb-3">
+                                    <CompTagInput v-model="state.Does_NOT_Have_Modifier" :options="modifiersList"
+                                        placeholder="e.g. Expulsion Act, Underground Labs"
+                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
+                                        :clearOnSelect="false">
+                                        <template #chip="{ item, remove }">
+                                            <span
+                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
+                                                style="font-size: 0.85rem;" @click.stop="remove()">
+
+                                                <span class="d-flex me-2">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 24px; height: 16px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+
+                                                <button type="button" class="btn-close btn-close-white ms-2"
+                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
+                                                    tabindex="-1"></button>
+                                            </span>
+                                        </template>
+
+                                        <template #dropdown-item="{ item }">
+                                            <div class="d-flex align-items-center">
+                                                <span class="d-flex me-3">
+                                                    <!-- <img v-for="(nation, nIdx) in (tileOwnersMap[item] || [])"
+                                                        :key="nation" :src="`/api/flag/${encodeURIComponent(nation)}`"
+                                                        :alt="nation" :title="nation"
+                                                        class="border bg-ron-button-dark shadow-sm"
+                                                        style="width: 36px; height: 24px; object-fit: cover; position: relative;"
+                                                        :style="{ zIndex: nIdx }" loading="lazy"> -->
+                                                </span>
+                                                {{ item }}
+                                            </div>
+                                        </template>
+                                    </CompTagInput>
+                                </BFormGroup>
+                            </BCol>
                         </BRow>
                     </BCardBody>
                 </BCollapse>
@@ -720,6 +1101,7 @@
 
     </BRow>
 
+    <!-- Output -->
     <BRow>
         <BCol md="12">
             <CompOutput :content="outputText">
