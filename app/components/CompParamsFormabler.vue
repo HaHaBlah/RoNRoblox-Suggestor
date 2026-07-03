@@ -53,9 +53,8 @@
         Minimum_Political_Power: '',
         Does_NOT_Have_Modifier: [],
         Does_NOT_Have_Policy: [],
-        Is_NOT_Ideology: [],
-        NOT_has_Political_Law: [],
-        Has_Political_Law: [],
+        NOT_has_Political_Law: {},
+        Has_Political_Law: {},
         At_War: '',
         Peace_not_required: '',
 
@@ -76,7 +75,7 @@
         modifiersList,
         modifierEffectsData,
         leadersList,
-        politicalLawsList,
+        lawnamesMap,
         policiesList,
         ideologiesList,
     } = await FandomLists();
@@ -289,6 +288,93 @@
 
         return 'text-white';
     };
+
+    // === POLITICAL LAW REQUIREMENT PICKER ===
+    const sortedLaws = computed(() =>
+        Object.entries(lawnamesMap.value).sort(([, a], [, b]) => a.Name.localeCompare(b.Name))
+    );
+
+    const selectedLawCode = ref(null);
+    const selectedLawName = computed(() =>
+        selectedLawCode.value ? (lawnamesMap.value[selectedLawCode.value]?.Name ?? '') : ''
+    );
+    const selectedLawTypes = computed(() =>
+        selectedLawCode.value ? (lawnamesMap.value[selectedLawCode.value]?.Types ?? {}) : {}
+    );
+
+    const selectLaw = (code) => {
+        selectedLawCode.value = selectedLawCode.value === code ? null : code;
+    };
+
+    const lawSelectionVariant = (code) => {
+        const hasLaws = (state.Has_Political_Law[code]?.length ?? 0) > 0;
+        const hasNotLaws = (state.NOT_has_Political_Law[code]?.length ?? 0) > 0;
+
+        if (hasLaws && hasNotLaws) return 'mixed';
+        if (hasLaws) return 'green';
+        if (hasNotLaws) return 'red';
+        return 'yellow';
+    };
+
+    // Cycles a level: unset -> Required (Has) -> Forbidden (NOT has) -> unset
+    const toggleLawLevel = (levelKey) => {
+        const code = selectedLawCode.value;
+        if (!code) return;
+
+        if (!state.Has_Political_Law[code]) state.Has_Political_Law[code] = [];
+        if (!state.NOT_has_Political_Law[code]) state.NOT_has_Political_Law[code] = [];
+
+        const lawArr = state.Has_Political_Law[code];
+        const notLawArr = state.NOT_has_Political_Law[code];
+
+        // Ensure array entries are numbers when possible
+        const val = isNaN(Number(levelKey)) ? levelKey : Number(levelKey);
+
+        if (lawArr.includes(val)) {
+            lawArr.splice(lawArr.indexOf(val), 1);
+            notLawArr.push(val);
+        } else if (notLawArr.includes(val)) {
+            notLawArr.splice(notLawArr.indexOf(val), 1);
+        } else {
+            lawArr.push(val);
+        }
+
+        // Clean up empty arrays to keep JSON clean
+        if (!lawArr.length) delete state.Has_Political_Law[code];
+        if (!notLawArr.length) delete state.NOT_has_Political_Law[code];
+    };
+
+    const levelVariant = (levelKey) => {
+        const code = selectedLawCode.value;
+        if (!code) return 'yellow';
+
+        const val = isNaN(Number(levelKey)) ? levelKey : Number(levelKey);
+        const lawArr = state.Has_Political_Law[code] ?? [];
+        const notLawArr = state.NOT_has_Political_Law[code] ?? [];
+
+        if (lawArr.includes(val)) return 'green';
+        if (notLawArr.includes(val)) return 'red';
+        return 'yellow';
+    };
+
+    const getLawName = (code) => lawnamesMap.value[code]?.Name ?? code;
+    const getLevelText = (code, key) => lawnamesMap.value[code]?.Types?.[key] ?? key;
+
+    const formatLawsObj = (obj) => {
+        return (
+            Object.entries(obj)
+                .filter(([, v]) => v?.length)
+                .map(
+                    ([code, levels]) =>
+                        `${getLawName(code)}: ${levels.map((l) => getLevelText(code, l)).join(', ')}`
+                )
+                .join(' | ') || 'None'
+        );
+    };
+
+    // Hook directly into state
+    const overviewHasLawsText = computed(() => formatLawsObj(state.Has_Political_Law));
+    const overviewNotLawsText = computed(() => formatLawsObj(state.NOT_has_Political_Law));
 </script>
 
 <template>
@@ -836,54 +922,46 @@
                                     </CompTagInput>
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="6">
-                                <BFormGroup label="Has Political Law:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.Has_Political_Law" :options="politicalLawsList"
-                                        placeholder="e.g. Unique_Monarchy:2,3"
-                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
-                                        :clearOnSelect="false">
-                                        <template #chip="{ item, remove }">
-                                            <span
-                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
-                                                style="font-size: 0.85rem;" @click.stop="remove()">
-                                                {{ item }}
-                                                <button type="button" class="btn-close btn-close-white ms-2"
-                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
-                                                    tabindex="-1"></button>
-                                            </span>
-                                        </template>
+                            <BCol md="12">
+                                <BFormGroup class="fw-bold mb-3">
+                                    <template #label>
+                                        Political Laws
+                                        <span class="fw-normal text-muted small d-block d-md-inline ms-md-2">
+                                            (click a law, then click a level to require it
+                                            <span class="text-green">green</span> or forbid it
+                                            <span class="text-red">red</span>)
+                                        </span>
+                                    </template>
+                                    <div class="small mb-3 border-bottom pb-2">
+                                        <div><strong class="text-green">Has Political Law:</strong>
+                                            {{ overviewHasLawsText }}</div>
+                                        <div><strong class="text-red">NOT has Political Law:</strong>
+                                            {{ overviewNotLawsText }}</div>
+                                    </div>
 
-                                        <template #dropdown-item="{ item }">
-                                            <div class="d-flex align-items-center">
-                                                {{ item }}
-                                            </div>
-                                        </template>
-                                    </CompTagInput>
-                                </BFormGroup>
-                            </BCol>
-                            <BCol md="6">
-                                <BFormGroup label="NOT has Political Law:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.NOT_has_Political_Law" :options="politicalLawsList"
-                                        placeholder="e.g. Unique_Monarchy:2,3"
-                                        emptyMessage="Autofill not implemented yet, press enter to add new entry"
-                                        :clearOnSelect="false">
-                                        <template #chip="{ item, remove }">
-                                            <span
-                                                class="badge bg-ron-button-dark d-flex align-items-center py-1 ps-2 pe-2 deletable-chip"
-                                                style="font-size: 0.85rem;" @click.stop="remove()">
-                                                {{ item }}
-                                                <button type="button" class="btn-close btn-close-white ms-2"
-                                                    style="font-size: 0.5em; pointer-events: none;" aria-label="Remove"
-                                                    tabindex="-1"></button>
-                                            </span>
-                                        </template>
+                                    <div v-if="!sortedLaws.length" class="text-center py-2">
+                                        <BSpinner small label="Loading Laws..."></BSpinner>
+                                    </div>
 
-                                        <template #dropdown-item="{ item }">
-                                            <div class="d-flex align-items-center">
-                                                {{ item }}
-                                            </div>
-                                        </template>
-                                    </CompTagInput>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <BButton class="ron-button" v-for="[code, law] in sortedLaws" :key="code"
+                                            size="sm" :variant="lawSelectionVariant(code)" @click="selectLaw(code)">
+                                            {{ law.Name }}
+                                        </BButton>
+                                    </div>
+
+                                    <!-- Selected Law Levels -->
+                                    <div v-if="selectedLawName" class="mt-3 border-top pt-3">
+                                        <h6 class="fw-bold mb-2">{{ selectedLawName }}</h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <BButton class="ron-button"
+                                                v-for="(levelText, levelKey) in selectedLawTypes" :key="levelKey"
+                                                size="sm" :variant="levelVariant(String(levelKey))"
+                                                @click="toggleLawLevel(String(levelKey))">
+                                                {{ levelText }}
+                                            </BButton>
+                                        </div>
+                                    </div>
                                 </BFormGroup>
                             </BCol>
                             <BCol md="6">

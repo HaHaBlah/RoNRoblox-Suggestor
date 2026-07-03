@@ -12,6 +12,13 @@
 
     const changelog: ChangelogEntry[] = [
         {
+            date: '2026-07-03',
+            version: 'v2.6',
+            changes: [
+                'Addded Additional Requirements section to Formabler',
+            ],
+        },
+        {
             date: '2026-07-01',
             version: 'v2.5',
             changes: [

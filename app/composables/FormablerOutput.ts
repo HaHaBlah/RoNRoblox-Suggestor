@@ -46,8 +46,8 @@ export interface FormablerState {
   Does_NOT_Have_Modifier: string[];
   Does_NOT_Have_Policy: string[];
   Is_NOT_Ideology: string[];
-  NOT_has_Political_Law: string[];
-  Has_Political_Law: string[];
+  NOT_has_Political_Law: Record<string, any[]>;
+  Has_Political_Law: Record<string, any[]>;
   At_War: boolean | string;
   Peace_not_required: boolean | string;
 
@@ -100,6 +100,25 @@ export function FormablerOutput(state: Ref<FormablerState>) {
 
     if (!items.length) return null;
     return `[${items.map((i) => `"${i}"`).join(", ")}]`;
+  };
+
+  const toJsonDictionary = (input: Record<string, any[]>) => {
+    if (!input || Object.keys(input).length === 0) return null;
+
+    let hasContent = false;
+    const stringifiedInput: Record<string, string[]> = {};
+
+    // Validate content and map all array items to strings
+    for (const key in input) {
+      if (input[key] && input[key].length > 0) {
+        hasContent = true;
+        stringifiedInput[key] = input[key].map((item) => String(item));
+      }
+    }
+
+    if (!hasContent) return null;
+
+    return JSON.stringify(stringifiedInput);
   };
 
   const validation = computed(() => {
@@ -297,24 +316,28 @@ export function FormablerOutput(state: Ref<FormablerState>) {
         );
       }
     }
-    if (s.Has_Political_Law && s.Has_Political_Law.length > 0) {
-      const StringArray = toLongStringLuaArray(s.Has_Political_Law);
+    if (s.Has_Political_Law && Object.keys(s.Has_Political_Law).length > 0) {
+      const dictStr = toJsonDictionary(s.Has_Political_Law);
 
-      if (StringArray) {
+      if (dictStr) {
         customAttributes.push(
           `${TAB}${TAB}["Has_Political_Law"] = [[\n` +
-            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}${TAB}${TAB}${dictStr}\n` +
             `${TAB}${TAB}]],`,
         );
       }
     }
-    if (s.NOT_has_Political_Law && s.NOT_has_Political_Law.length > 0) {
-      const StringArray = toLongStringLuaArray(s.NOT_has_Political_Law);
 
-      if (StringArray) {
+    if (
+      s.NOT_has_Political_Law &&
+      Object.keys(s.NOT_has_Political_Law).length > 0
+    ) {
+      const dictStr = toJsonDictionary(s.NOT_has_Political_Law);
+
+      if (dictStr) {
         customAttributes.push(
           `${TAB}${TAB}["NOT_has_Political_Law"] = [[\n` +
-            `${TAB}${TAB}${TAB}${TAB}${StringArray}\n` +
+            `${TAB}${TAB}${TAB}${TAB}${dictStr}\n` +
             `${TAB}${TAB}]],`,
         );
       }

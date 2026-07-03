@@ -207,6 +207,12 @@ export async function FandomLists() {
       .sort();
   });
 
+  // Map: LAW CODE -> { Name, Types } (For "Political Laws" requirement pickers)
+  const lawnamesMap = computed(() => {
+    if (!fandomData.value) return {};
+    return fandomData.value.Lawnames?.lawNames || {};
+  });
+
   // List 8: ALL POLICIES
   const policiesList = computed(() => {
     if (!fandomData.value) return [];
@@ -229,6 +235,7 @@ export async function FandomLists() {
     allResourcesList,
     leadersList,
     politicalLawsList,
+    lawnamesMap,
     policiesList,
     ideologiesList,
   };
