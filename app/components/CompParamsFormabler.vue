@@ -77,6 +77,7 @@
         modifierEffectsData,
         leadersList,
         politicalLawsList,
+        policiesList,
         ideologiesList,
     } = await FandomLists();
 
@@ -878,7 +879,7 @@
                                     </CompTagInput>
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="6">   
+                            <BCol md="6">
                                 <BFormGroup label="NOT has Political Law:" class="fw-bold mb-3">
                                     <CompTagInput v-model="state.NOT_has_Political_Law" :options="politicalLawsList"
                                         placeholder="e.g. Unique_Monarchy:2,3"
@@ -923,8 +924,7 @@
                             </BCol>
                             <BCol md="6">
                                 <BFormGroup label="Has Policy:" class="fw-bold mb-3">
-                                    <CompTagInput v-model="state.Has_Policy" :options="politicalLawsList"
-                                        placeholder="e.g. Expulsion Act, Underground Labs"
+                                    <CompTagInput v-model="state.Has_Policy" :options="policiesList" placeholder="e.g. Expulsion Act, Underground Labs"
                                         emptyMessage="Autofill not implemented yet, press enter to add new entry"
                                         :clearOnSelect="false">
                                         <template #chip="{ item, remove }">
@@ -964,7 +964,7 @@
                                     </CompTagInput>
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="6">   
+                            <BCol md="6">
                                 <BFormGroup label="Does NOT Have Policy:" class="fw-bold mb-3">
                                     <CompTagInput v-model="state.Does_NOT_Have_Policy" :options="policiesList"
                                         placeholder="e.g. Expulsion Act, Underground Labs"
@@ -1050,7 +1050,7 @@
                                     </CompTagInput>
                                 </BFormGroup>
                             </BCol>
-                            <BCol md="6">   
+                            <BCol md="6">
                                 <BFormGroup label="Does NOT Have Modifier:" class="fw-bold mb-3">
                                     <CompTagInput v-model="state.Does_NOT_Have_Modifier" :options="modifiersList"
                                         placeholder="e.g. Expulsion Act, Underground Labs"
