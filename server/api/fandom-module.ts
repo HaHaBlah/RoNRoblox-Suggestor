@@ -6,10 +6,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "Module name is required" });
   }
 
+  // Instruct Cloudflare Edge CDN and browser to cache module source
+  setResponseHeader(
+    event,
+    "Cache-Control",
+    "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
+  );
+
   return await fetchWithFallback(moduleName);
 });
 
-async function fetchWithFallback(moduleName: string) {
+export async function fetchWithFallback(moduleName: string) {
   // Primary: REST API
   try {
     const primaryUrl = `https://ronroblox.fandom.com/rest.php/v1/page/Module%3A${encodeURIComponent(moduleName)}`;

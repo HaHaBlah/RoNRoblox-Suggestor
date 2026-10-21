@@ -3,7 +3,16 @@
 import Aura from "@primeuix/themes/aura";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
+  ssr: false,
   devtools: { enabled: true },
+  routeRules: {
+    "/api/**": {
+      headers: {
+        "Cache-Control":
+          "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
+      },
+    },
+  },
   modules: [
     "nitro-cloudflare-dev",
     "@bootstrap-vue-next/nuxt",
@@ -60,6 +69,20 @@ export default defineNuxtConfig({
     preset: "cloudflare-pages",
     cloudflare: {
       nodeCompat: true,
+    },
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        "/",
+        "/Formabler",
+        "/Dyn-Flagger",
+        "/Cityer",
+        "/Releasabler",
+        "/Resourcer",
+        "/Credits",
+        "/Changelog",
+        "/Sitemap",
+      ],
     },
   },
 

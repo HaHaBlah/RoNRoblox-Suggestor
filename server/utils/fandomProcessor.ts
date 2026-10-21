@@ -1,5 +1,6 @@
 // server/utils/fandomProcessor.ts
 import luaparse from "luaparse";
+import { fetchWithFallback } from "../api/fandom-module";
 
 const fandomModules: Record<string, string> = {
   Lawnames: "Lawnames",
@@ -18,12 +19,10 @@ export async function getFandomImageUrl(filename: string, baseUrl = "") {
   return `/api/fandom-image?proxy=true&url=${encodeURIComponent(data.url)}`;
 }
 
-async function loadAllModules(baseUrl: string) {
+async function loadAllModules() {
   const modulePromises = Object.entries(fandomModules).map(
     async ([name, moduleName]) => {
-      const data = await $fetch<{ source: string }>(
-        `${baseUrl}/api/fandom-module?module=${encodeURIComponent(moduleName)}`,
-      );
+      const data = await fetchWithFallback(moduleName);
       return [name, data.source] as const;
     },
   );
@@ -34,7 +33,7 @@ async function loadAllModules(baseUrl: string) {
 type LuaValue = string | number | boolean | null | LuaTable;
 type LuaTable = { [key: string | number]: LuaValue };
 
-async function extractValue(node: any): Promise<LuaValue> {
+function extractValue(node: any): LuaValue {
   if (!node) return null;
 
   switch (node.type) {
@@ -52,37 +51,36 @@ async function extractValue(node: any): Promise<LuaValue> {
     case "NilLiteral":
       return null;
 
-    // 1. ADDED: Support for negative numbers (e.g., -10)
+    // 1. Support for negative numbers (e.g., -10)
     case "UnaryExpression": {
-      const argument = await extractValue(node.argument);
+      const argument = extractValue(node.argument);
       if (node.operator === "-" && typeof argument === "number") {
         return -argument;
       }
       return null;
     }
 
-    // 2. ADDED: Support for Color3.fromRGB(r, g, b)
+    // 2. Support for Color3.fromRGB(r, g, b)
     case "CallExpression": {
       if (
-        node.base.type === "MemberExpression" &&
-        node.base.base.type === "Identifier" &&
-        node.base.base.name === "Color3" &&
-        node.base.identifier.type === "Identifier" &&
-        node.base.identifier.name === "fromRGB"
+        node.base?.type === "MemberExpression" &&
+        node.base?.base?.type === "Identifier" &&
+        node.base?.base?.name === "Color3" &&
+        node.base?.identifier?.type === "Identifier" &&
+        node.base?.identifier?.name === "fromRGB"
       ) {
-        const r = await extractValue(node.arguments[0]);
-        const g = await extractValue(node.arguments[1]);
-        const b = await extractValue(node.arguments[2]);
+        const r = extractValue(node.arguments[0]);
+        const g = extractValue(node.arguments[1]);
+        const b = extractValue(node.arguments[2]);
 
-        // Return as a 1-indexed object to seamlessly match how your extractTable handles {r, g, b}
         return { 1: r, 2: g, 3: b };
       }
       return null;
     }
 
     case "BinaryExpression": {
-      const left = await extractValue(node.left);
-      const right = await extractValue(node.right);
+      const left = extractValue(node.left);
+      const right = extractValue(node.right);
       if (typeof left === "number" && typeof right === "number") {
         switch (node.operator) {
           case "+":
@@ -103,33 +101,34 @@ async function extractValue(node: any): Promise<LuaValue> {
     }
 
     case "TableConstructorExpression":
-      return await extractTable(node);
+      return extractTable(node);
 
     default:
       return null;
   }
 }
 
-async function extractTable(tableNode: any): Promise<LuaTable> {
+function extractTable(tableNode: any): LuaTable {
   const obj: LuaTable = {};
+  let arrayIndex = 1;
 
-  for (const field of tableNode.fields) {
+  for (let i = 0; i < tableNode.fields.length; i++) {
+    const field = tableNode.fields[i];
     if (field.type === "TableKey") {
-      const key = await extractValue(field.key);
-      obj[key as string | number] = await extractValue(field.value);
+      const key = extractValue(field.key);
+      obj[key as string | number] = extractValue(field.value);
     } else if (field.type === "TableKeyString") {
-      obj[field.key.name] = await extractValue(field.value);
+      obj[field.key.name] = extractValue(field.value);
     } else if (field.type === "TableValue") {
-      obj[tableNode.fields.indexOf(field) + 1] = await extractValue(
-        field.value,
-      );
+      // O(1) sequential Lua 1-based indexing instead of O(N^2) indexOf
+      obj[arrayIndex++] = extractValue(field.value);
     }
   }
 
   return obj;
 }
 
-async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
+function extractDataFromAST(ast: any): Record<string, LuaValue> {
   const result: Record<string, LuaValue> = {};
 
   for (const statement of ast.body) {
@@ -138,28 +137,26 @@ async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
       statement.type === "LocalStatement"
     ) {
       const variable = statement.variables[0];
-      const initValue = await extractValue(statement.init[0]);
+      const initValue = extractValue(statement.init[0]);
 
       if (variable.type === "Identifier") {
-        // Handles: local ModifierEffectsdata = {}
         result[variable.name] = initValue;
-        
       } else if (variable.type === "MemberExpression") {
-        // Handles dot notation: ModifierEffectsdata.PositiveIsGreen = { ... }
         const baseName = variable.base.name;
         const key = variable.identifier.name;
 
-        // Ensure the base table exists in our result object before appending
         if (result[baseName] && typeof result[baseName] === "object") {
           (result[baseName] as LuaTable)[key] = initValue;
         }
-        
       } else if (variable.type === "IndexExpression") {
-        // Handles bracket notation: ModifierEffectsdata["PositiveIsGreen"] = { ... } 
         const baseName = variable.base.name;
-        const key = await extractValue(variable.index);
+        const key = extractValue(variable.index);
 
-        if (result[baseName] && typeof result[baseName] === "object" && key !== null) {
+        if (
+          result[baseName] &&
+          typeof result[baseName] === "object" &&
+          key !== null
+        ) {
           (result[baseName] as LuaTable)[key as string | number] = initValue;
         }
       }
@@ -169,14 +166,14 @@ async function extractDataFromAST(ast: any): Promise<Record<string, LuaValue>> {
   return result;
 }
 
-export async function getFandomData(baseUrl = "") {
-  const allModules = await loadAllModules(baseUrl);
+export async function getFandomData(_baseUrl = "") {
+  const allModules = await loadAllModules();
   const extractedData: Record<string, Record<string, LuaValue>> = {};
 
   for (const [name, source] of Object.entries(allModules)) {
     try {
       const ast = luaparse.parse(source);
-      extractedData[name] = await extractDataFromAST(ast);
+      extractedData[name] = extractDataFromAST(ast);
     } catch (error) {
       console.error(`Error parsing ${name}:`, error);
     }
