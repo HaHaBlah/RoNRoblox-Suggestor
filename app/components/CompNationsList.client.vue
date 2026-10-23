@@ -12,7 +12,7 @@
   }
 
   const emit = defineEmits<{ select: [name: string] }>()
-  const { data, status, error } = await useFetch<FandomData>('/api/fandom-data')
+  const { data, status, error } = await useFetch<FandomData>('/data/fandom-data.json')
 
   const nations = computed(() => data.value ? Object.entries(data.value.Nationdata.nationdata).filter(([, v]) => v.nation === true).map(([k]) => k).sort() : [])
   const releasables = computed(() => data.value ? Object.entries(data.value.Nationdata.nationdata).filter(([, v]) => v.nation === false).map(([k]) => k).sort() : [])

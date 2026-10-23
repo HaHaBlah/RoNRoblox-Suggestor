@@ -6,6 +6,24 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
   routeRules: {
+    "/data/**": {
+      headers: {
+        "Cache-Control":
+          "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400",
+      },
+    },
+    "/api/flag/**": {
+      headers: {
+        "Cache-Control":
+          "public, max-age=31536000, s-maxage=31536000, immutable",
+      },
+    },
+    "/api/resource/**": {
+      headers: {
+        "Cache-Control":
+          "public, max-age=31536000, s-maxage=31536000, immutable",
+      },
+    },
     "/api/**": {
       headers: {
         "Cache-Control":

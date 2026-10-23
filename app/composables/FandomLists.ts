@@ -26,7 +26,7 @@ const ideologiesList = [
 ];
 
 export async function FandomLists() {
-  const { data: fandomData } = await useFetch("/api/fandom-data");
+  const { data: fandomData } = await useFetch("/data/fandom-data.json");
 
   // List 1: EVERYTHING (For "Countries That Can Form")
   const allCountriesList = computed(() => {

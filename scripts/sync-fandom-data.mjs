@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const dataDir = path.join(projectRoot, "server", "data");
 const targetFile = path.join(dataDir, "fandom-data.json");
+const publicDataDir = path.join(projectRoot, "public", "data");
+const publicTargetFile = path.join(publicDataDir, "fandom-data.json");
 
 const fandomModules = {
   Lawnames: "Lawnames",
@@ -164,11 +166,18 @@ async function main() {
       extracted[key] = extractDataFromASTSync(ast);
     }
 
+    const jsonString = JSON.stringify(extracted);
     fs.mkdirSync(dataDir, { recursive: true });
-    fs.writeFileSync(targetFile, JSON.stringify(extracted));
-    console.log(`Successfully synced Fandom data to ${targetFile} (${fs.statSync(targetFile).size} bytes).`);
+    fs.writeFileSync(targetFile, jsonString);
+    fs.mkdirSync(publicDataDir, { recursive: true });
+    fs.writeFileSync(publicTargetFile, jsonString);
+    console.log(`Successfully synced Fandom data to ${targetFile} and ${publicTargetFile} (${fs.statSync(targetFile).size} bytes).`);
   } catch (error) {
     if (fs.existsSync(targetFile)) {
+      if (!fs.existsSync(publicTargetFile)) {
+        fs.mkdirSync(publicDataDir, { recursive: true });
+        fs.copyFileSync(targetFile, publicTargetFile);
+      }
       console.warn(`Warning: Failed to sync latest Fandom data: ${error.message}`);
       console.warn(`Continuing build using existing ${targetFile}.`);
     } else {

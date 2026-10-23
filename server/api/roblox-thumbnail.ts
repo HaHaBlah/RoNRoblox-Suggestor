@@ -1,4 +1,5 @@
 // server/api/roblox-thumbnail.ts
+
 interface ThumbnailResult {
   imageUrl: string;
   state: string;
@@ -8,14 +9,15 @@ interface ThumbnailResult {
 async function fetchThumbnailWithRetry(
   imageID: string,
   size: string,
-  maxRetries = 5,
-  delayMs = 1000,
+  maxRetries = 3,
+  delayMs = 500,
 ): Promise<ThumbnailResult> {
   const apiUrl = `https://thumbnails.roblox.com/v1/assets?assetIds=${encodeURIComponent(imageID)}&size=${encodeURIComponent(size)}&format=Png&isCircular=false`;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const data = await $fetch<{ data: { state: string; imageUrl: string }[] }>(
       apiUrl,
+      { timeout: 4000 }
     );
 
     const thumbnail = data?.data?.[0];
@@ -27,9 +29,6 @@ async function fetchThumbnailWithRetry(
 
     if (thumbnail.state === "Pending") {
       if (attempt < maxRetries) {
-        console.log(
-          `Thumbnail for ${imageID} is Pending (attempt ${attempt}/${maxRetries}). Retrying in ${delayMs}ms...`,
-        );
         await new Promise((resolve) => setTimeout(resolve, delayMs));
         continue;
       }
@@ -46,7 +45,6 @@ async function fetchThumbnailWithRetry(
     };
   }
 
-  // Unreachable, but satisfies TS
   throw createError({ statusCode: 500, message: "Thumbnail fetch failed" });
 }
 
@@ -62,12 +60,51 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const reqUrl = getRequestURL(event).toString();
+
+  // 1. Check Cloudflare Edge Cache API
+  // @ts-ignore
+  const cfCache = typeof caches !== "undefined" && caches.default ? caches.default : null;
+  if (cfCache) {
+    try {
+      const cached = await cfCache.match(reqUrl);
+      if (cached) {
+        return cached;
+      }
+    } catch {
+      // Ignore cache match error
+    }
+  }
+
+  const waitUntil = (promise: Promise<any>) => {
+    const cfContext = (event.context as any).cloudflare?.context;
+    if (cfContext?.waitUntil) {
+      cfContext.waitUntil(promise);
+    } else if ((event as any).waitUntil) {
+      (event as any).waitUntil(promise);
+    }
+  };
+
   const result = await fetchThumbnailWithRetry(imageID, size);
 
-  setResponseHeader(event, "Cache-Control", "public, max-age=3600");
-  return {
+  const payload = {
     imageUrl: result.imageUrl,
     state: result.state,
     fullData: result.fullData,
   };
+
+  const response = new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=604800, s-maxage=604800", // Cache for 7 days
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  if (cfCache) {
+    waitUntil(cfCache.put(reqUrl, response.clone()));
+  }
+
+  return response;
 });

@@ -9,6 +9,31 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const reqUrl = getRequestURL(event).toString();
+
+  // 1. Check Cloudflare Edge Cache API
+  // @ts-ignore
+  const cfCache = typeof caches !== "undefined" && caches.default ? caches.default : null;
+  if (cfCache) {
+    try {
+      const cached = await cfCache.match(reqUrl);
+      if (cached) {
+        return cached;
+      }
+    } catch {
+      // Ignore cache match error
+    }
+  }
+
+  const waitUntil = (promise: Promise<any>) => {
+    const cfContext = (event.context as any).cloudflare?.context;
+    if (cfContext?.waitUntil) {
+      cfContext.waitUntil(promise);
+    } else if ((event as any).waitUntil) {
+      (event as any).waitUntil(promise);
+    }
+  };
+
   const config = useRuntimeConfig();
 
   // Resolve decal → CDN location
@@ -50,6 +75,20 @@ export default defineEventHandler(async (event) => {
       message: "Could not find Texture ID in decal XML",
     });
 
-  setResponseHeader(event, "Cache-Control", "public, max-age=3600");
-  return { imageId: match[1], decalId: decalid };
+  const payload = { imageId: match[1], decalId: decalid };
+
+  const response = new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable", // Decals never change
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  if (cfCache) {
+    waitUntil(cfCache.put(reqUrl, response.clone()));
+  }
+
+  return response;
 });

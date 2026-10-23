@@ -15,7 +15,7 @@
     Lawnames: { lawNames: Record<string, LawEntry> }
   }
 
-  const { data: fandomData } = await useFetch<FandomData>('/api/fandom-data')
+  const { data: fandomData } = await useFetch<FandomData>('/data/fandom-data.json')
   const lawnames = computed(() => fandomData.value?.Lawnames?.lawNames ?? {})
 
   const nationFlagSrc = ref(unknownFlag)

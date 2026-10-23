@@ -7,8 +7,8 @@
     "build": "node scripts/sync-fandom-data.mjs && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "npm run build && wrangler dev .output/server/index.mjs --assets .output/public --compatibility-date=2025-07-15",
-    "deploy": "npm run build && wrangler pages deploy .output/public"
+    "preview": "npm run build && wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist"
   },
   "dependencies": {
     "@bootstrap-vue-next/nuxt": "^0.44.3",
