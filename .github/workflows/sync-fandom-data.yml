@@ -1,0 +1,44 @@
+name: Sync Fandom Wiki Data
+
+on:
+  schedule:
+    # Runs daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  # Allows manual execution from the GitHub Actions tab anytime
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Fandom Wiki Lua data
+        run: node scripts/sync-fandom-data.mjs
+
+      - name: Check for changes and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/fandom-data.json server/data/fandom-data.json
+          if git diff --staged --quiet; then
+            echo "Fandom data is already up to date. No changes to commit."
+          else
+            git commit -m "chore: auto-sync latest Fandom Wiki data"
+            git push
+            echo "Committed and pushed updated Fandom data."
+          fi
