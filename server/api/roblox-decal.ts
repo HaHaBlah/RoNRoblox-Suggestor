@@ -41,6 +41,8 @@ export default defineEventHandler(async (event) => {
     `https://apis.roblox.com/asset-delivery-api/v1/assetId/${encodeURIComponent(decalid)}`,
     {
       headers: { "x-api-key": config.robloxApiKey },
+      // @ts-ignore
+      cf: { cacheEverything: true, cacheTtl: 31536000 },
     },
   ).catch((err) => {
     throw createError({
@@ -57,8 +59,11 @@ export default defineEventHandler(async (event) => {
     });
 
   // Fetch the decal XML from the CDN
-  const xml = await $fetch<string>(cdnUrl, { responseType: "text" }).catch(
-    (err) => {
+  const xml = await $fetch<string>(cdnUrl, {
+    responseType: "text",
+    // @ts-ignore
+    cf: { cacheEverything: true, cacheTtl: 31536000 },
+  }).catch((err) => {
       throw createError({
         statusCode: 500,
         message: `CDN fetch error: ${err.message}`,

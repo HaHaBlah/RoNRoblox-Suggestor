@@ -17,7 +17,11 @@ async function fetchThumbnailWithRetry(
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const data = await $fetch<{ data: { state: string; imageUrl: string }[] }>(
       apiUrl,
-      { timeout: 4000 }
+      {
+        timeout: 4000,
+        // @ts-ignore
+        cf: { cacheEverything: true, cacheTtl: 604800 },
+      }
     );
 
     const thumbnail = data?.data?.[0];

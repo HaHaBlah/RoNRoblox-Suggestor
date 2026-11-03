@@ -39,15 +39,18 @@ export default defineEventHandler(async (event) => {
         "User-Agent": "Mozilla/5.0",
         Referer: "https://ronroblox.fandom.com/",
       },
+      // @ts-ignore
+      cf: { cacheEverything: true, cacheTtl: 31536000 },
     });
 
-    if (!imgResponse.ok || !imgResponse.body) {
+    if (!imgResponse.ok) {
       throw createError({ statusCode: imgResponse.status, message: "Failed to fetch image" });
     }
 
     const contentType = imgResponse.headers.get("Content-Type") ?? "image/png";
+    const imageBytes = await imgResponse.arrayBuffer();
 
-    const response = new Response(imgResponse.body, {
+    const response = new Response(imageBytes, {
       status: 200,
       headers: {
         "Content-Type": contentType,
@@ -88,6 +91,8 @@ export default defineEventHandler(async (event) => {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       Accept: "application/json",
     },
+    // @ts-ignore
+    cf: { cacheEverything: true, cacheTtl: 604800 },
     timeout: 5000,
   }).catch((err) => {
     throw createError({

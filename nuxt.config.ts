@@ -87,6 +87,12 @@ export default defineNuxtConfig({
     preset: "cloudflare-pages",
     cloudflare: {
       nodeCompat: true,
+      pages: {
+        routes: {
+          include: ["/api/*"],
+          exclude: [],
+        },
+      },
     },
     prerender: {
       crawlLinks: true,

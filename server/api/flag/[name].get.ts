@@ -1,8 +1,10 @@
 // server/api/flag/[name].get.ts
 
-const TRANSPARENT_1X1_PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
-  "base64"
+const TRANSPARENT_1X1_PNG = Uint8Array.from(
+  atob(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+  ),
+  (c) => c.charCodeAt(0)
 );
 
 export default defineEventHandler(async (event) => {
@@ -38,9 +40,11 @@ export default defineEventHandler(async (event) => {
     const filename = `${name}_Flag.png`;
     const fandomApiUrl = `https://ronroblox.fandom.com/rest.php/v1/file/File:${encodeURIComponent(filename)}`;
 
-    // 1. Get the actual image URL from Fandom
+    // 1. Get the actual image URL from Fandom (cached at Cloudflare edge for 7 days)
     const data = await $fetch<{ preferred?: { url: string } }>(fandomApiUrl, {
       headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+      // @ts-ignore
+      cf: { cacheEverything: true, cacheTtl: 604800 },
       timeout: 5000,
     });
 
@@ -48,22 +52,25 @@ export default defineEventHandler(async (event) => {
       throw new Error("No URL found");
     }
 
-    // 2. Fetch the actual image bytes with Fandom Referer
+    // 2. Fetch the actual image bytes with Fandom Referer (cached at Cloudflare edge for 1 year)
     const imgResponse = await fetch(data.preferred.url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         Referer: "https://ronroblox.fandom.com/",
       },
+      // @ts-ignore
+      cf: { cacheEverything: true, cacheTtl: 31536000 },
     });
 
-    if (!imgResponse.ok || !imgResponse.body) {
+    if (!imgResponse.ok) {
       throw new Error(`Failed to fetch image: ${imgResponse.status}`);
     }
 
     const contentType = imgResponse.headers.get("Content-Type") || "image/png";
+    const imageBytes = await imgResponse.arrayBuffer();
 
-    // 3. Return native Web Response directly from stream — NO JS stream piping!
-    const response = new Response(imgResponse.body, {
+    // 3. Return native Web Response from ArrayBuffer (no JS stream pumping/teeing)
+    const response = new Response(imageBytes, {
       status: 200,
       headers: {
         "Content-Type": contentType,
