@@ -30,8 +30,9 @@
       </BCard>
 
       <BCard class="mt-4 bg-dark-2 border-0 rounded-0 text-center" body-class="p-1 p-sm-4">
-        <p class="mb-0">Powered by <NuxtLink to="https://docs.mapbox.com/mapbox-gl-js/api/" class="text-body"
-            target="_blank">Mapbox GL JS</NuxtLink>
+        <p class="mb-0">Powered by <NuxtLink to="https://www.maptiler.com/" class="text-body"
+            target="_blank">MapTiler</NuxtLink> &amp; <NuxtLink to="https://maplibre.org/" class="text-body"
+            target="_blank">MapLibre GL</NuxtLink>
         </p>
       </BCard>
     </BContainer>

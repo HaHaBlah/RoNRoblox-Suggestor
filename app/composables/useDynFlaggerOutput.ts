@@ -130,7 +130,7 @@ export function useDynFlaggerOutput() {
       ...(descriptions ? ["# __Description/Sources__", descriptions] : []),
       "# __Images__",
       imagesBlock || "None",
-      "> -# *Made using [Dyn-Flagger](https://ronroblox-suggestor.pages.dev/Dyn-Flagger/ )*",
+      "> -# *Made using [Dyn-Flagger](https://ronroblox-suggestor.pages.dev/Dyn-Flagger)*",
       "]]",
     ].join("\n");
   });

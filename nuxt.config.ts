@@ -34,16 +34,29 @@ export default defineNuxtConfig({
   modules: [
     "nitro-cloudflare-dev",
     "@bootstrap-vue-next/nuxt",
-    "@nuxt/image", // "@nuxt/ui",
+    "@nuxt/image",
     "@primevue/nuxt-module",
     "nuxt-maplibre",
   ],
   css: [
-    "bootstrap/dist/css/bootstrap.min.css",
+    "bootstrap-icons/font/bootstrap-icons.css",
     "@/assets/style.css",
     "@/assets/scss/styles.scss",
-    // "primeicons/primeicons.css",
   ],
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: [
+            "legacy-js-api",
+            "import",
+            "color-functions",
+            "if-function",
+          ],
+        },
+      },
+    },
+  },
 
   app: {
     pageTransition: { 

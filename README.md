@@ -1,75 +1,54 @@
-# Nuxt Minimal Starter
+# Suggestor - Rise of Nations Tools
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A specialized web application for the [Rise of Nations (Roblox)](https://www.roblox.com/games/2569453732/Rise-of-Nations) community. Generate game suggestion code, formables, dynamic flags, city coordinates, releasables, and resource allocations with automatic sync to the latest Fandom wiki data.
 
-## Setup
+Hosted live on Cloudflare Pages: [https://ronroblox-suggestor.pages.dev](https://ronroblox-suggestor.pages.dev)
 
-Make sure to install dependencies:
+---
+
+## Features
+
+- **Formabler**: Generate complete Lua code configurations for formable nations and missions with autofill.
+- **Dyn-Flagger**: Design dynamic national flags with ideology and law requirements.
+- **Cityer**: Click on an interactive world map to capture precise city coordinates.
+- **Releasabler**: Create releasable nation configurations based on game tiles.
+- **Resourcer**: Allocate resources across nation tiles with autocomplete.
+- **Live Wiki Sync**: Automatically syncs and parses Lua modules from the official Rise of Nations Fandom wiki.
+
+---
+
+## Environment Setup
+
+Copy `.env.example` to `.env`:
 
 ```bash
-# npm
+cp .env.example .env
+```
+
+Set the following variables:
+- `MAPTILER_API_KEY`: Required for the interactive MapTiler map on the Cityer page. Get a free key at [maptiler.com](https://cloud.maptiler.com/).
+- `ROBLOX_API_KEY`: Optional Roblox Open Cloud API key for decal asset resolution.
+
+---
+
+## Development
+
+```bash
+# Install dependencies
 npm install
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
+# Sync wiki data and run dev server (default port: 6767)
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Development server runs at `http://localhost:6767`.
 
-Build the application for production:
+---
 
-```bash
-# npm
-npm run build
+## Scripts
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- `npm run dev`: Start local development server on port 6767.
+- `npm run sync:fandom`: Fetch and parse the latest Lua modules from the RoN Fandom Wiki into JSON.
+- `npm run build`: Sync wiki data and build the production application.
+- `npm run preview`: Build and preview the Cloudflare Pages output with Wrangler.
+- `npm run deploy`: Build and deploy to Cloudflare Pages.

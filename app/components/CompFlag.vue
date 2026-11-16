@@ -1,6 +1,7 @@
 <!-- components/CompFlag.vue -->
 <script setup lang="ts">
   import type { FlagSpec } from '~/composables/useDynFlagger'
+  import type { ButtonVariant } from 'bootstrap-vue-next'
 
   import unknownFlag from '~/assets/images/Unknown Flag.png'
 
@@ -89,10 +90,11 @@
     }
   )
 
-  function onImageInput(value: string) {
-    imageInputRaw.value = value
+  function onImageInput(value: string | number | null) {
+    const strVal = String(value ?? '')
+    imageInputRaw.value = strVal
 
-    const match = value.trim().match(/\d+/)
+    const match = strVal.trim().match(/\d+/)
     if (!match) {
       props.flag.FlagID = ''
       thumbnailSrc.value = unknownFlag
@@ -111,7 +113,7 @@
       try {
         const data = await $fetch<{ imageId: string }>(
           `/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`,
-          { signal } as RequestInit
+          { signal }
         )
         if (data && data.imageId) {
           props.flag.FlagID = data.imageId
@@ -157,7 +159,7 @@
   }
 
   // Returns Bootstrap variants instead of CSS classes
-  function ideologyVariant(ideology: string): string {
+  function ideologyVariant(ideology: string): ButtonVariant {
     if (props.flag.Ideologies.length === 0) {
       return 'yellow';
     }
@@ -173,7 +175,7 @@
 
   function selectLaw(code: string) { selectedLawCode.value = code }
 
-  function lawSelectionVariant(code: string): string {
+  function lawSelectionVariant(code: string): ButtonVariant {
     const hasLaws = (props.flag.Laws[code]?.length ?? 0) > 0
     const hasNotLaws = (props.flag.NOTLaws[code]?.length ?? 0) > 0
 
@@ -205,7 +207,7 @@
     if (!notLawArr.length) delete props.flag.NOTLaws[code]
   }
 
-  function levelVariant(levelKey: string): string {
+  function levelVariant(levelKey: string): ButtonVariant {
     const code = selectedLawCode.value
     // Changed to 'yellow'
     if (!code) return 'yellow'

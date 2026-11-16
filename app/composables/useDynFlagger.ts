@@ -1,4 +1,5 @@
 // composables/useDynFlagger.ts
+import { useState } from "#app";
 import { usePersistentReactive } from "~/composables/useFormStorage";
 
 export interface FlagSpec {
@@ -16,15 +17,21 @@ export interface FlaggerState {
   Flags: FlagSpec[];
 }
 
-// Module-level singleton — one reactive object shared across all components
-const state = reactive<FlaggerState>({
-  NationName: "",
-  Flags: [],
-});
-
-const { reset: resetFlagger } = usePersistentReactive("ron_dynflagger_state", state);
+let isStorageInitialized = false;
 
 export function useDynFlagger() {
+  const flaggerRef = useState<FlaggerState>("ron_dynflagger_state", () => ({
+    NationName: "",
+    Flags: [],
+  }));
+
+  const state = flaggerRef.value;
+
+  if (import.meta.client && !isStorageInitialized) {
+    isStorageInitialized = true;
+    usePersistentReactive("ron_dynflagger_state", state);
+  }
+
   function addFlag(data: Partial<FlagSpec> = {}): FlagSpec {
     const newFlag: FlagSpec = {
       _id: crypto.randomUUID(),
@@ -44,10 +51,14 @@ export function useDynFlagger() {
   }
 
   function resetState() {
-    resetFlagger();
-    if (state.Flags.length === 0) {
-      addFlag();
+    if (import.meta.client) {
+      try {
+        localStorage.removeItem("ron_dynflagger_state");
+      } catch {}
     }
+    state.NationName = "";
+    state.Flags = [];
+    addFlag();
   }
 
   return { state, addFlag, removeFlag, resetState };

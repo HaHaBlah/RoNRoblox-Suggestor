@@ -34,7 +34,7 @@
       subtitle: "Community Game",
       description: "The foundation of this project - a complex nation-building game on Roblox that inspired the need for community tools.",
       category: "Game",
-      image: "https://static.wikia.nocookie.net/ronroblox/images/7/7f/Ron_Logo_%28vector%29.svg",
+      image: ronLogo,
       link: "https://www.roblox.com/games/2569453732/Rise-of-Nations"
     },
     {
@@ -42,7 +42,7 @@
       subtitle: "Community Documentation",
       description: "Comprehensive wiki documenting all game mechanics, data structures, and configurations. Essential reference for all RoN tools.",
       category: "Resource",
-      image: "https://static.wikia.nocookie.net/ronroblox/images/e/e6/Site-logo.png",
+      image: "/api/fandom-image?proxy=true&url=https%3A%2F%2Fstatic.wikia.nocookie.net%2Fronroblox%2Fimages%2Fe%2Fe6%2FSite-logo.png",
       link: "https://ronroblox.fandom.com/wiki/Roblox_Rise_of_Nations_Wiki"
     },
     {

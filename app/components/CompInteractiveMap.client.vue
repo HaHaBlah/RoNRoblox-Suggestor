@@ -34,11 +34,10 @@
     };
 
     // 1. Fetch countries at the root level to preserve the Nuxt useFetch context
-    FandomLists().then(({ startingCountriesList }) => {
-        watch(startingCountriesList, (val) => {
-            startingCountries.value = val || [];
-        }, { immediate: true });
-    }).catch(err => console.error("Failed to load country list:", err));
+    const { startingCountriesList } = await FandomLists()
+    watch(startingCountriesList, (val) => {
+        startingCountries.value = val || []
+    }, { immediate: true })
 
     onMounted(async () => {
         await nextTick();

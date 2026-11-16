@@ -68,7 +68,7 @@ export function usePersistentReactive<T extends Record<string, any>>(
         isRestoring = true;
         for (const key of Object.keys(parsed)) {
           if (key in state) {
-            state[key] = parsed[key];
+            (state as Record<string, any>)[key] = parsed[key];
           }
         }
       }
@@ -86,7 +86,7 @@ export function usePersistentReactive<T extends Record<string, any>>(
       localStorage.removeItem(storageKey);
     } catch {}
     for (const key of Object.keys(initialDefaults)) {
-      state[key] = structuredClone(initialDefaults[key]);
+      (state as Record<string, any>)[key] = structuredClone(initialDefaults[key]);
     }
   };
 
