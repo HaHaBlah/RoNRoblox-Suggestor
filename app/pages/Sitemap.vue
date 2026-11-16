@@ -21,7 +21,7 @@
   const pages = [
     { name: "Home", path: "/", desc: "Main landing page and tool selector." },
     { name: "Credits", path: "/Credits", desc: "Credits, acknowledgements, and data sources." },
-    { name: "Changelog", path: "/Changelog", desc: "Version history and updates." },
+    // { name: "Changelog", path: "/Changelog", desc: "Version history and updates." },
   ];
 </script>
 

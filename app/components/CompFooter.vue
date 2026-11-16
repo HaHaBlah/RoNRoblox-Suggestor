@@ -56,12 +56,12 @@
               <li class="mb-2">
                 <BLink to="/">Home</BLink>
               </li>
-              <li class="mb-2">
+              <!-- <li class="mb-2">
                 <BLink to="/Sitemap">Sitemap</BLink>
-              </li>
-              <li class="mb-2">
+              </li> -->
+              <!-- <li class="mb-2">
                 <BLink to="/Changelog">Changelog</BLink>
-              </li>
+              </li> -->
               <li class="mb-2">
                 <BLink to="/Credits">Credits</BLink>
               </li>
