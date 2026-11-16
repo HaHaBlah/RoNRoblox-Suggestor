@@ -7,16 +7,19 @@ const TAB = "\t";
 const thumbnailCache = reactive<Record<string, string | null>>({});
 
 async function fetchThumbnail(flagId: string): Promise<string | null> {
-  if (flagId in thumbnailCache) return thumbnailCache[flagId];
+  if (flagId in thumbnailCache && thumbnailCache[flagId]) return thumbnailCache[flagId];
   try {
     const data = await $fetch<{ imageUrl: string }>(
       `/api/roblox-thumbnail?assetid=${encodeURIComponent(flagId)}&size=700x700`,
     );
-    thumbnailCache[flagId] = data.imageUrl;
+    if (data && data.imageUrl) {
+      thumbnailCache[flagId] = data.imageUrl;
+      return data.imageUrl;
+    }
   } catch {
-    thumbnailCache[flagId] = null;
+    // Do not permanently cache errors so subsequent calls can retry
   }
-  return thumbnailCache[flagId];
+  return null;
 }
 
 function buildSingleFlag(flag: FlagSpec, index: number): string {

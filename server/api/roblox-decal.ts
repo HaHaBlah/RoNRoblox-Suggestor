@@ -9,6 +9,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const matchId = String(decalid).match(/\d+/);
+  const cleanDecalId = matchId ? matchId[0] : "";
+
+  if (!cleanDecalId) {
+    throw createError({
+      statusCode: 400,
+      message: "Valid numeric decalid parameter required",
+    });
+  }
+
   const reqUrl = getRequestURL(event).toString();
 
   // 1. Check Cloudflare Edge Cache API
@@ -36,64 +46,61 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig();
 
-  // Resolve decal → CDN location
-  const assetData = await $fetch<{ location?: string }>(
-    `https://apis.roblox.com/asset-delivery-api/v1/assetId/${encodeURIComponent(decalid)}`,
-    {
-      headers: { "x-api-key": config.robloxApiKey },
-      // @ts-ignore
-      cf: { cacheEverything: true, cacheTtl: 31536000 },
-    },
-  ).catch((err) => {
-    throw createError({
-      statusCode: 500,
-      message: `Asset delivery error: ${err.message}`,
-    });
-  });
+  try {
+    // Resolve decal → CDN location
+    const assetData = await $fetch<{ location?: string }>(
+      `https://apis.roblox.com/asset-delivery-api/v1/assetId/${encodeURIComponent(cleanDecalId)}`,
+      {
+        headers: config.robloxApiKey ? { "x-api-key": config.robloxApiKey } : undefined,
+        timeout: 4000,
+      },
+    );
 
-  const cdnUrl = assetData?.location;
-  if (!cdnUrl)
-    throw createError({
-      statusCode: 500,
-      message: "No CDN location found in response",
-    });
-
-  // Fetch the decal XML from the CDN
-  const xml = await $fetch<string>(cdnUrl, {
-    responseType: "text",
-    // @ts-ignore
-    cf: { cacheEverything: true, cacheTtl: 31536000 },
-  }).catch((err) => {
-      throw createError({
-        statusCode: 500,
-        message: `CDN fetch error: ${err.message}`,
+    const cdnUrl = assetData?.location;
+    if (cdnUrl) {
+      // Fetch decal XML from CDN
+      const xml = await $fetch<string>(cdnUrl, {
+        responseType: "text",
+        timeout: 4000,
       });
-    },
-  );
 
-  const match = xml.match(
-    /name="Texture"[\s\S]*?<url>[^<]*?id=(\d+)[^<]*<\/url>/,
-  );
-  if (!match)
-    throw createError({
-      statusCode: 500,
-      message: "Could not find Texture ID in decal XML",
-    });
+      const match = xml.match(
+        /name="Texture"[\s\S]*?<url>[^<]*?id=(\d+)[^<]*<\/url>/,
+      );
 
-  const payload = { imageId: match[1], decalId: decalid };
+      if (match && match[1]) {
+        // Successfully resolved Decal ID → Image ID
+        const payload = { imageId: match[1], decalId: cleanDecalId, isDecal: true };
+        const response = new Response(JSON.stringify(payload), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable", // Decals never change
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
 
-  const response = new Response(JSON.stringify(payload), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, max-age=31536000, s-maxage=31536000, immutable", // Decals never change
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
+        if (cfCache) {
+          waitUntil(cfCache.put(reqUrl, response.clone()));
+        }
 
-  if (cfCache) {
-    waitUntil(cfCache.put(reqUrl, response.clone()));
+        return response;
+      }
+    }
+  } catch {
+    // Asset delivery or XML parsing failed (e.g. asset is already an Image ID, or API key unavailable)
   }
 
-  return response;
+  // Fallback: If it's not a decal XML (it's already an Image ID), return the ID directly as imageId
+  return new Response(
+    JSON.stringify({ imageId: cleanDecalId, decalId: cleanDecalId, isDecal: false }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=86400, s-maxage=86400",
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+  );
 });

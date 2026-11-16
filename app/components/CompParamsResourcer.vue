@@ -2,15 +2,17 @@
 <script setup>
     import { ref, computed } from 'vue';
     import { FandomLists } from '~/composables/FandomLists';
+    import { usePersistentRef } from '~/composables/useFormStorage';
     import CompTagInput from '~/components/CompTagInput.vue';
     import CompOutput from '~/components/CompOutput.vue';
 
     // Fetch tile lists, maps, and resource lists dynamically
     const { allTilesList, tileOwnersMap, allResourcesList } = await FandomLists();
 
-    const entries = ref([
-        { resource: '', tiles: [], amount: null, _showDropdown: false }
-    ]);
+    const defaultEntries = [{ resource: '', tiles: [], amount: null, _showDropdown: false }];
+    const entries = ref(structuredClone(defaultEntries));
+
+    const { reset: resetEntries } = usePersistentRef('ron_resourcer_state', entries, defaultEntries);
 
     const addEntry = () => {
         entries.value.push({ resource: '', tiles: [], amount: null, _showDropdown: false });
@@ -199,7 +201,7 @@
 
         <BRow>
             <BCol md="12">
-                <CompOutput :content="outputText">
+                <CompOutput :content="outputText" :showReset="true" @reset="resetEntries">
                     <div v-if="validation.hasErrors" class="text-red pt-2">
                         Please add at least one resource suggestion and fill out all fields (Resource, Tile, Amount) to
                         generate

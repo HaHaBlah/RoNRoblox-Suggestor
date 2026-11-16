@@ -6,7 +6,7 @@
 
   import unknownFlag from '~/assets/images/Unknown Flag.png'
 
-  const { state, addFlag, removeFlag } = useDynFlagger()
+  const { state, addFlag, removeFlag, resetState } = useDynFlagger()
   const { outputText, validation } = useDynFlaggerOutput()
   const { getFlagData } = useFlagUrl()
 
@@ -103,7 +103,7 @@
           </BButton>
         </div>
 
-        <CompOutput :content="outputText">
+        <CompOutput :content="outputText" :showReset="true" @reset="resetState">
           <div v-if="validation.hasErrors" class="text-red pt-2">
             <h6 class="fw-bold mb-3">Missing required inputs:</h6>
             <ul class="mb-0 text-start d-inline-block">

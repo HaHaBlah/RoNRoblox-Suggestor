@@ -3,7 +3,7 @@
 import Aura from "@primeuix/themes/aura";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  ssr: false,
+  ssr: true,
   devtools: { enabled: true },
   routeRules: {
     "/data/**": {

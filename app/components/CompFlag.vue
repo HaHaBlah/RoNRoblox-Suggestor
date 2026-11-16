@@ -16,25 +16,66 @@
 
   const isExpanded = ref(true)
   const thumbnailSrc = ref(unknownFlag)
+  const imageInputRaw = ref(props.flag.FlagID)
 
-  watch(
-    () => props.flag.FlagID,
-    async (id) => {
-      if (!id) { thumbnailSrc.value = unknownFlag; return }
-      try {
-        const data = await $fetch<{ imageUrl: string }>(`/api/roblox-thumbnail?assetid=${encodeURIComponent(id)}&size=700x700`)
+  let imageAbortController: AbortController | null = null
+  let imageDebounceTimer: ReturnType<typeof setTimeout> | null = null
+  let thumbnailAbortController: AbortController | null = null
+  let thumbnailRetryTimer: ReturnType<typeof setTimeout> | null = null
+
+  async function loadThumbnail(id: string, isRetry = false) {
+    if (!id) {
+      thumbnailSrc.value = unknownFlag
+      return
+    }
+
+    thumbnailAbortController?.abort()
+    thumbnailAbortController = new AbortController()
+    const { signal } = thumbnailAbortController
+
+    try {
+      const data = await $fetch<{ imageUrl: string; state?: string; retry?: boolean }>(
+        `/api/roblox-thumbnail?assetid=${encodeURIComponent(id)}&size=700x700`,
+        { signal }
+      )
+      if (data && data.imageUrl) {
         thumbnailSrc.value = data.imageUrl
-      } catch {
+      } else if (!isRetry && data?.retry) {
+        if (thumbnailRetryTimer) clearTimeout(thumbnailRetryTimer)
+        thumbnailRetryTimer = setTimeout(() => {
+          if (props.flag.FlagID === id) {
+            loadThumbnail(id, true)
+          }
+        }, 1500)
+      } else {
         thumbnailSrc.value = unknownFlag
       }
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return
+      if (!isRetry) {
+        if (thumbnailRetryTimer) clearTimeout(thumbnailRetryTimer)
+        thumbnailRetryTimer = setTimeout(() => {
+          if (props.flag.FlagID === id) {
+            loadThumbnail(id, true)
+          }
+        }, 1500)
+      } else {
+        thumbnailSrc.value = unknownFlag
+      }
+    }
+  }
+
+  // Watch FlagID to load thumbnails
+  watch(
+    () => props.flag.FlagID,
+    (id) => {
+      if (thumbnailRetryTimer) clearTimeout(thumbnailRetryTimer)
+      loadThumbnail(id)
     },
     { immediate: true },
   )
 
-  const imageInputRaw = ref(props.flag.FlagID)
-  let imageAbortController: AbortController | null = null
-
-  //Keeps the local input ref synced with the parent prop
+  // Keeps the local input ref synced with the parent prop
   watch(
     () => props.flag.FlagID,
     (newId) => {
@@ -48,24 +89,38 @@
     }
   )
 
-  async function onImageInput(value: string) {
+  function onImageInput(value: string) {
     imageInputRaw.value = value
-    imageAbortController?.abort()
-    imageAbortController = new AbortController()
-    const { signal } = imageAbortController
-    props.flag.FlagID = ''
 
     const match = value.trim().match(/\d+/)
-    if (!match) return
-    const parsed = match[0]
-
-    try {
-      const data = await $fetch<{ imageId: string }>(`/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`, { signal } as RequestInit)
-      props.flag.FlagID = data.imageId
-    } catch (err: unknown) {
-      if (err instanceof Error && (err.name === 'AbortError' || (err.cause as Error)?.name === 'AbortError')) return
-      props.flag.FlagID = parsed
+    if (!match) {
+      props.flag.FlagID = ''
+      thumbnailSrc.value = unknownFlag
+      return
     }
+    const parsed = match[0]
+    // Immediately set parsed ID so input isn't blanked and thumbnail loading starts right away
+    props.flag.FlagID = parsed
+
+    if (imageDebounceTimer) clearTimeout(imageDebounceTimer)
+    imageDebounceTimer = setTimeout(async () => {
+      imageAbortController?.abort()
+      imageAbortController = new AbortController()
+      const { signal } = imageAbortController
+
+      try {
+        const data = await $fetch<{ imageId: string }>(
+          `/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`,
+          { signal } as RequestInit
+        )
+        if (data && data.imageId) {
+          props.flag.FlagID = data.imageId
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error && (err.name === 'AbortError' || (err.cause as Error)?.name === 'AbortError')) return
+        props.flag.FlagID = parsed
+      }
+    }, 300)
   }
 
 

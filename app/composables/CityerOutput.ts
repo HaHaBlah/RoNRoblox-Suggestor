@@ -1,6 +1,7 @@
 // composables/CityerOutput.ts
 import { computed } from "vue";
 import { useState } from "#app";
+import { usePersistentRef } from "~/composables/useFormStorage";
 
 export interface CityData {
   name: string;
@@ -10,9 +11,16 @@ export interface CityData {
   country: string;
 }
 
+let isStorageInitialized = false;
+
 export const useCityer = () => {
   // useState ensures the state is shared across components
   const cities = useState<CityData[]>("cityer-cities", () => []);
+
+  if (import.meta.client && !isStorageInitialized) {
+    isStorageInitialized = true;
+    usePersistentRef("ron_cityer_cities", cities, []);
+  }
 
   const addCity = (city: CityData) => {
     cities.value.push(city);

@@ -5,6 +5,7 @@
     // Assets & Composables
     import unknownFlag from '~/assets/images/Unknown Flag.png';
     import { FandomLists } from '~/composables/FandomLists';
+    import { usePersistentReactive } from '~/composables/useFormStorage';
     import CompTagInput from '~/components/CompTagInput.vue';
     import CompOutput from '~/components/CompOutput.vue';
 
@@ -19,38 +20,78 @@
         SourcesDescription: ''
     });
 
+    const { reset: resetForm } = usePersistentReactive('ron_releasabler_state', state);
+
     // Fetch Fandom Lists dynamically for Tiles
     const { allTilesList, tileOwnersMap } = await FandomLists();
 
     // Decal & Flag Logic (Auto-converts Decal to Image ID and fetches preview)
     let decalAbortController = null;
+    let decalDebounceTimer = null;
     let flagAbortController = null;
+    let flagRetryTimer = null;
     const flagPreviewSrc = ref(unknownFlag);
 
-    async function onFlagInput(value) {
+    function onFlagInput(value) {
         state.Flag = value;
 
         const match = value.match(/\d+/);
         if (!match) return;
         const parsed = match[0];
 
-        decalAbortController?.abort();
-        decalAbortController = new AbortController();
-        const { signal } = decalAbortController;
+        if (decalDebounceTimer) clearTimeout(decalDebounceTimer);
+        decalDebounceTimer = setTimeout(async () => {
+            decalAbortController?.abort();
+            decalAbortController = new AbortController();
+            const { signal } = decalAbortController;
+
+            try {
+                const data = await $fetch(`/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`, { signal });
+                if (data && data.imageId) {
+                    state.Flag = data.imageId;
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+            }
+        }, 300);
+    }
+
+    async function fetchReleasableThumbnail(parsedId, isRetry = false) {
+        flagAbortController?.abort();
+        flagAbortController = new AbortController();
 
         try {
-            const data = await $fetch(`/api/roblox-decal?decalid=${encodeURIComponent(parsed)}`, { signal });
-            if (data && data.imageId) {
-                state.Flag = data.imageId;
+            const data = await $fetch(`/api/roblox-thumbnail?assetid=${encodeURIComponent(parsedId)}&size=700x700`, {
+                signal: flagAbortController.signal
+            });
+            if (data && data.imageUrl) {
+                flagPreviewSrc.value = data.imageUrl;
+            } else if (!isRetry && data?.retry) {
+                if (flagRetryTimer) clearTimeout(flagRetryTimer);
+                flagRetryTimer = setTimeout(() => {
+                    fetchReleasableThumbnail(parsedId, true);
+                }, 1500);
+            } else {
+                flagPreviewSrc.value = unknownFlag;
             }
         } catch (err) {
             if (err.name === 'AbortError') return;
+            if (!isRetry) {
+                if (flagRetryTimer) clearTimeout(flagRetryTimer);
+                flagRetryTimer = setTimeout(() => {
+                    fetchReleasableThumbnail(parsedId, true);
+                }, 1500);
+            } else {
+                flagPreviewSrc.value = unknownFlag;
+            }
         }
     }
 
     watch(
         () => state.Flag,
-        async (newFlagId) => {
+        (newFlagId) => {
+            if (flagRetryTimer) clearTimeout(flagRetryTimer);
+
             if (!newFlagId) {
                 flagPreviewSrc.value = unknownFlag;
                 return;
@@ -59,18 +100,7 @@
             const match = newFlagId.match(/\d+/);
             const parsedId = match ? match[0] : newFlagId;
 
-            flagAbortController?.abort();
-            flagAbortController = new AbortController();
-
-            try {
-                const data = await $fetch(`/api/roblox-thumbnail?assetid=${encodeURIComponent(parsedId)}&size=700x700`, {
-                    signal: flagAbortController.signal
-                });
-                flagPreviewSrc.value = data?.imageUrl || unknownFlag;
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                flagPreviewSrc.value = unknownFlag;
-            }
+            fetchReleasableThumbnail(parsedId);
         },
         { immediate: true }
     );
@@ -281,7 +311,7 @@
 
         <BRow>
             <BCol md="12">
-                <CompOutput :content="outputText">
+                <CompOutput :content="outputText" :showReset="true" @reset="resetForm">
                     <div v-if="validation.hasErrors" class="text-red pt-2">
                         <h6 class="fw-bold mb-3">Missing required inputs:</h6>
                         <ul class="mb-0 text-start d-inline-block">

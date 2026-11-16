@@ -9,7 +9,7 @@
     import { FandomLists } from '~/composables/FandomLists'
 
     const config = useRuntimeConfig()
-    const { addCity } = useCityer()
+    const { addCity, cities } = useCityer()
 
     const map = shallowRef(null)
     const currentMarker = shallowRef(null)
@@ -17,6 +17,21 @@
 
     const mapContainerRef = ref(null)
     const startingCountries = ref([])
+
+    const createSavedMarker = (c) => {
+        if (!map.value) return null;
+        const popup = new maptilersdk.Popup({ offset: 25 }).setHTML(`
+            <div class="p-2 bg-dark-2 text-white">
+                <h6 class="fw-bold mb-1">${c.name}</h6>
+                <p class="text-muted mb-1" style="font-size: 0.85rem;">Country: ${c.country}</p>
+                <p class="text-muted mb-0" style="font-size: 0.85rem;">Population: ${c.population ? Number(c.population).toLocaleString() : 'N/A'}</p>
+            </div>
+        `);
+        return markRaw(new maptilersdk.Marker({ color: "#28a745" })
+            .setLngLat([c.lng, c.lat])
+            .setPopup(popup)
+            .addTo(map.value));
+    };
 
     // 1. Fetch countries at the root level to preserve the Nuxt useFetch context
     FandomLists().then(({ startingCountriesList }) => {
@@ -42,6 +57,20 @@
 
         const geocoder = new GeocodingControl()
         map.value.addControl(geocoder, 'top-left')
+
+        // Render markers for all pre-existing / restored cities
+        cities.value.forEach(c => {
+            const marker = createSavedMarker(c);
+            if (marker) permanentMarkers.value.push(marker);
+        });
+
+        // Watch for cities being cleared
+        watch(cities, (newCities) => {
+            if (newCities.length === 0 && permanentMarkers.value.length > 0) {
+                permanentMarkers.value.forEach(m => m.remove());
+                permanentMarkers.value = [];
+            }
+        }, { deep: true });
 
         map.value.on('click', (e) => {
             const { lng, lat } = e.lngLat
@@ -139,19 +168,20 @@
                     return;
                 }
 
-                addCity({
+                const cityObj = {
                     name,
                     country,
                     population,
                     lat: parseFloat(lat.toFixed(4)),
                     lng: parseFloat(lng.toFixed(4))
-                });
+                };
 
-                const savedMarker = markRaw(new maptilersdk.Marker({ color: "#28a745" })
-                    .setLngLat([lng, lat])
-                    .addTo(map.value));
+                addCity(cityObj);
 
-                permanentMarkers.value.push(savedMarker);
+                const savedMarker = createSavedMarker(cityObj);
+                if (savedMarker) {
+                    permanentMarkers.value.push(savedMarker);
+                }
 
                 currentMarker.value.remove();
                 currentMarker.value = null;

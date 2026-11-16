@@ -2,7 +2,12 @@
 <script setup lang="ts">
 const props = defineProps<{
     /** The text to display and copy. When absent, the slot is shown instead. */
-    content?: string
+    content?: string;
+    showReset?: boolean;
+}>()
+
+const emit = defineEmits<{
+    (e: 'reset'): void
 }>()
 
 const isCopied = ref(false)
@@ -13,19 +18,36 @@ async function copyOutput() {
     isCopied.value = true
     setTimeout(() => { isCopied.value = false }, 1500)
 }
+
+function handleReset() {
+    if (confirm('Are you sure you want to reset all fields? This will clear saved data.')) {
+        emit('reset')
+    }
+}
 </script>
 
 <template>
     <BCard bg-variant="dark" text-variant="light" class="position-relative mt-4 shadow">
-        <BButton
-            :variant="isCopied ? 'green' : 'primary'"
-            :disabled="!content"
-            size="sm"
-            class="position-absolute top-0 end-0 m-3 z-3 shadow-sm fw-bold"
-            @click="copyOutput"
-        >
-            {{ isCopied ? 'Copied!' : 'Copy to Clipboard' }}
-        </BButton>
+        <div class="position-absolute top-0 end-0 m-3 z-3 d-flex gap-2">
+            <BButton
+                v-if="showReset"
+                variant="outline-danger"
+                size="sm"
+                class="shadow-sm fw-bold"
+                @click="handleReset"
+            >
+                Reset Form
+            </BButton>
+            <BButton
+                :variant="isCopied ? 'green' : 'primary'"
+                :disabled="!content"
+                size="sm"
+                class="shadow-sm fw-bold"
+                @click="copyOutput"
+            >
+                {{ isCopied ? 'Copied!' : 'Copy to Clipboard' }}
+            </BButton>
+        </div>
 
         <pre
             class="mb-0 p-3 text-light"

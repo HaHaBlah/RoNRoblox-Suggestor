@@ -1,4 +1,5 @@
 // composables/useDynFlagger.ts
+import { usePersistentReactive } from "~/composables/useFormStorage";
 
 export interface FlagSpec {
   _id: string;
@@ -21,6 +22,8 @@ const state = reactive<FlaggerState>({
   Flags: [],
 });
 
+const { reset: resetFlagger } = usePersistentReactive("ron_dynflagger_state", state);
+
 export function useDynFlagger() {
   function addFlag(data: Partial<FlagSpec> = {}): FlagSpec {
     const newFlag: FlagSpec = {
@@ -40,5 +43,12 @@ export function useDynFlagger() {
     state.Flags.splice(index, 1);
   }
 
-  return { state, addFlag, removeFlag };
+  function resetState() {
+    resetFlagger();
+    if (state.Flags.length === 0) {
+      addFlag();
+    }
+  }
+
+  return { state, addFlag, removeFlag, resetState };
 }
