@@ -3,6 +3,7 @@
   import { useDynFlagger } from '~/composables/useDynFlagger'
   import { useDynFlaggerOutput } from '~/composables/useDynFlaggerOutput'
   import { useFlagUrl } from '~/composables/useFlagUrl'
+  import { FandomLists } from '~/composables/FandomLists'
 
   import unknownFlag from '~/assets/images/Unknown Flag.png'
 
@@ -10,13 +11,7 @@
   const { outputText, validation } = useDynFlaggerOutput()
   const { getFlagData } = useFlagUrl()
 
-  interface LawEntry { Name: string; Types: Record<string, string> }
-  interface FandomData {
-    Lawnames: { lawNames: Record<string, LawEntry> }
-  }
-
-  const { data: fandomData } = await useFetch<FandomData>('/data/fandom-data.json')
-  const lawnames = computed(() => fandomData.value?.Lawnames?.lawNames ?? {})
+  const { lawnamesMap: lawnames } = await FandomLists()
 
   const nationFlagSrc = ref(unknownFlag)
   let nationFlagController: AbortController | null = null

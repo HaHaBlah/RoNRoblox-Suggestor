@@ -80,7 +80,11 @@ const ideologiesList = [
 ];
 
 export async function FandomLists() {
-  const { data: fandomData } = await useFetch<FandomData>("/data/fandom-data.json");
+  const { fandomData, isLoading, error, fetchData } = useFandomData();
+
+  if (import.meta.client && !fandomData.value) {
+    await fetchData();
+  }
 
   // List 1: EVERYTHING (For "Countries That Can Form")
   const allCountriesList = computed<string[]>(() => {
@@ -244,7 +248,19 @@ export async function FandomLists() {
     return [...new Set([...nations])].sort();
   });
 
-  // List 6: ALL LEADERS
+  // List 7: RELEASABLES ONLY
+  const releasablesList = computed<string[]>(() => {
+    if (!fandomData.value) return [];
+    const releasables = Object.entries(
+      fandomData.value.Nationdata?.nationdata || {},
+    )
+      .filter(([, v]) => v.nation === false)
+      .map(([k]) => k);
+
+    return [...new Set([...releasables])].sort();
+  });
+
+  // List 8: ALL LEADERS
   const leadersList = computed<string[]>(() => {
     if (!fandomData.value) return [];
     return Object.values(fandomData.value.Leaderdata?.leaderdata || {})
@@ -252,7 +268,7 @@ export async function FandomLists() {
       .sort();
   });
 
-  // List 7: ALL POLITICAL LAWS
+  // List 9: ALL POLITICAL LAWS
   const politicalLawsList = computed<string[]>(() => {
     if (!fandomData.value) return [];
     return Object.values(
@@ -268,7 +284,7 @@ export async function FandomLists() {
     return fandomData.value.Lawnames?.lawNames || {};
   });
 
-  // List 8: ALL POLICIES
+  // List 10: ALL POLICIES
   const policiesList = computed<string[]>(() => {
     if (!fandomData.value) return [];
     return Object.values(
@@ -282,6 +298,7 @@ export async function FandomLists() {
     allCountriesList,
     baseCountriesList,
     startingCountriesList,
+    releasablesList,
     formablesList,
     allTilesList,
     tileOwnersMap,
@@ -293,5 +310,8 @@ export async function FandomLists() {
     lawnamesMap,
     policiesList,
     ideologiesList,
+    isLoading,
+    error,
+    fandomData,
   };
 }

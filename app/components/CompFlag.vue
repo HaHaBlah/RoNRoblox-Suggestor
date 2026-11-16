@@ -168,10 +168,10 @@
     return props.flag.Ideologies.includes(ideology) ? 'green' : 'red';
   }
 
-  const sortedLaws = computed(() => Object.entries(props.lawnames).sort(([, a], [, b]) => a.Name.localeCompare(b.Name)))
+  const sortedLaws = computed(() => Object.entries(props.lawnames || {}).sort(([, a], [, b]) => a.Name.localeCompare(b.Name)))
   const selectedLawCode = ref<string | null>(null)
-  const selectedLawName = computed(() => selectedLawCode.value ? (props.lawnames[selectedLawCode.value]?.Name ?? '') : '')
-  const selectedLawTypes = computed<Record<string, string>>(() => selectedLawCode.value ? (props.lawnames[selectedLawCode.value]?.Types ?? {}) : {})
+  const selectedLawName = computed(() => selectedLawCode.value ? (props.lawnames?.[selectedLawCode.value]?.Name ?? '') : '')
+  const selectedLawTypes = computed<Record<string, string>>(() => selectedLawCode.value ? (props.lawnames?.[selectedLawCode.value]?.Types ?? {}) : {})
 
   function selectLaw(code: string) { selectedLawCode.value = code }
 
@@ -222,8 +222,8 @@
     return 'yellow'
   }
 
-  function getLawName(code: string): string { return props.lawnames[code]?.Name ?? code }
-  function getLevelText(code: string, key: string): string { return props.lawnames[code]?.Types[key] ?? key }
+  function getLawName(code: string): string { return props.lawnames?.[code]?.Name ?? code }
+  function getLevelText(code: string, key: string): string { return props.lawnames?.[code]?.Types?.[key] ?? key }
   function formatLawsObj(obj: Record<string, string[]>): string {
     return Object.entries(obj).filter(([, v]) => v?.length).map(([code, levels]) => `${getLawName(code)}: ${levels.map(l => getLevelText(code, l)).join(', ')}`).join(' | ') || 'None'
   }

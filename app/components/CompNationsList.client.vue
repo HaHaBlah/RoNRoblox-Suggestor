@@ -1,22 +1,16 @@
 <!-- components/CompNationsList.client.vue -->
 <script setup lang="ts">
   import { ref, computed } from 'vue'
-
-  interface NationEntry { nation: boolean }
-  interface FormableEntry { FormableName?: string; Removed?: boolean }
-
-  interface FandomData {
-    Nationdata: { nationdata: Record<string, NationEntry> }
-    Tagdata: { Tags: Record<string, FormableEntry> }
-    flagMap: Record<string, string>
-  }
+  import { FandomLists } from '~/composables/FandomLists'
 
   const emit = defineEmits<{ select: [name: string] }>()
-  const { data, status, error } = await useFetch<FandomData>('/data/fandom-data.json')
-
-  const nations = computed(() => data.value ? Object.entries(data.value.Nationdata.nationdata).filter(([, v]) => v.nation === true).map(([k]) => k).sort() : [])
-  const releasables = computed(() => data.value ? Object.entries(data.value.Nationdata.nationdata).filter(([, v]) => v.nation === false).map(([k]) => k).sort() : [])
-  const formables = computed(() => data.value ? Object.values(data.value.Tagdata.Tags).filter(f => f.FormableName && !f.Removed).map(f => f.FormableName!).sort() : [])
+  const {
+    startingCountriesList: nations,
+    releasablesList: releasables,
+    formablesList: formables,
+    isLoading,
+    error,
+  } = await FandomLists()
 
   type Tab = 'Nations' | 'Releasables' | 'Formables'
   const tabIndex = ref<Tab>('Nations')
@@ -56,12 +50,12 @@
     </div>
 
     <div class="flex-grow-1 overflow-auto">
-      <div v-if="status === 'pending'" class="text-center text-muted p-4">
+      <div v-if="isLoading" class="text-center text-muted p-4">
         <BSpinner class="mb-2" />
         <p>Loading nations...</p>
       </div>
       <BAlert v-else-if="error" variant="danger" show>
-        Failed to load: {{ error.message }}
+        Failed to load: {{ error }}
       </BAlert>
       <BListGroup class="nations-list" v-else>
         <BListGroupItem v-for="name in filteredList" :key="name" button

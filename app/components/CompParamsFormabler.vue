@@ -321,15 +321,15 @@
 
     // === POLITICAL LAW REQUIREMENT PICKER ===
     const sortedLaws = computed(() =>
-        Object.entries(lawnamesMap.value).sort(([, a], [, b]) => a.Name.localeCompare(b.Name))
+        Object.entries(lawnamesMap.value || {}).sort(([, a], [, b]) => a.Name.localeCompare(b.Name))
     );
 
     const selectedLawCode = ref(null);
     const selectedLawName = computed(() =>
-        selectedLawCode.value ? (lawnamesMap.value[selectedLawCode.value]?.Name ?? '') : ''
+        selectedLawCode.value ? (lawnamesMap.value?.[selectedLawCode.value]?.Name ?? '') : ''
     );
     const selectedLawTypes = computed(() =>
-        selectedLawCode.value ? (lawnamesMap.value[selectedLawCode.value]?.Types ?? {}) : {}
+        selectedLawCode.value ? (lawnamesMap.value?.[selectedLawCode.value]?.Types ?? {}) : {}
     );
 
     const selectLaw = (code) => {
