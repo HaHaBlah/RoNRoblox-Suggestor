@@ -52,7 +52,7 @@
 
   const edgeStyle = {
     stroke: 'var(--ron-connector-dark, #13171d)',
-    strokeWidth: 6,
+    strokeWidth: 4,
   }
 
   // Generates 100% straight orthogonal tree paths with no S-curves or buffer offsets
@@ -64,15 +64,16 @@
     return `M ${sourceX} ${sourceY} L ${sourceX} ${forkY} L ${targetX} ${forkY} L ${targetX} ${targetY}`
   }
 
+  // Compact symmetrical coordinates designed to fit within standard mobile card widths (340px total span)
+  // Col 1 center = 60, Col 2 center = 175, Col 3 center = 290 (115px between columns)
   const nodes = computed(() => {
-    // Reference ideologyVersion so updates to props.selectedIdeologies recalculate all node variants
     void ideologyVersion.value
 
     return [
       {
         id: 'Non-Aligned',
         type: 'ideology',
-        position: { x: 165, y: 10 },
+        position: { x: 125, y: 8 },
         data: {
           key: 'Non-Aligned',
           label: 'Non-Aligned',
@@ -84,7 +85,7 @@
       {
         id: 'Socialism',
         type: 'ideology',
-        position: { x: 20, y: 80 },
+        position: { x: 10, y: 68 },
         data: {
           key: 'Socialism',
           label: 'Socialism',
@@ -97,7 +98,7 @@
       {
         id: 'Liberalism',
         type: 'ideology',
-        position: { x: 165, y: 80 },
+        position: { x: 125, y: 68 },
         data: {
           key: 'Liberalism',
           label: 'Liberalism',
@@ -110,7 +111,7 @@
       {
         id: 'Nationalism',
         type: 'ideology',
-        position: { x: 310, y: 80 },
+        position: { x: 240, y: 68 },
         data: {
           key: 'Nationalism',
           label: 'Nationalism',
@@ -123,7 +124,7 @@
       {
         id: 'Communism',
         type: 'ideology',
-        position: { x: 20, y: 145 },
+        position: { x: 10, y: 126 },
         data: {
           key: 'Communism',
           label: 'Communism',
@@ -136,7 +137,7 @@
       {
         id: 'Democracy',
         type: 'ideology',
-        position: { x: 165, y: 145 },
+        position: { x: 125, y: 126 },
         data: {
           key: 'Democracy',
           label: 'Democracy',
@@ -149,7 +150,7 @@
       {
         id: 'Fascism',
         type: 'ideology',
-        position: { x: 310, y: 145 },
+        position: { x: 240, y: 126 },
         data: {
           key: 'Fascism',
           label: 'Fascism',
@@ -170,11 +171,41 @@
     { id: 'e-lib-dem', source: 'Liberalism', target: 'Democracy', type: 'fork', style: edgeStyle },
     { id: 'e-nat-fas', source: 'Nationalism', target: 'Fascism', type: 'fork', style: edgeStyle },
   ])
+
+  const containerRef = ref<HTMLElement | null>(null)
+  let flowApi: any = null
+  let resizeObserver: ResizeObserver | null = null
+
+  function fitFlow() {
+    if (flowApi) {
+      nextTick(() => {
+        flowApi.fitView({ padding: 0.03, includeHiddenNodes: true })
+      })
+    }
+  }
+
+  function onPaneReady(instance: any) {
+    flowApi = instance
+    fitFlow()
+  }
+
+  onMounted(() => {
+    if (typeof ResizeObserver !== 'undefined' && containerRef.value) {
+      resizeObserver = new ResizeObserver(() => {
+        fitFlow()
+      })
+      resizeObserver.observe(containerRef.value)
+    }
+  })
+
+  onUnmounted(() => {
+    resizeObserver?.disconnect()
+  })
 </script>
 
 <template>
-  <div class="ideology-flow-outer overflow-auto w-100 py-1">
-    <div class="ideology-flow-container">
+  <div class="ideology-flow-outer w-100 py-1">
+    <div ref="containerRef" class="ideology-flow-container">
       <ClientOnly>
         <VueFlow
           :nodes="nodes"
@@ -188,7 +219,9 @@
           :zoom-on-pinch="false"
           :zoom-on-double-click="false"
           :prevent-scrolling="false"
-          :default-viewport="{ zoom: 1, x: 0, y: 0 }"
+          :fit-view-on-init="true"
+          :auto-pan-on-node-drag="false"
+          @pane-ready="onPaneReady"
           @node-click="onNodeClick"
         >
           <!-- Custom Node -->
@@ -235,11 +268,13 @@
   .ideology-flow-outer {
     display: flex;
     justify-content: center;
+    overflow: hidden;
   }
 
   .ideology-flow-container {
-    width: 440px;
-    height: 200px;
+    width: 100%;
+    max-width: 360px;
+    height: 180px;
     position: relative;
   }
 
@@ -251,12 +286,13 @@
   }
 
   .ideology-btn {
-    width: 110px;
+    width: 100px;
     font-weight: 700;
     text-align: center;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.25rem 0.2rem;
+    font-size: 0.8rem;
     cursor: pointer !important;
+    white-space: nowrap;
   }
 
   .hidden-handle {
