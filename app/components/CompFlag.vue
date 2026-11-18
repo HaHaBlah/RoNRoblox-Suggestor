@@ -126,32 +126,6 @@
   }
 
 
-  // --- Ideology Tree Data Structure ---
-  // OrganizationChart requires a recursive 'children' structure
-  const ideologyTree = ref({
-    label: 'Non-Aligned',
-    key: 'Non-Aligned',
-    children: [
-      {
-        label: 'Socialism',
-        key: 'Socialism',
-        styleClass: 'ideology-socialism',
-        children: [{ label: 'Communism', key: 'Communism', styleClass: 'ideology-communism' }]
-      },
-      {
-        label: 'Liberalism',
-        key: 'Liberalism',
-        styleClass: 'ideology-liberalism',
-        children: [{ label: 'Democracy', key: 'Democracy', styleClass: 'ideology-democracy' }]
-      },
-      {
-        label: 'Nationalism',
-        key: 'Nationalism',
-        styleClass: 'ideology-nationalism',
-        children: [{ label: 'Fascism', key: 'Fascism', styleClass: 'ideology-fascism' }]
-      }
-    ]
-  })
   function toggleIdeology(ideology: string) {
     const idx = props.flag.Ideologies.indexOf(ideology)
     if (idx !== -1) props.flag.Ideologies.splice(idx, 1)
@@ -281,24 +255,13 @@
           </BCol>
         </BRow>
 
-        <!-- Ideology Tree (Uses layout classes) -->
+        <!-- Ideologies Tree -->
         <div class="mb-4">
           <h6 class="fw-bold mb-2 text-center">Ideologies</h6>
-          <div class="chart-container overflow-auto w-100 pb-2">
-            <POrganizationChart :value="ideologyTree" :pt="{
-              // Remove Node backgrounds and padding
-              node: {
-                style: { padding: '0', background: 'transparent', borderColor: 'transparent' }
-              },
-            }">
-              <template #default="{ node }">
-                <BButton :variant="ideologyVariant(node.key)" size="sm" class="ron-button ideology-btn"
-                  @click.stop="toggleIdeology(node.key)">
-                  {{ node.label }}
-                </BButton>
-              </template>
-            </POrganizationChart>
-          </div>
+          <CompIdeologyTree
+            :selected-ideologies="flag.Ideologies"
+            @toggle="toggleIdeology"
+          />
         </div>
 
         <!-- Laws -->
@@ -367,58 +330,6 @@
 
   .ideology-fascism button {
     color: #7B7B7B;
-  }
-
-
-</style>
-<style>
-
-  .chart-container {
-    /* Set Orgchart Connector Color */
-    --p-organizationchart-connector-color: var(--ron-connector-dark);
-
-    /* Adjust Vertical Distance */
-    --p-organizationchart-connector-height: 0.5em;
-
-    /* Adjust Horizontal Distance */
-    --p-organizationchart-gutter: 0.2em;
-
-    --p-organizationchart-connector-border-radius: 0;
-
-    /* Connector Width */
-    --ron-connector-width: 6px;
-  }
-
-  @media (max-width: 576px) {
-    .chart-container {
-      --p-organizationchart-connector-height: 0.25em;
-      --p-organizationchart-gutter: 0.1em;
-      --ron-connector-width: 4px;
-    }
-  }
-
-  .p-organizationchart-connector-down {
-    width: var(--ron-connector-width) !important;
-  }
-
-  .p-organizationchart-connector-left {
-    border-top-width: var(--ron-connector-width) !important;
-    border-right-width: var(--ron-connector-width) !important;
-  }
-
-  .p-organizationchart-connector-right {
-    border-top-width: var(--ron-connector-width) !important;
-  }
-
-  /* Hide the overhanging top borders on the very first and very last items */
-  .p-organizationchart-connectors>td:first-child,
-  .p-organizationchart-connectors>td:last-child {
-    border-top-color: transparent !important;
-  }
-
-  .p-organizationchart-connectors :nth-child(1 of .p-organizationchart-connector-right) {
-    border-inline-start: var(--ron-connector-width) solid var(--p-organizationchart-connector-color);
-    border-start-start-radius: var(--p-organizationchart-connector-border-radius);
   }
 
 
