@@ -52,7 +52,7 @@
 
   const edgeStyle = {
     stroke: 'var(--ron-connector-dark, #13171d)',
-    strokeWidth: 4,
+    strokeWidth: 6,
   }
 
   // Generates 100% straight orthogonal tree paths with no S-curves or buffer offsets
